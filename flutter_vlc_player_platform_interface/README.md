@@ -1,4 +1,4 @@
-# vlc_platform_interface
+# fluttter_vlc_player_platform_interface
 
 A common platform interface for the [`vlc`][1] plugin.
 
