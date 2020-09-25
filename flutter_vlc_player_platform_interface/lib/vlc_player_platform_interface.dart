@@ -1,6 +1,11 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:vlc_platform_interface/enums/vlc_player_state.dart';
-import 'package:vlc_platform_interface/method_channel/method_channel_vlc_player.dart';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
+
+import 'enums/vlc_player_state.dart';
+import 'method_channel/method_channel_vlc_player.dart';
 
 /// The interface that implementations of vlc must implement.
 ///
@@ -9,11 +14,14 @@ import 'package:vlc_platform_interface/method_channel/method_channel_vlc_player.
 /// (using `extends`) ensures that the subclass will get the default implementation, while
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [VlcPlatform] methods.
-abstract class VlcPlayerPlatform extends PlatformInterface {
-  /// Constructs a VlcPlatform.
-  VlcPlayerPlatform() : super(token: _token);
-
-  static final Object _token = Object();
+abstract class VlcPlayerPlatform {
+  /// Only mock implementations should set this to true.
+  ///
+  /// Mockito mocks are implementing this class with `implements` which is forbidden for anything
+  /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
+  /// skip the verification that the class isn't implemented with `implements`.
+  @visibleForTesting
+  bool get isMock => false;
 
   static VlcPlayerPlatform _instance = MethodChannelVlcPlayer();
 
@@ -25,18 +33,86 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [VlcPlayerPlatform] when they register themselves.
   static set instance(VlcPlayerPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
+    if (!instance.isMock) {
+      try {
+        instance._verifyProvidesDefaultImplementations();
+      } on NoSuchMethodError catch (_) {
+        throw AssertionError(
+            'Platform interfaces must not be implemented with `implements`');
+      }
+    }
     _instance = instance;
   }
 
-  /// Gets the battery level from device.
-  Future<void> play() {
-    throw UnimplementedError('play() has not been implemented.');
+  // This method makes sure that VideoPlayer isn't implemented with `implements`.
+  //
+  // See class doc for more details on why implementing this class is forbidden.
+  //
+  // This private method is called by the instance setter, which fails if the class is
+  // implemented with `implements`.
+  void _verifyProvidesDefaultImplementations() {}
+
+  /// Initializes the platform interface and disposes all existing players.
+  ///
+  /// This method is called when the plugin is first initialized
+  /// and on every full restart.
+  Future<void> init() {
+    throw UnimplementedError('init() has not been implemented.');
   }
 
-  /// gets vlc player state
-  Stream<VlcPlayerState> onVlcPlayerStateChanged() {
-    throw UnimplementedError(
-        'onVlcPlayerStateChanged() has not been implemented.');
+  /// Clears one video.
+  Future<void> dispose(int textureId) {
+    throw UnimplementedError('dispose() has not been implemented.');
   }
+
+  /// Creates an instance of a video player and returns its textureId.
+  Future<int> create(String url) {
+    throw UnimplementedError('create() has not been implemented.');
+  }
+
+  // /// Returns a Stream of [VideoEventType]s.
+  // Stream<VideoEvent> videoEventsFor(int textureId) {
+  //   throw UnimplementedError('videoEventsFor() has not been implemented.');
+  // }
+
+  // /// Sets the looping attribute of the video.
+  // Future<void> setLooping(int textureId, bool looping) {
+  //   throw UnimplementedError('setLooping() has not been implemented.');
+  // }
+
+  // /// Starts the video playback.
+  // Future<void> play(int textureId) {
+  //   throw UnimplementedError('play() has not been implemented.');
+  // }
+
+  // /// Stops the video playback.
+  // Future<void> pause(int textureId) {
+  //   throw UnimplementedError('pause() has not been implemented.');
+  // }
+
+  // /// Sets the volume to a range between 0.0 and 1.0.
+  // Future<void> setVolume(int textureId, double volume) {
+  //   throw UnimplementedError('setVolume() has not been implemented.');
+  // }
+
+  // /// Sets the video position to a [Duration] from the start.
+  // Future<void> seekTo(int textureId, Duration position) {
+  //   throw UnimplementedError('seekTo() has not been implemented.');
+  // }
+
+  // /// Gets the video position as [Duration] from the start.
+  // Future<Duration> getPosition(int textureId) {
+  //   throw UnimplementedError('getPosition() has not been implemented.');
+  // }
+
+  // /// Returns a widget displaying the video with a given textureID.
+  // Widget buildView(int textureId) {
+  //   throw UnimplementedError('buildView() has not been implemented.');
+  // }
+
+  // /// gets vlc player state
+  // Stream<VlcPlayerState> onVlcPlayerStateChanged() {
+  //   throw UnimplementedError(
+  //       'onVlcPlayerStateChanged() has not been implemented.');
+  // }
 }

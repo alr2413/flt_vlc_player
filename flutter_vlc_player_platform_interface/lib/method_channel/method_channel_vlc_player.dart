@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:vlc_platform_interface/enums/vlc_player_state.dart';
-import 'package:vlc_platform_interface/vlc_player_platform_interface.dart';
+import '../enums/vlc_player_state.dart';
+
+import '../vlc_player_platform_interface.dart';
 
 /// An implementation of [VlcPlayerPlatform] that uses method channels.
 class MethodChannelVlcPlayer extends VlcPlayerPlatform {
@@ -17,25 +18,25 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     return EventChannel('flutter_video_plugin/getVideoEvents$textureId');
   }
 
-  Future<void> play() async {
-    await channel.invokeMethod('setPlaybackState', {
-      'playbackState': 'play',
-    });
-  }
+  // Future<void> play() async {
+  //   await channel.invokeMethod('setPlaybackState', {
+  //     'playbackState': 'play',
+  //   });
+  // }
 
-  /// Stream variable for storing vlc player state.
-  Stream<VlcPlayerState> _onVlcPlayerStateChanged;
+  // /// Stream variable for storing vlc player state.
+  // Stream<VlcPlayerState> _onVlcPlayerStateChanged;
 
-  /// Event channel for getting vlc player change state.
-  Stream<VlcPlayerState> onVlcPlayerStateChanged() {
-    if (_onVlcPlayerStateChanged == null) {
-      _onVlcPlayerStateChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseVlcPlayerState(event));
-    }
-    return _onVlcPlayerStateChanged;
-  }
+  // /// Event channel for getting vlc player change state.
+  // Stream<VlcPlayerState> onVlcPlayerStateChanged() {
+  //   if (_onVlcPlayerStateChanged == null) {
+  //     _onVlcPlayerStateChanged = eventChannel
+  //         .receiveBroadcastStream()
+  //         .map((dynamic event) => _parseVlcPlayerState(event));
+  //   }
+  //   return _onVlcPlayerStateChanged;
+  // }
 }
 
 /// Method for parsing vlc player state.
-VlcPlayerState _parseVlcPlayerState(String state) {}
+// VlcPlayerState _parseVlcPlayerState(String state) {}
