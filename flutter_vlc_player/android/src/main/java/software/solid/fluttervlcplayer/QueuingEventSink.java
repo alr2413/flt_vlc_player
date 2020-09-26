@@ -1,8 +1,8 @@
 package software.solid.fluttervlcplayer;
 
-import io.flutter.plugin.common.EventChannel;
-
 import java.util.ArrayList;
+
+import io.flutter.plugin.common.EventChannel;
 
 /**
  * And implementation of {@link EventChannel.EventSink} which can wrap an underlying sink.
@@ -66,8 +66,7 @@ final class QueuingEventSink implements EventChannel.EventSink {
         eventQueue.clear();
     }
 
-    private static class EndOfStreamEvent {
-    }
+    private static class EndOfStreamEvent {}
 
     private static class ErrorEvent {
         String code;

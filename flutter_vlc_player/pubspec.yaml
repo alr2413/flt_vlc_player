@@ -9,18 +9,28 @@ environment:
   # the flutter.plugin.platforms.
   flutter: ">=1.10.0 <2.0.0"
 
-dependencies:
-  flutter:
-    sdk: flutter
-  cryptoutils: ^0.4.0
-  flutter_vlc_player_platform_interface:
-    path: ../flutter_vlc_player_platform_interface/
-
 flutter:
   plugin:
     platforms:
       android:
         package: software.solid.fluttervlcplayer
-        pluginClass: FlutterVlcPlayerPlugin
+        pluginClass: VlcPlayerPlugin
       ios:
-        pluginClass: FlutterVlcPlayerPlugin
+        pluginClass: VlcPlayerPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cryptoutils: ^0.4.0
+  meta: ^1.0.5
+  
+  flutter_vlc_player_platform_interface: 
+    path: ../flutter_vlc_player_platform_interface
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.8.0
+  pigeon: 0.1.9
+

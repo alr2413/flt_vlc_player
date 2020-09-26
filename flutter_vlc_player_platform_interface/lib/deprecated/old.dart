@@ -7,9 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_vlc_player_platform_interface/vlc_player_platform_interface.dart';
-
-final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance;
 
 enum PlayingState { STOPPED, PAUSED, BUFFERING, PLAYING, ERROR }
 enum HwAcc { AUTO, DISABLED, DECODING, FULL }

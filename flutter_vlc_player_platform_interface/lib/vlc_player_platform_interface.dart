@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-import 'enums/vlc_player_state.dart';
-import 'method_channel/method_channel_vlc_player.dart';
+import 'method_channel_vlc_player.dart';
 
 /// The interface that implementations of vlc must implement.
 ///
@@ -70,45 +69,55 @@ abstract class VlcPlayerPlatform {
     throw UnimplementedError('create() has not been implemented.');
   }
 
-  // /// Returns a Stream of [VideoEventType]s.
+  /// Returns a Stream of [VideoEventType]s.
   // Stream<VideoEvent> videoEventsFor(int textureId) {
   //   throw UnimplementedError('videoEventsFor() has not been implemented.');
   // }
 
-  // /// Sets the looping attribute of the video.
-  // Future<void> setLooping(int textureId, bool looping) {
-  //   throw UnimplementedError('setLooping() has not been implemented.');
-  // }
+  /// Sets the looping attribute of the video.
+  Future<void> setLooping(int textureId, bool looping) {
+    throw UnimplementedError('setLooping() has not been implemented.');
+  }
 
-  // /// Starts the video playback.
-  // Future<void> play(int textureId) {
-  //   throw UnimplementedError('play() has not been implemented.');
-  // }
+  /// Starts the video playback.
+  Future<void> play(int textureId) {
+    throw UnimplementedError('play() has not been implemented.');
+  }
 
-  // /// Stops the video playback.
-  // Future<void> pause(int textureId) {
-  //   throw UnimplementedError('pause() has not been implemented.');
-  // }
+  /// Stops the video playback.
+  Future<void> pause(int textureId) {
+    throw UnimplementedError('pause() has not been implemented.');
+  }
 
-  // /// Sets the volume to a range between 0.0 and 1.0.
-  // Future<void> setVolume(int textureId, double volume) {
-  //   throw UnimplementedError('setVolume() has not been implemented.');
-  // }
+  /// Sets the volume to a range between 0 and 100.
+  Future<void> setVolume(int textureId, int volume) {
+    throw UnimplementedError('setVolume() has not been implemented.');
+  }
 
-  // /// Sets the video position to a [Duration] from the start.
-  // Future<void> seekTo(int textureId, Duration position) {
-  //   throw UnimplementedError('seekTo() has not been implemented.');
-  // }
+  /// Sets the video position to a [Duration] from the start.
+  Future<void> seekTo(int textureId, Duration position) {
+    throw UnimplementedError('seekTo() has not been implemented.');
+  }
 
-  // /// Gets the video position as [Duration] from the start.
-  // Future<Duration> getPosition(int textureId) {
-  //   throw UnimplementedError('getPosition() has not been implemented.');
-  // }
+  /// Sets the playback speed to a [speed] value indicating the playback rate.
+  Future<void> setPlaybackSpeed(int textureId, double speed) {
+    throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
+  }
 
-  // /// Returns a widget displaying the video with a given textureID.
-  // Widget buildView(int textureId) {
-  //   throw UnimplementedError('buildView() has not been implemented.');
-  // }
+  /// Gets the video position as [Duration] from the start.
+  Future<Duration> getPosition(int textureId) {
+    throw UnimplementedError('getPosition() has not been implemented.');
+  }
+
+  /// Returns a widget displaying the video with a given textureID.
+  Widget buildView(int textureId) {
+    throw UnimplementedError('buildView() has not been implemented.');
+  }
+
+  /// Sets the audio mode to mix with other sources
+  Future<void> setMixWithOthers(bool mixWithOthers) {
+    throw UnimplementedError('setMixWithOthers() has not been implemented.');
+  }
 
   // /// gets vlc player state
   // Stream<VlcPlayerState> onVlcPlayerStateChanged() {
