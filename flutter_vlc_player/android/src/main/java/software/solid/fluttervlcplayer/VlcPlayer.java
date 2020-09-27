@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Surface;
 
 import io.flutter.plugin.common.EventChannel;
@@ -92,28 +93,33 @@ final class VlcPlayer {
                     public void onEvent(MediaPlayer.Event event) {
                         HashMap<String, Object> eventObject = new HashMap<>();
                         switch (event.type) {
+
+                            case MediaPlayer.Event.MediaChanged:
+                                Log.d("TEST", "MediaChanged");
+                                break;
+
                             case MediaPlayer.Event.Opening:
-                                eventObject.put("name", "buffering");
+                                eventObject.put("event", "buffering");
                                 eventObject.put("value", true);
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Paused:
                                 eventObject.clear();
-                                eventObject.put("name", "paused");
+                                eventObject.put("event", "paused");
                                 eventObject.put("value", true);
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Stopped:
                                 eventObject.clear();
-                                eventObject.put("name", "stopped");
+                                eventObject.put("event", "stopped");
                                 eventObject.put("value", true);
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Playing:
-                                eventObject.put("name", "buffering");
+                                eventObject.put("event", "buffering");
                                 eventObject.put("value", false);
                                 eventSink.success(eventObject.clone());
                                 eventObject.clear();
@@ -130,7 +136,7 @@ final class VlcPlayer {
                                     width = currentVideoTrack.width;
                                 }
 
-                                eventObject.put("name", "playing");
+                                eventObject.put("event", "playing");
                                 eventObject.put("value", true);
                                 eventObject.put("ratio", height > 0 ? (double) width / (double) height : 0D);
                                 eventObject.put("height", height);
@@ -151,7 +157,7 @@ final class VlcPlayer {
 
                             case MediaPlayer.Event.EndReached:
                                 mediaPlayer.stop();
-                                eventObject.put("name", "ended");
+                                eventObject.put("event", "ended");
                                 eventSink.success(eventObject);
 
                                 eventObject.clear();
@@ -163,7 +169,8 @@ final class VlcPlayer {
 
                             case MediaPlayer.Event.Buffering:
                             case MediaPlayer.Event.TimeChanged:
-                                eventObject.put("name", "timeChanged");
+//                                event.getBuffering();
+                                eventObject.put("event", "timeChanged");
                                 eventObject.put("value", mediaPlayer.getTime());
                                 eventObject.put("speed", mediaPlayer.getRate());
                                 eventSink.success(eventObject);

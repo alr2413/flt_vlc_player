@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'enums/vlc_event_type.dart';
 import 'messages.dart';
+import 'vlc_event.dart';
 import 'vlc_player_platform_interface.dart';
 
 /// An implementation of [VlcPlayerPlatform] that uses method channels.
@@ -76,11 +78,38 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
+  Stream<VlcEvent> videoEventsFor(int textureId) {
+    return _eventChannelFor(textureId)
+        .receiveBroadcastStream()
+        .map((dynamic event) {
+      final Map<dynamic, dynamic> map = event;
+      switch (map['event']) {
+        case 'initialized':
+          return VlcEvent(
+            eventType: VlcEventType.initialized,
+            duration: Duration(milliseconds: map['duration']),
+            size: Size(map['width']?.toDouble() ?? 0.0,
+                map['height']?.toDouble() ?? 0.0),
+          );
+        case 'playing':
+          return VlcEvent(
+            eventType: VlcEventType.playing,
+            duration: Duration(milliseconds: map['length']),
+            size: Size(map['width']?.toDouble() ?? 0.0,
+                map['height']?.toDouble() ?? 0.0),
+          );
+        default:
+          return VlcEvent(eventType: VlcEventType.unknown);
+      }
+    });
+  }
+
+  @override
   Widget buildView(int textureId) {
     return Texture(textureId: textureId);
   }
 
-  // EventChannel _eventChannelFor(int textureId) {
-  //   return EventChannel('flutter_video_plugin/getVideoEvents_$textureId');
-  // }
+  EventChannel _eventChannelFor(int textureId) {
+    return EventChannel('flutter_video_plugin/getVideoEvents_$textureId');
+  }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_vlc_player_platform_interface/vlc_event.dart';
 import 'package:meta/meta.dart';
 
 import 'method_channel_vlc_player.dart';
@@ -69,10 +70,10 @@ abstract class VlcPlayerPlatform {
     throw UnimplementedError('create() has not been implemented.');
   }
 
-  /// Returns a Stream of [VideoEventType]s.
-  // Stream<VideoEvent> videoEventsFor(int textureId) {
-  //   throw UnimplementedError('videoEventsFor() has not been implemented.');
-  // }
+  /// Returns a Stream of [VlcEvent]s.
+  Stream<VlcEvent> videoEventsFor(int textureId) {
+    throw UnimplementedError('videoEventsFor() has not been implemented.');
+  }
 
   /// Sets the looping attribute of the video.
   Future<void> setLooping(int textureId, bool looping) {
@@ -113,15 +114,4 @@ abstract class VlcPlayerPlatform {
   Widget buildView(int textureId) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
-
-  /// Sets the audio mode to mix with other sources
-  Future<void> setMixWithOthers(bool mixWithOthers) {
-    throw UnimplementedError('setMixWithOthers() has not been implemented.');
-  }
-
-  // /// gets vlc player state
-  // Stream<VlcPlayerState> onVlcPlayerStateChanged() {
-  //   throw UnimplementedError(
-  //       'onVlcPlayerStateChanged() has not been implemented.');
-  // }
 }

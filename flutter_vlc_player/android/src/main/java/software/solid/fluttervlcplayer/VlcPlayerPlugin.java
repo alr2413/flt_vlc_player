@@ -110,7 +110,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
                 flutterState.textureRegistry.createSurfaceTexture();
         EventChannel eventChannel =
                 new EventChannel(
-                        flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
+                        flutterState.binaryMessenger, "flutter_video_plugin/getVideoEvents_" + handle.id());
 
         VlcPlayer player;
         if (arg.getAsset() != null) {

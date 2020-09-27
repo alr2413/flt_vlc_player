@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/vlc_app_life_cycle_observer.dart';
 import 'package:flutter_vlc_player/vlc_player_value.dart';
+import 'package:flutter_vlc_player_platform_interface/enums/vlc_event_type.dart';
+import 'package:flutter_vlc_player_platform_interface/vlc_event.dart';
 import 'package:flutter_vlc_player_platform_interface/vlc_player_platform_interface.dart';
 
 final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
+// This will clear all open videos on the platform when a full restart is
+// performed.
   ..init();
 
 /// Controls a platform video player, and provides updates when the state is
@@ -42,23 +45,59 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    _lifeCycleObserver = VlcAppLifeCycleObserver(this);
-    _lifeCycleObserver.initialize();
+    // _lifeCycleObserver = VlcAppLifeCycleObserver(this);
+    // _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
 
     _textureId = await _vlcPlayerPlatform.create(dataSource);
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
-    // void eventListener(VideoEvent event) {
-    //   if (_isDisposed) {
-    //     return;
-    //   }
-    // }
+    void eventListener(VlcEvent event) {
+      if (_isDisposed) {
+        return;
+      }
+      switch (event.eventType) {
+        case VlcEventType.initialized:
+          value = value.copyWith(
+            duration: event.duration,
+            size: event.size,
+          );
+          initializingCompleter.complete(null);
+          _applyLooping();
+          _applyVolume();
+          _applyPlayPause();
+          break;
+        //
+        case VlcEventType.playing:
+          value = value.copyWith(
+            duration: event.duration,
+            size: event.size,
+          );
+          if (!initializingCompleter.isCompleted)
+            initializingCompleter.complete(null);
+          _applyLooping();
+          _applyVolume();
+          _applyPlayPause();
+          break;
+        //
+        case VlcEventType.unknown:
+          break;
+      }
+    }
 
-    // _eventSubscription = _vlcPlayerPlatform
-    //     .videoEventsFor(_textureId)
-    //     .listen(eventListener, onError: errorListener);
+    void errorListener(Object obj) {
+      final PlatformException e = obj;
+      value = VlcPlayerValue.erroneous(e.message);
+      _timer?.cancel();
+      if (!initializingCompleter.isCompleted) {
+        initializingCompleter.completeError(obj);
+      }
+    }
+
+    _eventSubscription = _vlcPlayerPlatform
+        .videoEventsFor(_textureId)
+        .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
   }
 
@@ -72,7 +111,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
         await _eventSubscription?.cancel();
         await _vlcPlayerPlatform.dispose(_textureId);
       }
-      _lifeCycleObserver.dispose();
+      // _lifeCycleObserver.dispose();
     }
     _isDisposed = true;
     super.dispose();

@@ -23,68 +23,22 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        key: const ValueKey<String>('home_page'),
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Vlc player example'),
-          actions: <Widget>[],
-          bottom: const TabBar(
-            isScrollable: true,
-            tabs: <Widget>[
-              Tab(
-                icon: Icon(Icons.cloud),
-                text: "Remote",
-              ),
-              Tab(icon: Icon(Icons.list), text: "List example"),
-            ],
-          ),
         ),
-        body: TabBarView(
-          children: <Widget>[
-            _BumbleBeeRemoteVideo(),
-            _ButterFlyAssetVideoInList(),
-          ],
-        ),
-      ),
-    );
+        body: Container(
+          child: _VlcRemoteVideo(),
+        ));
   }
 }
 
-class _ButterFlyAssetVideoInList extends StatelessWidget {
+class _VlcRemoteVideo extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Card(
-            child: Column(children: <Widget>[
-          Column(
-            children: <Widget>[
-              const ListTile(
-                leading: Icon(Icons.cake),
-                title: Text("Video video"),
-              ),
-              Stack(
-                  alignment: FractionalOffset.bottomRight +
-                      const FractionalOffset(-0.1, -0.1),
-                  children: <Widget>[
-                    Image.asset('assets/flutter-mark-square-64.png'),
-                  ]),
-            ],
-          ),
-        ])),
-      ],
-    );
-  }
+  _VlcRemoteVideoState createState() => _VlcRemoteVideoState();
 }
 
-class _BumbleBeeRemoteVideo extends StatefulWidget {
-  @override
-  _BumbleBeeRemoteVideoState createState() => _BumbleBeeRemoteVideoState();
-}
-
-class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
+class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
   VlcPlayerController _controller;
 
   @override
@@ -98,10 +52,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       setState(() {});
     });
     _controller.setLooping(true);
-    _controller.initialize()
-      ..then((_) {
-        _controller.play();
-      });
+    _controller.initialize();
   }
 
   @override
@@ -174,6 +125,7 @@ class _ControlsOverlay extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
+            print(controller.value.isPlaying);
             controller.value.isPlaying ? controller.pause() : controller.play();
           },
         ),
