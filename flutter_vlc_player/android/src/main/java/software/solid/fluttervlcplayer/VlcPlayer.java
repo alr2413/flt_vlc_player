@@ -32,10 +32,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 final class VlcPlayer {
-
-    private final Context context;
 
     private LibVLC libVLC;
 
@@ -59,7 +58,6 @@ final class VlcPlayer {
             TextureRegistry.SurfaceTextureEntry textureEntry,
             String dataSource,
             VlcPlayerOptions options) {
-        this.context = context;
         this.eventChannel = eventChannel;
         this.textureEntry = textureEntry;
         this.options = options;
@@ -91,9 +89,7 @@ final class VlcPlayer {
                     }
                 });
 
-        SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
-//        surfaceTexture.setDefaultBufferSize(1080, 720);
-        surface = new Surface(surfaceTexture);
+        surface = new Surface(textureEntry.surfaceTexture());
         mediaPlayer.getVLCVout().setVideoSurface(surface, null);
         mediaPlayer.getVLCVout().attachViews();
 
@@ -135,12 +131,14 @@ final class VlcPlayer {
                                 int height = 0;
                                 int width = 0;
 
-                                Media.VideoTrack currentVideoTrack = (Media.VideoTrack) mediaPlayer.getMedia().getTrack(
-                                        mediaPlayer.getVideoTrack()
-                                );
+//                                Media.VideoTrack currentVideoTrack = (Media.VideoTrack) mediaPlayer.getMedia().getTrack(
+//                                        mediaPlayer.getVideoTrack()
+//                                );
+                                Media.VideoTrack currentVideoTrack = mediaPlayer.getCurrentVideoTrack();
                                 if (currentVideoTrack != null) {
                                     height = currentVideoTrack.height;
                                     width = currentVideoTrack.width;
+                                    //
                                     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
                                 }
 
@@ -160,20 +158,7 @@ final class VlcPlayer {
                                 break;
 
                             case MediaPlayer.Event.Vout:
-//                                Log.d("TAG", "VOUT");
-//                                currentVideoTrack = mediaPlayer.getCurrentVideoTrack();
-//                                Log.d("TAG", String.valueOf(currentVideoTrack != null));
-//                                if (currentVideoTrack != null) {
-//                                    height = currentVideoTrack.height;
-//                                    width = currentVideoTrack.width;
-//                                    Log.d("TAG", String.valueOf(width));
-//                                    Log.d("TAG", String.valueOf(height));
-//                                    SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
-//                                    surfaceTexture.setDefaultBufferSize(width, height);
-//                                    surface = new Surface(surfaceTexture);
-//                                    mediaPlayer.getVLCVout().setVideoSurface(surface, null);
-//                                }
-//                                mediaPlayer.updateVideoSurfaces();
+                                mediaPlayer.updateVideoSurfaces();
                                 break;
 
                             case MediaPlayer.Event.EndReached:

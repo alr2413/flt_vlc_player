@@ -71,7 +71,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
+              aspectRatio: 16 / 9, //_controller.value.aspectRatio,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
