@@ -45,8 +45,8 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    // _lifeCycleObserver = VlcAppLifeCycleObserver(this);
-    // _lifeCycleObserver.initialize();
+    _lifeCycleObserver = VlcAppLifeCycleObserver(this);
+    _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
 
     _textureId = await _vlcPlayerPlatform.create(dataSource);
@@ -111,7 +111,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
         await _eventSubscription?.cancel();
         await _vlcPlayerPlatform.dispose(_textureId);
       }
-      // _lifeCycleObserver.dispose();
+      _lifeCycleObserver.dispose();
     }
     _isDisposed = true;
     super.dispose();

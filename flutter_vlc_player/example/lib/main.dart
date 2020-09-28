@@ -113,7 +113,7 @@ class _ControlsOverlay extends StatelessWidget {
           child: controller.value.isPlaying
               ? SizedBox.shrink()
               : Container(
-                  color: Colors.black26,
+                  color: Colors.blue,
                   child: Center(
                     child: Icon(
                       Icons.play_arrow,
@@ -125,7 +125,6 @@ class _ControlsOverlay extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            print(controller.value.isPlaying);
             controller.value.isPlaying ? controller.pause() : controller.play();
           },
         ),

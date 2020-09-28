@@ -7,14 +7,21 @@ import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.RendererDiscoverer;
 import org.videolan.libvlc.RendererItem;
+import org.videolan.libvlc.media.VideoView;
+import org.videolan.libvlc.util.VLCVideoLayout;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Surface;
+import android.view.SurfaceView;
+import android.view.TextureView;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
@@ -27,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 final class VlcPlayer {
+
+    private final Context context;
 
     private LibVLC libVLC;
 
@@ -50,6 +59,7 @@ final class VlcPlayer {
             TextureRegistry.SurfaceTextureEntry textureEntry,
             String dataSource,
             VlcPlayerOptions options) {
+        this.context = context;
         this.eventChannel = eventChannel;
         this.textureEntry = textureEntry;
         this.options = options;
@@ -61,7 +71,6 @@ final class VlcPlayer {
         Media media = new Media(libVLC, uri);
         mediaPlayer.setMedia(media);
         media.release();
-        mediaPlayer.play(); // todo: remove this line
         //
         setupVlcMediaPlayer(eventChannel, textureEntry);
     }
@@ -82,7 +91,9 @@ final class VlcPlayer {
                     }
                 });
 
-        surface = new Surface(textureEntry.surfaceTexture());
+        SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
+        surfaceTexture.setDefaultBufferSize(120, 200);
+        surface = new Surface(surfaceTexture);
         mediaPlayer.getVLCVout().setVideoSurface(surface, null);
         mediaPlayer.getVLCVout().attachViews();
 
@@ -93,10 +104,6 @@ final class VlcPlayer {
                     public void onEvent(MediaPlayer.Event event) {
                         HashMap<String, Object> eventObject = new HashMap<>();
                         switch (event.type) {
-
-                            case MediaPlayer.Event.MediaChanged:
-                                Log.d("TEST", "MediaChanged");
-                                break;
 
                             case MediaPlayer.Event.Opening:
                                 eventObject.put("event", "buffering");
@@ -183,6 +190,9 @@ final class VlcPlayer {
                     }
                 }
         );
+        //
+        mediaPlayer.play(); // todo: remove this line
+
     }
 
     void play() {
