@@ -92,7 +92,7 @@ final class VlcPlayer {
                 });
 
         SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
-        surfaceTexture.setDefaultBufferSize(120, 200);
+//        surfaceTexture.setDefaultBufferSize(1080, 720);
         surface = new Surface(surfaceTexture);
         mediaPlayer.getVLCVout().setVideoSurface(surface, null);
         mediaPlayer.getVLCVout().attachViews();
@@ -141,6 +141,7 @@ final class VlcPlayer {
                                 if (currentVideoTrack != null) {
                                     height = currentVideoTrack.height;
                                     width = currentVideoTrack.width;
+                                    textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
                                 }
 
                                 eventObject.put("event", "playing");
@@ -159,7 +160,20 @@ final class VlcPlayer {
                                 break;
 
                             case MediaPlayer.Event.Vout:
-                                mediaPlayer.updateVideoSurfaces();
+//                                Log.d("TAG", "VOUT");
+//                                currentVideoTrack = mediaPlayer.getCurrentVideoTrack();
+//                                Log.d("TAG", String.valueOf(currentVideoTrack != null));
+//                                if (currentVideoTrack != null) {
+//                                    height = currentVideoTrack.height;
+//                                    width = currentVideoTrack.width;
+//                                    Log.d("TAG", String.valueOf(width));
+//                                    Log.d("TAG", String.valueOf(height));
+//                                    SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
+//                                    surfaceTexture.setDefaultBufferSize(width, height);
+//                                    surface = new Surface(surfaceTexture);
+//                                    mediaPlayer.getVLCVout().setVideoSurface(surface, null);
+//                                }
+//                                mediaPlayer.updateVideoSurfaces();
                                 break;
 
                             case MediaPlayer.Event.EndReached:
