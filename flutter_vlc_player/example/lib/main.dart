@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:flutter_vlc_player/vlc_progress_indicator.dart';
 
 void main() {
   runApp(
@@ -71,7 +72,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
-              aspectRatio: 16 / 9, //_controller.value.aspectRatio,
+              aspectRatio: 16 / 9,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[

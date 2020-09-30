@@ -327,6 +327,14 @@ class _VlcPlayerState extends State<VlcPlayer> {
   Widget build(BuildContext context) {
     return _textureId == null
         ? Container()
-        : _vlcPlayerPlatform.buildView(_textureId);
+        : Container(
+            color: Colors.black,
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: widget.controller.value.aspectRatio,
+                child: _vlcPlayerPlatform.buildView(_textureId),
+              ),
+            ),
+          );
   }
 }
