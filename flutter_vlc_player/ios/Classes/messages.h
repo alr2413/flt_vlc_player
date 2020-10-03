@@ -37,23 +37,17 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface CreateMessage : NSObject
-@property(nonatomic, copy, nullable) NSString * url;
+@property(nonatomic, copy, nullable) NSString * uri;
 @property(nonatomic, strong, nullable) NSNumber * isLocalMedia;
 @property(nonatomic, strong, nullable) NSNumber * autoPlay;
 @property(nonatomic, strong, nullable) NSNumber * hwAcc;
 @property(nonatomic, strong, nullable) NSArray * options;
-@property(nonatomic, copy, nullable) NSString * subtitleUrl;
-@property(nonatomic, strong, nullable) NSNumber * isLocalSubtitle;
-@property(nonatomic, strong, nullable) NSNumber * isSubtitleSelected;
 @end
 
 @interface SetMediaMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
-@property(nonatomic, copy, nullable) NSString * url;
+@property(nonatomic, copy, nullable) NSString * uri;
 @property(nonatomic, strong, nullable) NSNumber * isLocalMedia;
-@property(nonatomic, copy, nullable) NSString * subtitleUrl;
-@property(nonatomic, strong, nullable) NSNumber * isLocalSubtitle;
-@property(nonatomic, strong, nullable) NSNumber * isSubtitleSelected;
 @end
 
 @interface LoopingMessage : NSObject
@@ -113,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AddSubtitleMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
-@property(nonatomic, copy, nullable) NSString * url;
+@property(nonatomic, copy, nullable) NSString * uri;
 @property(nonatomic, strong, nullable) NSNumber * isLocal;
 @property(nonatomic, strong, nullable) NSNumber * isSelected;
 @end

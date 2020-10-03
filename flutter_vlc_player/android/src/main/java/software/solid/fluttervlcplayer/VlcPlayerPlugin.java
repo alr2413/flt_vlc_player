@@ -121,20 +121,13 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                         flutterState.binaryMessenger, "flutter_video_plugin/getVideoEvents_" + handle.id());
 
         VlcPlayer player;
-        if (arg.getAsset() != null) {
-            String assetLookupKey;
-            if (arg.getPackageName() != null) {
-                assetLookupKey =
-                        flutterState.keyForAssetAndPackageName.get(arg.getAsset(), arg.getPackageName());
-            } else {
-                assetLookupKey = flutterState.keyForAsset.get(arg.getAsset());
-            }
+        if (arg.getIsLocalMedia() != null) {
             player =
                     new VlcPlayer(
                             flutterState.applicationContext,
                             eventChannel,
                             handle,
-                            "asset:///" + assetLookupKey,
+                            arg.getUri(),
                             options);
             vlcPlayers.put(handle.id(), player);
         } else {
@@ -161,6 +154,11 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     }
 
     @Override
+    public void setStreamUrl(Messages.SetMediaMessage arg) {
+
+    }
+
+    @Override
     public void setLooping(LoopingMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
         player.setLooping(arg.getIsLooping());
@@ -173,9 +171,149 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     }
 
     @Override
+    public VolumeMessage getVolume(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
     public void setPlaybackSpeed(PlaybackSpeedMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
         player.setPlaybackSpeed(arg.getSpeed());
+    }
+
+    @Override
+    public PlaybackSpeedMessage getPlaybackSpeed(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.SnapshotMessage takeSnapshot(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.TrackCountMessage getSpuTracksCount(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.SpuTracksMessage getSpuTracks(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.SpuTrackMessage getSpuTrack(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void setSpuTrack(Messages.SpuTrackMessage arg) {
+
+    }
+
+    @Override
+    public void setSpuDelay(Messages.DelayMessage arg) {
+
+    }
+
+    @Override
+    public Messages.DelayMessage getSpuDelay(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void addSubtitleTrack(Messages.AddSubtitleMessage arg) {
+
+    }
+
+    @Override
+    public Messages.TrackCountMessage getAudioTracksCount(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.AudioTracksMessage getAudioTracks(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.AudioTrackMessage getAudioTrack(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void setAudioTrack(Messages.AudioTrackMessage arg) {
+
+    }
+
+    @Override
+    public void setAudioDelay(Messages.DelayMessage arg) {
+
+    }
+
+    @Override
+    public Messages.DelayMessage getAudioDelay(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.TrackCountMessage getVideoTracksCount(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.VideoTracksMessage getVideoTracks(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.VideoTrackMessage getCurrentVideoTrack(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public Messages.VideoTrackMessage getVideoTrack(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void setVideoScale(Messages.VideoScaleMessage arg) {
+
+    }
+
+    @Override
+    public Messages.VideoScaleMessage getVideoScale(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void setVideoAspectRatio(Messages.VideoAspectRatioMessage arg) {
+
+    }
+
+    @Override
+    public Messages.VideoAspectRatioMessage getVideoAspectRatio(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void startCastDiscovery(Messages.CastDiscoveryMessage arg) {
+
+    }
+
+    @Override
+    public void stopCastDiscovery(TextureMessage arg) {
+
+    }
+
+    @Override
+    public Messages.CastDevicesMessage getCastDevices(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void startCasting(Messages.CastDeviceMessage arg) {
+
     }
 
     @Override
@@ -193,6 +331,11 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     }
 
     @Override
+    public Messages.DurationMessage duration(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
     public void seekTo(Messages.PositionMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
         player.seekTo(arg.getPosition().intValue());
@@ -204,6 +347,20 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
         player.pause();
     }
 
+    @Override
+    public void stop(TextureMessage arg) {
+
+    }
+
+    @Override
+    public Messages.BooleanMessage isPlaying(TextureMessage arg) {
+        return null;
+    }
+
+    @Override
+    public void setTime(PositionMessage arg) {
+
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)

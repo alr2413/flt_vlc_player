@@ -26,25 +26,19 @@ class TextureMessage {
 }
 
 class CreateMessage {
-  String url;
+  String uri;
   bool isLocalMedia;
   bool autoPlay;
   int hwAcc;
   List options;
-  String subtitleUrl;
-  bool isLocalSubtitle;
-  bool isSubtitleSelected;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
-    pigeonMap['url'] = url;
+    pigeonMap['uri'] = uri;
     pigeonMap['isLocalMedia'] = isLocalMedia;
     pigeonMap['autoPlay'] = autoPlay;
     pigeonMap['hwAcc'] = hwAcc;
     pigeonMap['options'] = options;
-    pigeonMap['subtitleUrl'] = subtitleUrl;
-    pigeonMap['isLocalSubtitle'] = isLocalSubtitle;
-    pigeonMap['isSubtitleSelected'] = isSubtitleSelected;
     return pigeonMap;
   }
   // ignore: unused_element
@@ -53,34 +47,25 @@ class CreateMessage {
       return null;
     }
     final CreateMessage result = CreateMessage();
-    result.url = pigeonMap['url'];
+    result.uri = pigeonMap['uri'];
     result.isLocalMedia = pigeonMap['isLocalMedia'];
     result.autoPlay = pigeonMap['autoPlay'];
     result.hwAcc = pigeonMap['hwAcc'];
     result.options = pigeonMap['options'];
-    result.subtitleUrl = pigeonMap['subtitleUrl'];
-    result.isLocalSubtitle = pigeonMap['isLocalSubtitle'];
-    result.isSubtitleSelected = pigeonMap['isSubtitleSelected'];
     return result;
   }
 }
 
 class SetMediaMessage {
   int textureId;
-  String url;
+  String uri;
   bool isLocalMedia;
-  String subtitleUrl;
-  bool isLocalSubtitle;
-  bool isSubtitleSelected;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
-    pigeonMap['url'] = url;
+    pigeonMap['uri'] = uri;
     pigeonMap['isLocalMedia'] = isLocalMedia;
-    pigeonMap['subtitleUrl'] = subtitleUrl;
-    pigeonMap['isLocalSubtitle'] = isLocalSubtitle;
-    pigeonMap['isSubtitleSelected'] = isSubtitleSelected;
     return pigeonMap;
   }
   // ignore: unused_element
@@ -90,11 +75,8 @@ class SetMediaMessage {
     }
     final SetMediaMessage result = SetMediaMessage();
     result.textureId = pigeonMap['textureId'];
-    result.url = pigeonMap['url'];
+    result.uri = pigeonMap['uri'];
     result.isLocalMedia = pigeonMap['isLocalMedia'];
-    result.subtitleUrl = pigeonMap['subtitleUrl'];
-    result.isLocalSubtitle = pigeonMap['isLocalSubtitle'];
-    result.isSubtitleSelected = pigeonMap['isSubtitleSelected'];
     return result;
   }
 }
@@ -343,14 +325,14 @@ class DelayMessage {
 
 class AddSubtitleMessage {
   int textureId;
-  String url;
+  String uri;
   bool isLocal;
   bool isSelected;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
-    pigeonMap['url'] = url;
+    pigeonMap['uri'] = uri;
     pigeonMap['isLocal'] = isLocal;
     pigeonMap['isSelected'] = isSelected;
     return pigeonMap;
@@ -362,7 +344,7 @@ class AddSubtitleMessage {
     }
     final AddSubtitleMessage result = AddSubtitleMessage();
     result.textureId = pigeonMap['textureId'];
-    result.url = pigeonMap['url'];
+    result.uri = pigeonMap['uri'];
     result.isLocal = pigeonMap['isLocal'];
     result.isSelected = pigeonMap['isSelected'];
     return result;

@@ -67,14 +67,11 @@ abstract class VlcPlayerPlatform {
 
   /// Creates an instance of a vlc player and returns its textureId.
   Future<int> create({
-    @required String url,
+    @required String uri,
     bool isLocalMedia,
     bool autoPlay,
     HwAcc hwAcc,
     List<String> options,
-    String subtitleUrl,
-    bool isLocalSubtitle,
-    bool isSubtitleSelected,
   }) {
     throw UnimplementedError('create() has not been implemented.');
   }
@@ -92,11 +89,8 @@ abstract class VlcPlayerPlatform {
   /// Set/Change video streaming url
   Future<void> setStreamUrl(
     int textureId,
-    String url, {
+    String uri, {
     bool isLocalMedia,
-    String subtitleUrl,
-    bool isLocalSubtitle,
-    bool isSubtitleSelected,
   }) {
     throw UnimplementedError('setStreamUrl() has not been implemented.');
   }
@@ -212,7 +206,7 @@ abstract class VlcPlayerPlatform {
   /// [isSubtitleSelected] - Set true if you wanna force the added subtitle to start display on media.
   Future<void> addSubtitleTrack(
     int textureId,
-    String subtitleUrl, {
+    String subtitleUri, {
     bool isLocalSubtitle,
     bool isSubtitleSelected,
   }) {
@@ -327,5 +321,4 @@ abstract class VlcPlayerPlatform {
   Stream<VlcCastEvent> castEventsFor(int textureId) {
     throw UnimplementedError('castEventsFor() has not been implemented.');
   }
-
 }

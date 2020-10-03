@@ -44,7 +44,12 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VlcPlayerController();
+    _controller = VlcPlayerController.network(
+      "http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4",
+      // "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4",
+      // "/storage/emulated/0/Download/Test.mp4",
+      // "/sdcard/Download/Test.mp4",
+    );
 
     _controller.addListener(() {
       setState(() {});
@@ -68,6 +73,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
           const Text('With remote mp4'),
           Container(
             padding: const EdgeInsets.all(20),
+            color: Colors.black,
             child: AspectRatio(
               aspectRatio: 16 / 9,
               child: Stack(
@@ -80,6 +86,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
                         aspectRatio: _controller.value.aspectRatio,
                         child: VlcPlayer(
                           controller: _controller,
+                          aspectRatio: 16 / 9,
                         ),
                       ),
                     ),

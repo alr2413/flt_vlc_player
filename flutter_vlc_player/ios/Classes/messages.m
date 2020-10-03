@@ -136,9 +136,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 @implementation CreateMessage
 +(CreateMessage*)fromMap:(NSDictionary*)dict {
   CreateMessage* result = [[CreateMessage alloc] init];
-  result.url = dict[@"url"];
-  if ((NSNull *)result.url == [NSNull null]) {
-    result.url = nil;
+  result.uri = dict[@"uri"];
+  if ((NSNull *)result.uri == [NSNull null]) {
+    result.uri = nil;
   }
   result.isLocalMedia = dict[@"isLocalMedia"];
   if ((NSNull *)result.isLocalMedia == [NSNull null]) {
@@ -156,22 +156,10 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.options == [NSNull null]) {
     result.options = nil;
   }
-  result.subtitleUrl = dict[@"subtitleUrl"];
-  if ((NSNull *)result.subtitleUrl == [NSNull null]) {
-    result.subtitleUrl = nil;
-  }
-  result.isLocalSubtitle = dict[@"isLocalSubtitle"];
-  if ((NSNull *)result.isLocalSubtitle == [NSNull null]) {
-    result.isLocalSubtitle = nil;
-  }
-  result.isSubtitleSelected = dict[@"isSubtitleSelected"];
-  if ((NSNull *)result.isSubtitleSelected == [NSNull null]) {
-    result.isSubtitleSelected = nil;
-  }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.url ? self.url : [NSNull null]), @"url", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", (self.autoPlay ? self.autoPlay : [NSNull null]), @"autoPlay", (self.hwAcc ? self.hwAcc : [NSNull null]), @"hwAcc", (self.options ? self.options : [NSNull null]), @"options", (self.subtitleUrl ? self.subtitleUrl : [NSNull null]), @"subtitleUrl", (self.isLocalSubtitle ? self.isLocalSubtitle : [NSNull null]), @"isLocalSubtitle", (self.isSubtitleSelected ? self.isSubtitleSelected : [NSNull null]), @"isSubtitleSelected", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.uri ? self.uri : [NSNull null]), @"uri", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", (self.autoPlay ? self.autoPlay : [NSNull null]), @"autoPlay", (self.hwAcc ? self.hwAcc : [NSNull null]), @"hwAcc", (self.options ? self.options : [NSNull null]), @"options", nil];
 }
 @end
 
@@ -182,30 +170,18 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.textureId == [NSNull null]) {
     result.textureId = nil;
   }
-  result.url = dict[@"url"];
-  if ((NSNull *)result.url == [NSNull null]) {
-    result.url = nil;
+  result.uri = dict[@"uri"];
+  if ((NSNull *)result.uri == [NSNull null]) {
+    result.uri = nil;
   }
   result.isLocalMedia = dict[@"isLocalMedia"];
   if ((NSNull *)result.isLocalMedia == [NSNull null]) {
     result.isLocalMedia = nil;
   }
-  result.subtitleUrl = dict[@"subtitleUrl"];
-  if ((NSNull *)result.subtitleUrl == [NSNull null]) {
-    result.subtitleUrl = nil;
-  }
-  result.isLocalSubtitle = dict[@"isLocalSubtitle"];
-  if ((NSNull *)result.isLocalSubtitle == [NSNull null]) {
-    result.isLocalSubtitle = nil;
-  }
-  result.isSubtitleSelected = dict[@"isSubtitleSelected"];
-  if ((NSNull *)result.isSubtitleSelected == [NSNull null]) {
-    result.isSubtitleSelected = nil;
-  }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.url ? self.url : [NSNull null]), @"url", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", (self.subtitleUrl ? self.subtitleUrl : [NSNull null]), @"subtitleUrl", (self.isLocalSubtitle ? self.isLocalSubtitle : [NSNull null]), @"isLocalSubtitle", (self.isSubtitleSelected ? self.isSubtitleSelected : [NSNull null]), @"isSubtitleSelected", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", nil];
 }
 @end
 
@@ -414,9 +390,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.textureId == [NSNull null]) {
     result.textureId = nil;
   }
-  result.url = dict[@"url"];
-  if ((NSNull *)result.url == [NSNull null]) {
-    result.url = nil;
+  result.uri = dict[@"uri"];
+  if ((NSNull *)result.uri == [NSNull null]) {
+    result.uri = nil;
   }
   result.isLocal = dict[@"isLocal"];
   if ((NSNull *)result.isLocal == [NSNull null]) {
@@ -429,7 +405,7 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.url ? self.url : [NSNull null]), @"url", (self.isLocal ? self.isLocal : [NSNull null]), @"isLocal", (self.isSelected ? self.isSelected : [NSNull null]), @"isSelected", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.isLocal ? self.isLocal : [NSNull null]), @"isLocal", (self.isSelected ? self.isSelected : [NSNull null]), @"isSelected", nil];
 }
 @end
 

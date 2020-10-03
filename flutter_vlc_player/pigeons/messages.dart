@@ -5,23 +5,17 @@ class TextureMessage {
 }
 
 class CreateMessage {
-  String url;
+  String uri;
   bool isLocalMedia;
   bool autoPlay;
   int hwAcc;
   List<String> options;
-  String subtitleUrl;
-  bool isLocalSubtitle;
-  bool isSubtitleSelected;
 }
 
 class SetMediaMessage {
   int textureId;
-  String url;
+  String uri;
   bool isLocalMedia;
-  String subtitleUrl;
-  bool isLocalSubtitle;
-  bool isSubtitleSelected;
 }
 
 class BooleanMessage {
@@ -81,7 +75,7 @@ class SpuTrackMessage {
 
 class AddSubtitleMessage {
   int textureId;
-  String url;
+  String uri;
   bool isLocal;
   bool isSelected;
 }

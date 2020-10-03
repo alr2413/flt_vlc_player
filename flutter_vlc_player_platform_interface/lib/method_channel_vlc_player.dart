@@ -27,7 +27,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
 
   @override
   Future<int> create({
-    @required String url,
+    @required String uri,
     bool isLocalMedia,
     bool autoPlay,
     HwAcc hwAcc,
@@ -37,14 +37,11 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     bool isSubtitleSelected,
   }) async {
     CreateMessage message = CreateMessage();
-    message.url = url;
+    message.uri = uri;
     message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
     message.isLocalMedia = isLocalMedia ?? true;
     message.autoPlay = autoPlay ?? true;
     message.options = options ?? [];
-    message.subtitleUrl = subtitleUrl ?? '';
-    message.isLocalSubtitle = isLocalSubtitle ?? false;
-    message.isSubtitleSelected = isSubtitleSelected ?? true;
     TextureMessage response = await _api.create(message);
     return response.textureId;
   }
@@ -66,7 +63,6 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
         final Map<dynamic, dynamic> map = event;
         //
         switch (map['event']) {
-
           case 'initialized':
             return VlcMediaEvent(
               mediaEventType: VlcMediaEventType.INITIALIZED,
@@ -130,19 +126,13 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   @override
   Future<void> setStreamUrl(
     int textureId,
-    String url, {
+    String uri, {
     bool isLocalMedia,
-    String subtitleUrl,
-    bool isLocalSubtitle,
-    bool isSubtitleSelected,
   }) async {
     SetMediaMessage message = SetMediaMessage();
     message.textureId = textureId;
-    message.url = url;
+    message.uri = uri;
     message.isLocalMedia = isLocalMedia ?? false;
-    message.subtitleUrl = subtitleUrl ?? '';
-    message.isLocalSubtitle = isLocalSubtitle ?? false;
-    message.isSubtitleSelected = isSubtitleSelected ?? true;
     return await _api.setStreamUrl(message);
   }
 
@@ -282,11 +272,15 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Future<void> addSubtitleTrack(int textureId, String subtitleUrl,
-      {bool isLocalSubtitle, bool isSubtitleSelected}) async {
+  Future<void> addSubtitleTrack(
+    int textureId,
+    String subtitleUri, {
+    bool isLocalSubtitle,
+    bool isSubtitleSelected,
+  }) async {
     AddSubtitleMessage message = AddSubtitleMessage();
     message.textureId = textureId;
-    message.url = subtitleUrl;
+    message.uri = subtitleUri;
     message.isLocal = isLocalSubtitle;
     message.isSelected = isSubtitleSelected;
     return await _api.addSubtitleTrack(message);

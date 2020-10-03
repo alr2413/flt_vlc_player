@@ -34,9 +34,9 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class CreateMessage {
-    private String url;
-    public String getUrl() { return url; }
-    public void setUrl(String setterArg) { this.url = setterArg; }
+    private String uri;
+    public String getUri() { return uri; }
+    public void setUri(String setterArg) { this.uri = setterArg; }
 
     private Boolean isLocalMedia;
     public Boolean getIsLocalMedia() { return isLocalMedia; }
@@ -54,34 +54,19 @@ public class Messages {
     public ArrayList getOptions() { return options; }
     public void setOptions(ArrayList setterArg) { this.options = setterArg; }
 
-    private String subtitleUrl;
-    public String getSubtitleUrl() { return subtitleUrl; }
-    public void setSubtitleUrl(String setterArg) { this.subtitleUrl = setterArg; }
-
-    private Boolean isLocalSubtitle;
-    public Boolean getIsLocalSubtitle() { return isLocalSubtitle; }
-    public void setIsLocalSubtitle(Boolean setterArg) { this.isLocalSubtitle = setterArg; }
-
-    private Boolean isSubtitleSelected;
-    public Boolean getIsSubtitleSelected() { return isSubtitleSelected; }
-    public void setIsSubtitleSelected(Boolean setterArg) { this.isSubtitleSelected = setterArg; }
-
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("url", url);
+      toMapResult.put("uri", uri);
       toMapResult.put("isLocalMedia", isLocalMedia);
       toMapResult.put("autoPlay", autoPlay);
       toMapResult.put("hwAcc", hwAcc);
       toMapResult.put("options", options);
-      toMapResult.put("subtitleUrl", subtitleUrl);
-      toMapResult.put("isLocalSubtitle", isLocalSubtitle);
-      toMapResult.put("isSubtitleSelected", isSubtitleSelected);
       return toMapResult;
     }
     static CreateMessage fromMap(HashMap map) {
       CreateMessage fromMapResult = new CreateMessage();
-      Object url = map.get("url");
-      fromMapResult.url = (String)url;
+      Object uri = map.get("uri");
+      fromMapResult.uri = (String)uri;
       Object isLocalMedia = map.get("isLocalMedia");
       fromMapResult.isLocalMedia = (Boolean)isLocalMedia;
       Object autoPlay = map.get("autoPlay");
@@ -90,12 +75,6 @@ public class Messages {
       fromMapResult.hwAcc = (hwAcc == null) ? null : ((hwAcc instanceof Integer) ? (Integer)hwAcc : (Long)hwAcc);
       Object options = map.get("options");
       fromMapResult.options = (ArrayList)options;
-      Object subtitleUrl = map.get("subtitleUrl");
-      fromMapResult.subtitleUrl = (String)subtitleUrl;
-      Object isLocalSubtitle = map.get("isLocalSubtitle");
-      fromMapResult.isLocalSubtitle = (Boolean)isLocalSubtitle;
-      Object isSubtitleSelected = map.get("isSubtitleSelected");
-      fromMapResult.isSubtitleSelected = (Boolean)isSubtitleSelected;
       return fromMapResult;
     }
   }
@@ -106,50 +85,29 @@ public class Messages {
     public Long getTextureId() { return textureId; }
     public void setTextureId(Long setterArg) { this.textureId = setterArg; }
 
-    private String url;
-    public String getUrl() { return url; }
-    public void setUrl(String setterArg) { this.url = setterArg; }
+    private String uri;
+    public String getUri() { return uri; }
+    public void setUri(String setterArg) { this.uri = setterArg; }
 
     private Boolean isLocalMedia;
     public Boolean getIsLocalMedia() { return isLocalMedia; }
     public void setIsLocalMedia(Boolean setterArg) { this.isLocalMedia = setterArg; }
 
-    private String subtitleUrl;
-    public String getSubtitleUrl() { return subtitleUrl; }
-    public void setSubtitleUrl(String setterArg) { this.subtitleUrl = setterArg; }
-
-    private Boolean isLocalSubtitle;
-    public Boolean getIsLocalSubtitle() { return isLocalSubtitle; }
-    public void setIsLocalSubtitle(Boolean setterArg) { this.isLocalSubtitle = setterArg; }
-
-    private Boolean isSubtitleSelected;
-    public Boolean getIsSubtitleSelected() { return isSubtitleSelected; }
-    public void setIsSubtitleSelected(Boolean setterArg) { this.isSubtitleSelected = setterArg; }
-
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
-      toMapResult.put("url", url);
+      toMapResult.put("uri", uri);
       toMapResult.put("isLocalMedia", isLocalMedia);
-      toMapResult.put("subtitleUrl", subtitleUrl);
-      toMapResult.put("isLocalSubtitle", isLocalSubtitle);
-      toMapResult.put("isSubtitleSelected", isSubtitleSelected);
       return toMapResult;
     }
     static SetMediaMessage fromMap(HashMap map) {
       SetMediaMessage fromMapResult = new SetMediaMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
-      Object url = map.get("url");
-      fromMapResult.url = (String)url;
+      Object uri = map.get("uri");
+      fromMapResult.uri = (String)uri;
       Object isLocalMedia = map.get("isLocalMedia");
       fromMapResult.isLocalMedia = (Boolean)isLocalMedia;
-      Object subtitleUrl = map.get("subtitleUrl");
-      fromMapResult.subtitleUrl = (String)subtitleUrl;
-      Object isLocalSubtitle = map.get("isLocalSubtitle");
-      fromMapResult.isLocalSubtitle = (Boolean)isLocalSubtitle;
-      Object isSubtitleSelected = map.get("isSubtitleSelected");
-      fromMapResult.isSubtitleSelected = (Boolean)isSubtitleSelected;
       return fromMapResult;
     }
   }
@@ -446,9 +404,9 @@ public class Messages {
     public Long getTextureId() { return textureId; }
     public void setTextureId(Long setterArg) { this.textureId = setterArg; }
 
-    private String url;
-    public String getUrl() { return url; }
-    public void setUrl(String setterArg) { this.url = setterArg; }
+    private String uri;
+    public String getUri() { return uri; }
+    public void setUri(String setterArg) { this.uri = setterArg; }
 
     private Boolean isLocal;
     public Boolean getIsLocal() { return isLocal; }
@@ -461,7 +419,7 @@ public class Messages {
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
-      toMapResult.put("url", url);
+      toMapResult.put("uri", uri);
       toMapResult.put("isLocal", isLocal);
       toMapResult.put("isSelected", isSelected);
       return toMapResult;
@@ -470,8 +428,8 @@ public class Messages {
       AddSubtitleMessage fromMapResult = new AddSubtitleMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
-      Object url = map.get("url");
-      fromMapResult.url = (String)url;
+      Object uri = map.get("uri");
+      fromMapResult.uri = (String)uri;
       Object isLocal = map.get("isLocal");
       fromMapResult.isLocal = (Boolean)isLocal;
       Object isSelected = map.get("isSelected");
