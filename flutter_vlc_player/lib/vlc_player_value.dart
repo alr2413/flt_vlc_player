@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// The duration, current position, buffering state, error state and settings
-/// of a [VlclayerController].
+/// of a [VlcPlayerController].
 class VlcPlayerValue {
   /// Constructs a video with the given values. Only [duration] is required. The
   /// rest will initialize with default values when unset.

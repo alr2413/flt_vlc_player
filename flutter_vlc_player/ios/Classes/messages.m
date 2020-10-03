@@ -30,8 +30,24 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 +(CreateMessage*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
+@interface SetMediaMessage ()
++(SetMediaMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
 @interface LoopingMessage ()
 +(LoopingMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface BooleanMessage ()
++(BooleanMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface PositionMessage ()
++(PositionMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface DurationMessage ()
++(DurationMessage*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
 @interface VolumeMessage ()
@@ -42,8 +58,64 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 +(PlaybackSpeedMessage*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
-@interface PositionMessage ()
-+(PositionMessage*)fromMap:(NSDictionary*)dict;
+@interface SnapshotMessage ()
++(SnapshotMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface TrackCountMessage ()
++(TrackCountMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface SpuTracksMessage ()
++(SpuTracksMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface SpuTrackMessage ()
++(SpuTrackMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface DelayMessage ()
++(DelayMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface AddSubtitleMessage ()
++(AddSubtitleMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface AudioTracksMessage ()
++(AudioTracksMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface AudioTrackMessage ()
++(AudioTrackMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface VideoTracksMessage ()
++(VideoTracksMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface VideoTrackMessage ()
++(VideoTrackMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface VideoScaleMessage ()
++(VideoScaleMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface VideoAspectRatioMessage ()
++(VideoAspectRatioMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface CastDiscoveryMessage ()
++(CastDiscoveryMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface CastDevicesMessage ()
++(CastDevicesMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
+@interface CastDeviceMessage ()
++(CastDeviceMessage*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
 
@@ -64,26 +136,76 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 @implementation CreateMessage
 +(CreateMessage*)fromMap:(NSDictionary*)dict {
   CreateMessage* result = [[CreateMessage alloc] init];
-  result.asset = dict[@"asset"];
-  if ((NSNull *)result.asset == [NSNull null]) {
-    result.asset = nil;
+  result.url = dict[@"url"];
+  if ((NSNull *)result.url == [NSNull null]) {
+    result.url = nil;
   }
-  result.uri = dict[@"uri"];
-  if ((NSNull *)result.uri == [NSNull null]) {
-    result.uri = nil;
+  result.isLocalMedia = dict[@"isLocalMedia"];
+  if ((NSNull *)result.isLocalMedia == [NSNull null]) {
+    result.isLocalMedia = nil;
   }
-  result.packageName = dict[@"packageName"];
-  if ((NSNull *)result.packageName == [NSNull null]) {
-    result.packageName = nil;
+  result.autoPlay = dict[@"autoPlay"];
+  if ((NSNull *)result.autoPlay == [NSNull null]) {
+    result.autoPlay = nil;
   }
-  result.formatHint = dict[@"formatHint"];
-  if ((NSNull *)result.formatHint == [NSNull null]) {
-    result.formatHint = nil;
+  result.hwAcc = dict[@"hwAcc"];
+  if ((NSNull *)result.hwAcc == [NSNull null]) {
+    result.hwAcc = nil;
+  }
+  result.options = dict[@"options"];
+  if ((NSNull *)result.options == [NSNull null]) {
+    result.options = nil;
+  }
+  result.subtitleUrl = dict[@"subtitleUrl"];
+  if ((NSNull *)result.subtitleUrl == [NSNull null]) {
+    result.subtitleUrl = nil;
+  }
+  result.isLocalSubtitle = dict[@"isLocalSubtitle"];
+  if ((NSNull *)result.isLocalSubtitle == [NSNull null]) {
+    result.isLocalSubtitle = nil;
+  }
+  result.isSubtitleSelected = dict[@"isSubtitleSelected"];
+  if ((NSNull *)result.isSubtitleSelected == [NSNull null]) {
+    result.isSubtitleSelected = nil;
   }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.asset ? self.asset : [NSNull null]), @"asset", (self.uri ? self.uri : [NSNull null]), @"uri", (self.packageName ? self.packageName : [NSNull null]), @"packageName", (self.formatHint ? self.formatHint : [NSNull null]), @"formatHint", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.url ? self.url : [NSNull null]), @"url", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", (self.autoPlay ? self.autoPlay : [NSNull null]), @"autoPlay", (self.hwAcc ? self.hwAcc : [NSNull null]), @"hwAcc", (self.options ? self.options : [NSNull null]), @"options", (self.subtitleUrl ? self.subtitleUrl : [NSNull null]), @"subtitleUrl", (self.isLocalSubtitle ? self.isLocalSubtitle : [NSNull null]), @"isLocalSubtitle", (self.isSubtitleSelected ? self.isSubtitleSelected : [NSNull null]), @"isSubtitleSelected", nil];
+}
+@end
+
+@implementation SetMediaMessage
++(SetMediaMessage*)fromMap:(NSDictionary*)dict {
+  SetMediaMessage* result = [[SetMediaMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.url = dict[@"url"];
+  if ((NSNull *)result.url == [NSNull null]) {
+    result.url = nil;
+  }
+  result.isLocalMedia = dict[@"isLocalMedia"];
+  if ((NSNull *)result.isLocalMedia == [NSNull null]) {
+    result.isLocalMedia = nil;
+  }
+  result.subtitleUrl = dict[@"subtitleUrl"];
+  if ((NSNull *)result.subtitleUrl == [NSNull null]) {
+    result.subtitleUrl = nil;
+  }
+  result.isLocalSubtitle = dict[@"isLocalSubtitle"];
+  if ((NSNull *)result.isLocalSubtitle == [NSNull null]) {
+    result.isLocalSubtitle = nil;
+  }
+  result.isSubtitleSelected = dict[@"isSubtitleSelected"];
+  if ((NSNull *)result.isSubtitleSelected == [NSNull null]) {
+    result.isSubtitleSelected = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.url ? self.url : [NSNull null]), @"url", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", (self.subtitleUrl ? self.subtitleUrl : [NSNull null]), @"subtitleUrl", (self.isLocalSubtitle ? self.isLocalSubtitle : [NSNull null]), @"isLocalSubtitle", (self.isSubtitleSelected ? self.isSubtitleSelected : [NSNull null]), @"isSubtitleSelected", nil];
 }
 @end
 
@@ -102,6 +224,60 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 -(NSDictionary*)toMap {
   return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.isLooping ? self.isLooping : [NSNull null]), @"isLooping", nil];
+}
+@end
+
+@implementation BooleanMessage
++(BooleanMessage*)fromMap:(NSDictionary*)dict {
+  BooleanMessage* result = [[BooleanMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.result = dict[@"result"];
+  if ((NSNull *)result.result == [NSNull null]) {
+    result.result = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.result ? self.result : [NSNull null]), @"result", nil];
+}
+@end
+
+@implementation PositionMessage
++(PositionMessage*)fromMap:(NSDictionary*)dict {
+  PositionMessage* result = [[PositionMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.position = dict[@"position"];
+  if ((NSNull *)result.position == [NSNull null]) {
+    result.position = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.position ? self.position : [NSNull null]), @"position", nil];
+}
+@end
+
+@implementation DurationMessage
++(DurationMessage*)fromMap:(NSDictionary*)dict {
+  DurationMessage* result = [[DurationMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.duration = dict[@"duration"];
+  if ((NSNull *)result.duration == [NSNull null]) {
+    result.duration = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.duration ? self.duration : [NSNull null]), @"duration", nil];
 }
 @end
 
@@ -141,21 +317,281 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 @end
 
-@implementation PositionMessage
-+(PositionMessage*)fromMap:(NSDictionary*)dict {
-  PositionMessage* result = [[PositionMessage alloc] init];
+@implementation SnapshotMessage
++(SnapshotMessage*)fromMap:(NSDictionary*)dict {
+  SnapshotMessage* result = [[SnapshotMessage alloc] init];
   result.textureId = dict[@"textureId"];
   if ((NSNull *)result.textureId == [NSNull null]) {
     result.textureId = nil;
   }
-  result.position = dict[@"position"];
-  if ((NSNull *)result.position == [NSNull null]) {
-    result.position = nil;
+  result.snapshot = dict[@"snapshot"];
+  if ((NSNull *)result.snapshot == [NSNull null]) {
+    result.snapshot = nil;
   }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.position ? self.position : [NSNull null]), @"position", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.snapshot ? self.snapshot : [NSNull null]), @"snapshot", nil];
+}
+@end
+
+@implementation TrackCountMessage
++(TrackCountMessage*)fromMap:(NSDictionary*)dict {
+  TrackCountMessage* result = [[TrackCountMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.count = dict[@"count"];
+  if ((NSNull *)result.count == [NSNull null]) {
+    result.count = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.count ? self.count : [NSNull null]), @"count", nil];
+}
+@end
+
+@implementation SpuTracksMessage
++(SpuTracksMessage*)fromMap:(NSDictionary*)dict {
+  SpuTracksMessage* result = [[SpuTracksMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.subtitles = dict[@"subtitles"];
+  if ((NSNull *)result.subtitles == [NSNull null]) {
+    result.subtitles = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.subtitles ? self.subtitles : [NSNull null]), @"subtitles", nil];
+}
+@end
+
+@implementation SpuTrackMessage
++(SpuTrackMessage*)fromMap:(NSDictionary*)dict {
+  SpuTrackMessage* result = [[SpuTrackMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.spuTrackNumber = dict[@"spuTrackNumber"];
+  if ((NSNull *)result.spuTrackNumber == [NSNull null]) {
+    result.spuTrackNumber = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.spuTrackNumber ? self.spuTrackNumber : [NSNull null]), @"spuTrackNumber", nil];
+}
+@end
+
+@implementation DelayMessage
++(DelayMessage*)fromMap:(NSDictionary*)dict {
+  DelayMessage* result = [[DelayMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.delay = dict[@"delay"];
+  if ((NSNull *)result.delay == [NSNull null]) {
+    result.delay = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.delay ? self.delay : [NSNull null]), @"delay", nil];
+}
+@end
+
+@implementation AddSubtitleMessage
++(AddSubtitleMessage*)fromMap:(NSDictionary*)dict {
+  AddSubtitleMessage* result = [[AddSubtitleMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.url = dict[@"url"];
+  if ((NSNull *)result.url == [NSNull null]) {
+    result.url = nil;
+  }
+  result.isLocal = dict[@"isLocal"];
+  if ((NSNull *)result.isLocal == [NSNull null]) {
+    result.isLocal = nil;
+  }
+  result.isSelected = dict[@"isSelected"];
+  if ((NSNull *)result.isSelected == [NSNull null]) {
+    result.isSelected = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.url ? self.url : [NSNull null]), @"url", (self.isLocal ? self.isLocal : [NSNull null]), @"isLocal", (self.isSelected ? self.isSelected : [NSNull null]), @"isSelected", nil];
+}
+@end
+
+@implementation AudioTracksMessage
++(AudioTracksMessage*)fromMap:(NSDictionary*)dict {
+  AudioTracksMessage* result = [[AudioTracksMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.audios = dict[@"audios"];
+  if ((NSNull *)result.audios == [NSNull null]) {
+    result.audios = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.audios ? self.audios : [NSNull null]), @"audios", nil];
+}
+@end
+
+@implementation AudioTrackMessage
++(AudioTrackMessage*)fromMap:(NSDictionary*)dict {
+  AudioTrackMessage* result = [[AudioTrackMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.audioTrackNumber = dict[@"audioTrackNumber"];
+  if ((NSNull *)result.audioTrackNumber == [NSNull null]) {
+    result.audioTrackNumber = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.audioTrackNumber ? self.audioTrackNumber : [NSNull null]), @"audioTrackNumber", nil];
+}
+@end
+
+@implementation VideoTracksMessage
++(VideoTracksMessage*)fromMap:(NSDictionary*)dict {
+  VideoTracksMessage* result = [[VideoTracksMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.videos = dict[@"videos"];
+  if ((NSNull *)result.videos == [NSNull null]) {
+    result.videos = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.videos ? self.videos : [NSNull null]), @"videos", nil];
+}
+@end
+
+@implementation VideoTrackMessage
++(VideoTrackMessage*)fromMap:(NSDictionary*)dict {
+  VideoTrackMessage* result = [[VideoTrackMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.videoTrackNumber = dict[@"videoTrackNumber"];
+  if ((NSNull *)result.videoTrackNumber == [NSNull null]) {
+    result.videoTrackNumber = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.videoTrackNumber ? self.videoTrackNumber : [NSNull null]), @"videoTrackNumber", nil];
+}
+@end
+
+@implementation VideoScaleMessage
++(VideoScaleMessage*)fromMap:(NSDictionary*)dict {
+  VideoScaleMessage* result = [[VideoScaleMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.scale = dict[@"scale"];
+  if ((NSNull *)result.scale == [NSNull null]) {
+    result.scale = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.scale ? self.scale : [NSNull null]), @"scale", nil];
+}
+@end
+
+@implementation VideoAspectRatioMessage
++(VideoAspectRatioMessage*)fromMap:(NSDictionary*)dict {
+  VideoAspectRatioMessage* result = [[VideoAspectRatioMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.aspectRatio = dict[@"aspectRatio"];
+  if ((NSNull *)result.aspectRatio == [NSNull null]) {
+    result.aspectRatio = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.aspectRatio ? self.aspectRatio : [NSNull null]), @"aspectRatio", nil];
+}
+@end
+
+@implementation CastDiscoveryMessage
++(CastDiscoveryMessage*)fromMap:(NSDictionary*)dict {
+  CastDiscoveryMessage* result = [[CastDiscoveryMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.serviceName = dict[@"serviceName"];
+  if ((NSNull *)result.serviceName == [NSNull null]) {
+    result.serviceName = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.serviceName ? self.serviceName : [NSNull null]), @"serviceName", nil];
+}
+@end
+
+@implementation CastDevicesMessage
++(CastDevicesMessage*)fromMap:(NSDictionary*)dict {
+  CastDevicesMessage* result = [[CastDevicesMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.castDevices = dict[@"castDevices"];
+  if ((NSNull *)result.castDevices == [NSNull null]) {
+    result.castDevices = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.castDevices ? self.castDevices : [NSNull null]), @"castDevices", nil];
+}
+@end
+
+@implementation CastDeviceMessage
++(CastDeviceMessage*)fromMap:(NSDictionary*)dict {
+  CastDeviceMessage* result = [[CastDeviceMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.castDevice = dict[@"castDevice"];
+  if ((NSNull *)result.castDevice == [NSNull null]) {
+    result.castDevice = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.castDevice ? self.castDevice : [NSNull null]), @"castDevice", nil];
 }
 @end
 
@@ -213,6 +649,23 @@ void VlcPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<VlcPlayerA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setStreamUrl"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        SetMediaMessage *input = [SetMediaMessage fromMap:message];
+        [api setStreamUrl:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setLooping"
         binaryMessenger:binaryMessenger];
     if (api) {
@@ -220,40 +673,6 @@ void VlcPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<VlcPlayerA
         FlutterError *error;
         LoopingMessage *input = [LoopingMessage fromMap:message];
         [api setLooping:input error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setVolume"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        VolumeMessage *input = [VolumeMessage fromMap:message];
-        [api setVolume:input error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    }
-    else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setPlaybackSpeed"
-        binaryMessenger:binaryMessenger];
-    if (api) {
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        PlaybackSpeedMessage *input = [PlaybackSpeedMessage fromMap:message];
-        [api setPlaybackSpeed:input error:&error];
         callback(wrapResult(nil, error));
       }];
     }
@@ -281,14 +700,65 @@ void VlcPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<VlcPlayerA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.position"
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.pause"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
         TextureMessage *input = [TextureMessage fromMap:message];
-        PositionMessage *output = [api position:input error:&error];
+        [api pause:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.stop"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        [api stop:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.isPlaying"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        BooleanMessage *output = [api isPlaying:input error:&error];
         callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setTime"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        PositionMessage *input = [PositionMessage fromMap:message];
+        [api setTime:input error:&error];
+        callback(wrapResult(nil, error));
       }];
     }
     else {
@@ -315,13 +785,540 @@ void VlcPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<VlcPlayerA
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.pause"
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.position"
         binaryMessenger:binaryMessenger];
     if (api) {
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FlutterError *error;
         TextureMessage *input = [TextureMessage fromMap:message];
-        [api pause:input error:&error];
+        PositionMessage *output = [api position:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.duration"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        DurationMessage *output = [api duration:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setVolume"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        VolumeMessage *input = [VolumeMessage fromMap:message];
+        [api setVolume:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getVolume"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        VolumeMessage *output = [api getVolume:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setPlaybackSpeed"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        PlaybackSpeedMessage *input = [PlaybackSpeedMessage fromMap:message];
+        [api setPlaybackSpeed:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getPlaybackSpeed"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        PlaybackSpeedMessage *output = [api getPlaybackSpeed:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.takeSnapshot"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        SnapshotMessage *output = [api takeSnapshot:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getSpuTracksCount"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        TrackCountMessage *output = [api getSpuTracksCount:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getSpuTracks"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        SpuTracksMessage *output = [api getSpuTracks:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getSpuTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        SpuTrackMessage *output = [api getSpuTrack:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setSpuTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        SpuTrackMessage *input = [SpuTrackMessage fromMap:message];
+        [api setSpuTrack:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setSpuDelay"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        DelayMessage *input = [DelayMessage fromMap:message];
+        [api setSpuDelay:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getSpuDelay"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        DelayMessage *output = [api getSpuDelay:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.addSubtitleTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        AddSubtitleMessage *input = [AddSubtitleMessage fromMap:message];
+        [api addSubtitleTrack:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getAudioTracksCount"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        TrackCountMessage *output = [api getAudioTracksCount:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getAudioTracks"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        AudioTracksMessage *output = [api getAudioTracks:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getAudioTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        AudioTrackMessage *output = [api getAudioTrack:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setAudioTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        AudioTrackMessage *input = [AudioTrackMessage fromMap:message];
+        [api setAudioTrack:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setAudioDelay"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        DelayMessage *input = [DelayMessage fromMap:message];
+        [api setAudioDelay:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getAudioDelay"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        DelayMessage *output = [api getAudioDelay:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getVideoTracksCount"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        TrackCountMessage *output = [api getVideoTracksCount:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getVideoTracks"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        VideoTracksMessage *output = [api getVideoTracks:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getCurrentVideoTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        VideoTrackMessage *output = [api getCurrentVideoTrack:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getVideoTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        VideoTrackMessage *output = [api getVideoTrack:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setVideoScale"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        VideoScaleMessage *input = [VideoScaleMessage fromMap:message];
+        [api setVideoScale:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getVideoScale"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        VideoScaleMessage *output = [api getVideoScale:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.setVideoAspectRatio"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        VideoAspectRatioMessage *input = [VideoAspectRatioMessage fromMap:message];
+        [api setVideoAspectRatio:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getVideoAspectRatio"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        VideoAspectRatioMessage *output = [api getVideoAspectRatio:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.startCastDiscovery"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        CastDiscoveryMessage *input = [CastDiscoveryMessage fromMap:message];
+        [api startCastDiscovery:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.stopCastDiscovery"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        [api stopCastDiscovery:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.getCastDevices"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        TextureMessage *input = [TextureMessage fromMap:message];
+        CastDevicesMessage *output = [api getCastDevices:input error:&error];
+        callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.startCasting"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        CastDeviceMessage *input = [CastDeviceMessage fromMap:message];
+        [api startCasting:input error:&error];
         callback(wrapResult(nil, error));
       }];
     }

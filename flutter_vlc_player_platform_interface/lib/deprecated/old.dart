@@ -290,7 +290,7 @@ class VlcPlayerController {
 
   int get spuTracksCount => _spuTracksCount;
 
-  /// Returns the active subitlte track index. "-1" means subitle is disabled.
+  /// Returns the active subtitle track index. "-1" means subtitle is disabled.
   int _activeSpuTrack = 0;
 
   int get activeSpuTrack => _activeSpuTrack;

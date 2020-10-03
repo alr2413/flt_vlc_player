@@ -2,18 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_vlc_player/vlc_app_life_cycle_observer.dart';
-import 'package:flutter_vlc_player/vlc_player_value.dart';
-import 'package:flutter_vlc_player_platform_interface/enums/vlc_event_type.dart';
-import 'package:flutter_vlc_player_platform_interface/vlc_event.dart';
+import 'package:flutter_vlc_player_platform_interface/enums/vlc_hardware_acceleration.dart';
+import 'package:flutter_vlc_player_platform_interface/enums/vlc_media_event_type.dart';
+import 'package:flutter_vlc_player_platform_interface/events/vlc_media_event.dart';
 import 'package:flutter_vlc_player_platform_interface/vlc_player_platform_interface.dart';
+import 'vlc_app_life_cycle_observer.dart';
+import 'vlc_player_value.dart';
 
 final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 // This will clear all open videos on the platform when a full restart is
 // performed.
   ..init();
 
-/// Controls a platform video player, and provides updates when the state is
+/// Controls a platform vlc player, and provides updates when the state is
 /// changing.
 ///
 /// Instances must be initialized with initialize.
@@ -24,11 +25,7 @@ final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 ///
 /// After [dispose] all further calls are ignored.
 class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
-  VlcPlayerController(this.dataSource) : super(VlcPlayerValue(duration: null));
-
-  /// The URI to the video file. This will be in different formats depending on
-  /// the [DataSourceType] of the original video.
-  final String dataSource;
+  VlcPlayerController() : super(VlcPlayerValue(duration: null));
 
   int _textureId;
 
@@ -43,22 +40,22 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   @visibleForTesting
   int get textureId => _textureId;
 
-  /// Attempts to open the given [dataSource] and load metadata about the video.
+  /// Attempts to open the given [url] and load metadata about the video.
   Future<void> initialize() async {
     _lifeCycleObserver = VlcAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
 
-    _textureId = await _vlcPlayerPlatform.create(dataSource);
+    _textureId = await _vlcPlayerPlatform.create(url: ''); // todo
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
-    void eventListener(VlcEvent event) {
+    void eventListener(VlcMediaEvent event) {
       if (_isDisposed) {
         return;
       }
-      switch (event.eventType) {
-        case VlcEventType.initialized:
+      switch (event.mediaEventType) {
+        case VlcMediaEventType.INITIALIZED:
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
@@ -69,7 +66,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
           _applyPlayPause();
           break;
         //
-        case VlcEventType.playing:
+        case VlcMediaEventType.PLAYING:
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
@@ -81,7 +78,22 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
           _applyPlayPause();
           break;
         //
-        case VlcEventType.unknown:
+        case VlcMediaEventType.UNKNOWN:
+          break;
+        case VlcMediaEventType.BUFFERING:
+          // TODO: Handle this case.
+          break;
+        case VlcMediaEventType.PAUSED:
+          // TODO: Handle this case.
+          break;
+        case VlcMediaEventType.STOPPED:
+          // TODO: Handle this case.
+          break;
+        case VlcMediaEventType.TIME_CHANGED:
+          // TODO: Handle this case.
+          break;
+        case VlcMediaEventType.ERROR:
+          // TODO: Handle this case.
           break;
       }
     }
@@ -96,7 +108,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     }
 
     _eventSubscription = _vlcPlayerPlatform
-        .videoEventsFor(_textureId)
+        .mediaEventsFor(_textureId)
         .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
   }
@@ -275,11 +287,60 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
 }
 
 class VlcPlayer extends StatefulWidget {
-  VlcPlayer(this.controller);
-
-  /// The [VideoPlayerController] responsible for the video being rendered in
-  /// this widget.
   final VlcPlayerController controller;
+  final double aspectRatio;
+  final HwAcc hwAcc;
+  final List<String> options;
+  final bool autoPlay;
+  final String url;
+  final bool isLocalMedia;
+  final String subtitle;
+  final bool isLocalSubtitle;
+  final bool isSubtitleSelected;
+  final Widget placeholder;
+
+  VlcPlayer({
+    Key key,
+
+    /// The [VlcPlayerController] responsible for the video being rendered in
+    /// this widget.
+    @required this.controller,
+
+    /// The aspect ratio used to display the video.
+    /// This MUST be provided, however it could simply be (parentWidth / parentHeight) - where parentWidth and
+    /// parentHeight are the width and height of the parent perhaps as defined by a LayoutBuilder.
+    @required this.aspectRatio,
+
+    /// This is the initial URL for the content. This also must be provided but [VlcPlayerController] implements
+    /// [VlcPlayerController.setStreamUrl] method so this can be changed at any time.
+    @required this.url,
+
+    /// Set hardware acceleration for player. Default is Automatic.
+    this.hwAcc,
+
+    /// Adds options to vlc. For more [https://wiki.videolan.org/VLC_command-line_help] If nothing is provided,
+    /// vlc will run without any options set.
+    this.options,
+
+    /// Set true if the provided url is local file
+    this.isLocalMedia,
+
+    /// The video should be played automatically.
+    this.autoPlay,
+
+    /// Set the external subtitle to load with video
+    this.subtitle,
+
+    /// Set true if the provided subtitle is local file
+    this.isLocalSubtitle,
+
+    /// Set true if the provided subtitle is selected by default
+    this.isSubtitleSelected,
+
+    /// Before the platform view has initialized, this placeholder will be rendered instead of the video player.
+    /// This can simply be a [CircularProgressIndicator] (see the example.)
+    this.placeholder,
+  });
 
   @override
   _VlcPlayerState createState() => _VlcPlayerState();
@@ -326,15 +387,7 @@ class _VlcPlayerState extends State<VlcPlayer> {
   @override
   Widget build(BuildContext context) {
     return _textureId == null
-        ? Container()
-        : Container(
-            color: Colors.black,
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: widget.controller.value.aspectRatio,
-                child: _vlcPlayerPlatform.buildView(_textureId),
-              ),
-            ),
-          );
+        ? widget.placeholder ?? Container()
+        : _vlcPlayerPlatform.buildView(_textureId);
   }
 }

@@ -34,40 +34,122 @@ public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class CreateMessage {
-    private String asset;
-    public String getAsset() { return asset; }
-    public void setAsset(String setterArg) { this.asset = setterArg; }
+    private String url;
+    public String getUrl() { return url; }
+    public void setUrl(String setterArg) { this.url = setterArg; }
 
-    private String uri;
-    public String getUri() { return uri; }
-    public void setUri(String setterArg) { this.uri = setterArg; }
+    private Boolean isLocalMedia;
+    public Boolean getIsLocalMedia() { return isLocalMedia; }
+    public void setIsLocalMedia(Boolean setterArg) { this.isLocalMedia = setterArg; }
 
-    private String packageName;
-    public String getPackageName() { return packageName; }
-    public void setPackageName(String setterArg) { this.packageName = setterArg; }
+    private Boolean autoPlay;
+    public Boolean getAutoPlay() { return autoPlay; }
+    public void setAutoPlay(Boolean setterArg) { this.autoPlay = setterArg; }
 
-    private String formatHint;
-    public String getFormatHint() { return formatHint; }
-    public void setFormatHint(String setterArg) { this.formatHint = setterArg; }
+    private Long hwAcc;
+    public Long getHwAcc() { return hwAcc; }
+    public void setHwAcc(Long setterArg) { this.hwAcc = setterArg; }
+
+    private ArrayList options;
+    public ArrayList getOptions() { return options; }
+    public void setOptions(ArrayList setterArg) { this.options = setterArg; }
+
+    private String subtitleUrl;
+    public String getSubtitleUrl() { return subtitleUrl; }
+    public void setSubtitleUrl(String setterArg) { this.subtitleUrl = setterArg; }
+
+    private Boolean isLocalSubtitle;
+    public Boolean getIsLocalSubtitle() { return isLocalSubtitle; }
+    public void setIsLocalSubtitle(Boolean setterArg) { this.isLocalSubtitle = setterArg; }
+
+    private Boolean isSubtitleSelected;
+    public Boolean getIsSubtitleSelected() { return isSubtitleSelected; }
+    public void setIsSubtitleSelected(Boolean setterArg) { this.isSubtitleSelected = setterArg; }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("asset", asset);
-      toMapResult.put("uri", uri);
-      toMapResult.put("packageName", packageName);
-      toMapResult.put("formatHint", formatHint);
+      toMapResult.put("url", url);
+      toMapResult.put("isLocalMedia", isLocalMedia);
+      toMapResult.put("autoPlay", autoPlay);
+      toMapResult.put("hwAcc", hwAcc);
+      toMapResult.put("options", options);
+      toMapResult.put("subtitleUrl", subtitleUrl);
+      toMapResult.put("isLocalSubtitle", isLocalSubtitle);
+      toMapResult.put("isSubtitleSelected", isSubtitleSelected);
       return toMapResult;
     }
     static CreateMessage fromMap(HashMap map) {
       CreateMessage fromMapResult = new CreateMessage();
-      Object asset = map.get("asset");
-      fromMapResult.asset = (String)asset;
-      Object uri = map.get("uri");
-      fromMapResult.uri = (String)uri;
-      Object packageName = map.get("packageName");
-      fromMapResult.packageName = (String)packageName;
-      Object formatHint = map.get("formatHint");
-      fromMapResult.formatHint = (String)formatHint;
+      Object url = map.get("url");
+      fromMapResult.url = (String)url;
+      Object isLocalMedia = map.get("isLocalMedia");
+      fromMapResult.isLocalMedia = (Boolean)isLocalMedia;
+      Object autoPlay = map.get("autoPlay");
+      fromMapResult.autoPlay = (Boolean)autoPlay;
+      Object hwAcc = map.get("hwAcc");
+      fromMapResult.hwAcc = (hwAcc == null) ? null : ((hwAcc instanceof Integer) ? (Integer)hwAcc : (Long)hwAcc);
+      Object options = map.get("options");
+      fromMapResult.options = (ArrayList)options;
+      Object subtitleUrl = map.get("subtitleUrl");
+      fromMapResult.subtitleUrl = (String)subtitleUrl;
+      Object isLocalSubtitle = map.get("isLocalSubtitle");
+      fromMapResult.isLocalSubtitle = (Boolean)isLocalSubtitle;
+      Object isSubtitleSelected = map.get("isSubtitleSelected");
+      fromMapResult.isSubtitleSelected = (Boolean)isSubtitleSelected;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SetMediaMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private String url;
+    public String getUrl() { return url; }
+    public void setUrl(String setterArg) { this.url = setterArg; }
+
+    private Boolean isLocalMedia;
+    public Boolean getIsLocalMedia() { return isLocalMedia; }
+    public void setIsLocalMedia(Boolean setterArg) { this.isLocalMedia = setterArg; }
+
+    private String subtitleUrl;
+    public String getSubtitleUrl() { return subtitleUrl; }
+    public void setSubtitleUrl(String setterArg) { this.subtitleUrl = setterArg; }
+
+    private Boolean isLocalSubtitle;
+    public Boolean getIsLocalSubtitle() { return isLocalSubtitle; }
+    public void setIsLocalSubtitle(Boolean setterArg) { this.isLocalSubtitle = setterArg; }
+
+    private Boolean isSubtitleSelected;
+    public Boolean getIsSubtitleSelected() { return isSubtitleSelected; }
+    public void setIsSubtitleSelected(Boolean setterArg) { this.isSubtitleSelected = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("url", url);
+      toMapResult.put("isLocalMedia", isLocalMedia);
+      toMapResult.put("subtitleUrl", subtitleUrl);
+      toMapResult.put("isLocalSubtitle", isLocalSubtitle);
+      toMapResult.put("isSubtitleSelected", isSubtitleSelected);
+      return toMapResult;
+    }
+    static SetMediaMessage fromMap(HashMap map) {
+      SetMediaMessage fromMapResult = new SetMediaMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object url = map.get("url");
+      fromMapResult.url = (String)url;
+      Object isLocalMedia = map.get("isLocalMedia");
+      fromMapResult.isLocalMedia = (Boolean)isLocalMedia;
+      Object subtitleUrl = map.get("subtitleUrl");
+      fromMapResult.subtitleUrl = (String)subtitleUrl;
+      Object isLocalSubtitle = map.get("isLocalSubtitle");
+      fromMapResult.isLocalSubtitle = (Boolean)isLocalSubtitle;
+      Object isSubtitleSelected = map.get("isSubtitleSelected");
+      fromMapResult.isSubtitleSelected = (Boolean)isSubtitleSelected;
       return fromMapResult;
     }
   }
@@ -94,6 +176,84 @@ public class Messages {
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       Object isLooping = map.get("isLooping");
       fromMapResult.isLooping = (Boolean)isLooping;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class BooleanMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Boolean result;
+    public Boolean getResult() { return result; }
+    public void setResult(Boolean setterArg) { this.result = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("result", result);
+      return toMapResult;
+    }
+    static BooleanMessage fromMap(HashMap map) {
+      BooleanMessage fromMapResult = new BooleanMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object result = map.get("result");
+      fromMapResult.result = (Boolean)result;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class PositionMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long position;
+    public Long getPosition() { return position; }
+    public void setPosition(Long setterArg) { this.position = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("position", position);
+      return toMapResult;
+    }
+    static PositionMessage fromMap(HashMap map) {
+      PositionMessage fromMapResult = new PositionMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object position = map.get("position");
+      fromMapResult.position = (position == null) ? null : ((position instanceof Integer) ? (Integer)position : (Long)position);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class DurationMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long duration;
+    public Long getDuration() { return duration; }
+    public void setDuration(Long setterArg) { this.duration = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("duration", duration);
+      return toMapResult;
+    }
+    static DurationMessage fromMap(HashMap map) {
+      DurationMessage fromMapResult = new DurationMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object duration = map.get("duration");
+      fromMapResult.duration = (duration == null) ? null : ((duration instanceof Integer) ? (Integer)duration : (Long)duration);
       return fromMapResult;
     }
   }
@@ -151,27 +311,405 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class PositionMessage {
+  public static class SnapshotMessage {
     private Long textureId;
     public Long getTextureId() { return textureId; }
     public void setTextureId(Long setterArg) { this.textureId = setterArg; }
 
-    private Long position;
-    public Long getPosition() { return position; }
-    public void setPosition(Long setterArg) { this.position = setterArg; }
+    private String snapshot;
+    public String getSnapshot() { return snapshot; }
+    public void setSnapshot(String setterArg) { this.snapshot = setterArg; }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
-      toMapResult.put("position", position);
+      toMapResult.put("snapshot", snapshot);
       return toMapResult;
     }
-    static PositionMessage fromMap(HashMap map) {
-      PositionMessage fromMapResult = new PositionMessage();
+    static SnapshotMessage fromMap(HashMap map) {
+      SnapshotMessage fromMapResult = new SnapshotMessage();
       Object textureId = map.get("textureId");
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
-      Object position = map.get("position");
-      fromMapResult.position = (position == null) ? null : ((position instanceof Integer) ? (Integer)position : (Long)position);
+      Object snapshot = map.get("snapshot");
+      fromMapResult.snapshot = (String)snapshot;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class TrackCountMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long count;
+    public Long getCount() { return count; }
+    public void setCount(Long setterArg) { this.count = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("count", count);
+      return toMapResult;
+    }
+    static TrackCountMessage fromMap(HashMap map) {
+      TrackCountMessage fromMapResult = new TrackCountMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object count = map.get("count");
+      fromMapResult.count = (count == null) ? null : ((count instanceof Integer) ? (Integer)count : (Long)count);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SpuTracksMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private HashMap subtitles;
+    public HashMap getSubtitles() { return subtitles; }
+    public void setSubtitles(HashMap setterArg) { this.subtitles = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("subtitles", subtitles);
+      return toMapResult;
+    }
+    static SpuTracksMessage fromMap(HashMap map) {
+      SpuTracksMessage fromMapResult = new SpuTracksMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object subtitles = map.get("subtitles");
+      fromMapResult.subtitles = (HashMap)subtitles;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SpuTrackMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long spuTrackNumber;
+    public Long getSpuTrackNumber() { return spuTrackNumber; }
+    public void setSpuTrackNumber(Long setterArg) { this.spuTrackNumber = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("spuTrackNumber", spuTrackNumber);
+      return toMapResult;
+    }
+    static SpuTrackMessage fromMap(HashMap map) {
+      SpuTrackMessage fromMapResult = new SpuTrackMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object spuTrackNumber = map.get("spuTrackNumber");
+      fromMapResult.spuTrackNumber = (spuTrackNumber == null) ? null : ((spuTrackNumber instanceof Integer) ? (Integer)spuTrackNumber : (Long)spuTrackNumber);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class DelayMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long delay;
+    public Long getDelay() { return delay; }
+    public void setDelay(Long setterArg) { this.delay = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("delay", delay);
+      return toMapResult;
+    }
+    static DelayMessage fromMap(HashMap map) {
+      DelayMessage fromMapResult = new DelayMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object delay = map.get("delay");
+      fromMapResult.delay = (delay == null) ? null : ((delay instanceof Integer) ? (Integer)delay : (Long)delay);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class AddSubtitleMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private String url;
+    public String getUrl() { return url; }
+    public void setUrl(String setterArg) { this.url = setterArg; }
+
+    private Boolean isLocal;
+    public Boolean getIsLocal() { return isLocal; }
+    public void setIsLocal(Boolean setterArg) { this.isLocal = setterArg; }
+
+    private Boolean isSelected;
+    public Boolean getIsSelected() { return isSelected; }
+    public void setIsSelected(Boolean setterArg) { this.isSelected = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("url", url);
+      toMapResult.put("isLocal", isLocal);
+      toMapResult.put("isSelected", isSelected);
+      return toMapResult;
+    }
+    static AddSubtitleMessage fromMap(HashMap map) {
+      AddSubtitleMessage fromMapResult = new AddSubtitleMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object url = map.get("url");
+      fromMapResult.url = (String)url;
+      Object isLocal = map.get("isLocal");
+      fromMapResult.isLocal = (Boolean)isLocal;
+      Object isSelected = map.get("isSelected");
+      fromMapResult.isSelected = (Boolean)isSelected;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class AudioTracksMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private HashMap audios;
+    public HashMap getAudios() { return audios; }
+    public void setAudios(HashMap setterArg) { this.audios = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("audios", audios);
+      return toMapResult;
+    }
+    static AudioTracksMessage fromMap(HashMap map) {
+      AudioTracksMessage fromMapResult = new AudioTracksMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object audios = map.get("audios");
+      fromMapResult.audios = (HashMap)audios;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class AudioTrackMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long audioTrackNumber;
+    public Long getAudioTrackNumber() { return audioTrackNumber; }
+    public void setAudioTrackNumber(Long setterArg) { this.audioTrackNumber = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("audioTrackNumber", audioTrackNumber);
+      return toMapResult;
+    }
+    static AudioTrackMessage fromMap(HashMap map) {
+      AudioTrackMessage fromMapResult = new AudioTrackMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object audioTrackNumber = map.get("audioTrackNumber");
+      fromMapResult.audioTrackNumber = (audioTrackNumber == null) ? null : ((audioTrackNumber instanceof Integer) ? (Integer)audioTrackNumber : (Long)audioTrackNumber);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class VideoTracksMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private HashMap videos;
+    public HashMap getVideos() { return videos; }
+    public void setVideos(HashMap setterArg) { this.videos = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("videos", videos);
+      return toMapResult;
+    }
+    static VideoTracksMessage fromMap(HashMap map) {
+      VideoTracksMessage fromMapResult = new VideoTracksMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object videos = map.get("videos");
+      fromMapResult.videos = (HashMap)videos;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class VideoTrackMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Long videoTrackNumber;
+    public Long getVideoTrackNumber() { return videoTrackNumber; }
+    public void setVideoTrackNumber(Long setterArg) { this.videoTrackNumber = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("videoTrackNumber", videoTrackNumber);
+      return toMapResult;
+    }
+    static VideoTrackMessage fromMap(HashMap map) {
+      VideoTrackMessage fromMapResult = new VideoTrackMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object videoTrackNumber = map.get("videoTrackNumber");
+      fromMapResult.videoTrackNumber = (videoTrackNumber == null) ? null : ((videoTrackNumber instanceof Integer) ? (Integer)videoTrackNumber : (Long)videoTrackNumber);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class VideoScaleMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private Double scale;
+    public Double getScale() { return scale; }
+    public void setScale(Double setterArg) { this.scale = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("scale", scale);
+      return toMapResult;
+    }
+    static VideoScaleMessage fromMap(HashMap map) {
+      VideoScaleMessage fromMapResult = new VideoScaleMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object scale = map.get("scale");
+      fromMapResult.scale = (Double)scale;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class VideoAspectRatioMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private String aspectRatio;
+    public String getAspectRatio() { return aspectRatio; }
+    public void setAspectRatio(String setterArg) { this.aspectRatio = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("aspectRatio", aspectRatio);
+      return toMapResult;
+    }
+    static VideoAspectRatioMessage fromMap(HashMap map) {
+      VideoAspectRatioMessage fromMapResult = new VideoAspectRatioMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object aspectRatio = map.get("aspectRatio");
+      fromMapResult.aspectRatio = (String)aspectRatio;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class CastDiscoveryMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private String serviceName;
+    public String getServiceName() { return serviceName; }
+    public void setServiceName(String setterArg) { this.serviceName = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("serviceName", serviceName);
+      return toMapResult;
+    }
+    static CastDiscoveryMessage fromMap(HashMap map) {
+      CastDiscoveryMessage fromMapResult = new CastDiscoveryMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object serviceName = map.get("serviceName");
+      fromMapResult.serviceName = (String)serviceName;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class CastDevicesMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private HashMap castDevices;
+    public HashMap getCastDevices() { return castDevices; }
+    public void setCastDevices(HashMap setterArg) { this.castDevices = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("castDevices", castDevices);
+      return toMapResult;
+    }
+    static CastDevicesMessage fromMap(HashMap map) {
+      CastDevicesMessage fromMapResult = new CastDevicesMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object castDevices = map.get("castDevices");
+      fromMapResult.castDevices = (HashMap)castDevices;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class CastDeviceMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private String castDevice;
+    public String getCastDevice() { return castDevice; }
+    public void setCastDevice(String setterArg) { this.castDevice = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("castDevice", castDevice);
+      return toMapResult;
+    }
+    static CastDeviceMessage fromMap(HashMap map) {
+      CastDeviceMessage fromMapResult = new CastDeviceMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object castDevice = map.get("castDevice");
+      fromMapResult.castDevice = (String)castDevice;
       return fromMapResult;
     }
   }
@@ -181,13 +719,46 @@ public class Messages {
     void initialize();
     TextureMessage create(CreateMessage arg);
     void dispose(TextureMessage arg);
+    void setStreamUrl(SetMediaMessage arg);
     void setLooping(LoopingMessage arg);
-    void setVolume(VolumeMessage arg);
-    void setPlaybackSpeed(PlaybackSpeedMessage arg);
     void play(TextureMessage arg);
-    PositionMessage position(TextureMessage arg);
-    void seekTo(PositionMessage arg);
     void pause(TextureMessage arg);
+    void stop(TextureMessage arg);
+    BooleanMessage isPlaying(TextureMessage arg);
+    void setTime(PositionMessage arg);
+    void seekTo(PositionMessage arg);
+    PositionMessage position(TextureMessage arg);
+    DurationMessage duration(TextureMessage arg);
+    void setVolume(VolumeMessage arg);
+    VolumeMessage getVolume(TextureMessage arg);
+    void setPlaybackSpeed(PlaybackSpeedMessage arg);
+    PlaybackSpeedMessage getPlaybackSpeed(TextureMessage arg);
+    SnapshotMessage takeSnapshot(TextureMessage arg);
+    TrackCountMessage getSpuTracksCount(TextureMessage arg);
+    SpuTracksMessage getSpuTracks(TextureMessage arg);
+    SpuTrackMessage getSpuTrack(TextureMessage arg);
+    void setSpuTrack(SpuTrackMessage arg);
+    void setSpuDelay(DelayMessage arg);
+    DelayMessage getSpuDelay(TextureMessage arg);
+    void addSubtitleTrack(AddSubtitleMessage arg);
+    TrackCountMessage getAudioTracksCount(TextureMessage arg);
+    AudioTracksMessage getAudioTracks(TextureMessage arg);
+    AudioTrackMessage getAudioTrack(TextureMessage arg);
+    void setAudioTrack(AudioTrackMessage arg);
+    void setAudioDelay(DelayMessage arg);
+    DelayMessage getAudioDelay(TextureMessage arg);
+    TrackCountMessage getVideoTracksCount(TextureMessage arg);
+    VideoTracksMessage getVideoTracks(TextureMessage arg);
+    VideoTrackMessage getCurrentVideoTrack(TextureMessage arg);
+    VideoTrackMessage getVideoTrack(TextureMessage arg);
+    void setVideoScale(VideoScaleMessage arg);
+    VideoScaleMessage getVideoScale(TextureMessage arg);
+    void setVideoAspectRatio(VideoAspectRatioMessage arg);
+    VideoAspectRatioMessage getVideoAspectRatio(TextureMessage arg);
+    void startCastDiscovery(CastDiscoveryMessage arg);
+    void stopCastDiscovery(TextureMessage arg);
+    CastDevicesMessage getCastDevices(TextureMessage arg);
+    void startCasting(CastDeviceMessage arg);
 
     /** Sets up an instance of `VlcPlayerApi` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, VlcPlayerApi api) {
@@ -254,6 +825,27 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setStreamUrl", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SetMediaMessage input = SetMediaMessage.fromMap((HashMap)message);
+              api.setStreamUrl(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setLooping", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
@@ -262,48 +854,6 @@ public class Messages {
               @SuppressWarnings("ConstantConditions")
               LoopingMessage input = LoopingMessage.fromMap((HashMap)message);
               api.setLooping(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setVolume", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              VolumeMessage input = VolumeMessage.fromMap((HashMap)message);
-              api.setVolume(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setPlaybackSpeed", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap((HashMap)message);
-              api.setPlaybackSpeed(input);
               wrapped.put("result", null);
             }
             catch (Exception exception) {
@@ -338,15 +888,78 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.position", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.pause", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
               TextureMessage input = TextureMessage.fromMap((HashMap)message);
-              PositionMessage output = api.position(input);
+              api.pause(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.stop", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              api.stop(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.isPlaying", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              BooleanMessage output = api.isPlaying(input);
               wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setTime", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              PositionMessage input = PositionMessage.fromMap((HashMap)message);
+              api.setTime(input);
+              wrapped.put("result", null);
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));
@@ -380,14 +993,665 @@ public class Messages {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.pause", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.position", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               @SuppressWarnings("ConstantConditions")
               TextureMessage input = TextureMessage.fromMap((HashMap)message);
-              api.pause(input);
+              PositionMessage output = api.position(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.duration", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              DurationMessage output = api.duration(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setVolume", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              VolumeMessage input = VolumeMessage.fromMap((HashMap)message);
+              api.setVolume(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getVolume", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              VolumeMessage output = api.getVolume(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setPlaybackSpeed", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              PlaybackSpeedMessage input = PlaybackSpeedMessage.fromMap((HashMap)message);
+              api.setPlaybackSpeed(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getPlaybackSpeed", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              PlaybackSpeedMessage output = api.getPlaybackSpeed(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.takeSnapshot", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              SnapshotMessage output = api.takeSnapshot(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getSpuTracksCount", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              TrackCountMessage output = api.getSpuTracksCount(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getSpuTracks", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              SpuTracksMessage output = api.getSpuTracks(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getSpuTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              SpuTrackMessage output = api.getSpuTrack(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setSpuTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              SpuTrackMessage input = SpuTrackMessage.fromMap((HashMap)message);
+              api.setSpuTrack(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setSpuDelay", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              DelayMessage input = DelayMessage.fromMap((HashMap)message);
+              api.setSpuDelay(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getSpuDelay", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              DelayMessage output = api.getSpuDelay(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.addSubtitleTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              AddSubtitleMessage input = AddSubtitleMessage.fromMap((HashMap)message);
+              api.addSubtitleTrack(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getAudioTracksCount", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              TrackCountMessage output = api.getAudioTracksCount(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getAudioTracks", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              AudioTracksMessage output = api.getAudioTracks(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getAudioTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              AudioTrackMessage output = api.getAudioTrack(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setAudioTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              AudioTrackMessage input = AudioTrackMessage.fromMap((HashMap)message);
+              api.setAudioTrack(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setAudioDelay", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              DelayMessage input = DelayMessage.fromMap((HashMap)message);
+              api.setAudioDelay(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getAudioDelay", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              DelayMessage output = api.getAudioDelay(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getVideoTracksCount", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              TrackCountMessage output = api.getVideoTracksCount(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getVideoTracks", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              VideoTracksMessage output = api.getVideoTracks(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getCurrentVideoTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              VideoTrackMessage output = api.getCurrentVideoTrack(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getVideoTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              VideoTrackMessage output = api.getVideoTrack(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setVideoScale", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              VideoScaleMessage input = VideoScaleMessage.fromMap((HashMap)message);
+              api.setVideoScale(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getVideoScale", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              VideoScaleMessage output = api.getVideoScale(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.setVideoAspectRatio", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              VideoAspectRatioMessage input = VideoAspectRatioMessage.fromMap((HashMap)message);
+              api.setVideoAspectRatio(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getVideoAspectRatio", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              VideoAspectRatioMessage output = api.getVideoAspectRatio(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.startCastDiscovery", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              CastDiscoveryMessage input = CastDiscoveryMessage.fromMap((HashMap)message);
+              api.startCastDiscovery(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.stopCastDiscovery", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              api.stopCastDiscovery(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.getCastDevices", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              TextureMessage input = TextureMessage.fromMap((HashMap)message);
+              CastDevicesMessage output = api.getCastDevices(input);
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.startCasting", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              CastDeviceMessage input = CastDeviceMessage.fromMap((HashMap)message);
+              api.startCasting(input);
               wrapped.put("result", null);
             }
             catch (Exception exception) {

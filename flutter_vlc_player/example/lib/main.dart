@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:flutter_vlc_player/vlc_progress_indicator.dart';
 
 void main() {
   runApp(
@@ -45,9 +44,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VlcPlayerController(
-      'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
-    );
+    _controller = VlcPlayerController();
 
     _controller.addListener(() {
       setState(() {});
@@ -76,7 +73,17 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
-                  VlcPlayer(_controller),
+                  Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VlcPlayer(
+                          controller: _controller,
+                        ),
+                      ),
+                    ),
+                  ),
                   _ControlsOverlay(controller: _controller),
                 ],
               ),
