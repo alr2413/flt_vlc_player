@@ -38,6 +38,8 @@ import java.util.Objects;
 
 final class VlcPlayer {
 
+    private Context context;
+
     private LibVLC libVLC;
 
     private MediaPlayer mediaPlayer;
@@ -65,6 +67,7 @@ final class VlcPlayer {
             TextureRegistry.SurfaceTextureEntry textureEntry,
             String dataSource,
             VlcPlayerOptions options) {
+        this.context = context;
         this.eventChannel = eventChannel;
         this.textureEntry = textureEntry;
         this.options = options;
@@ -100,6 +103,7 @@ final class VlcPlayer {
 
         surface = new Surface(textureEntry.surfaceTexture());
         mediaPlayer.getVLCVout().setVideoSurface(surface, null);
+        //
         mediaPlayer.getVLCVout().attachViews();
         mediaPlayer.setEventListener(
                 new MediaPlayer.EventListener() {
@@ -370,6 +374,7 @@ final class VlcPlayer {
         rendererDiscoverers = new ArrayList<>();
         rendererItems = new ArrayList<>();
         //
+        //todo: check for duplicates
         RendererDiscoverer.Description[] renderers = RendererDiscoverer.list(libVLC);
         for (RendererDiscoverer.Description renderer : renderers) {
             RendererDiscoverer rendererDiscoverer = new RendererDiscoverer(libVLC, renderer.name);
@@ -466,11 +471,14 @@ final class VlcPlayer {
     }
 
     String getSnapshot() {
-//        Bitmap bitmap = textureView.getBitmap();
+        TextureView textureView = new TextureView(context);
+        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
+        textureView.forceLayout();
+        textureView.setFitsSystemWindows(true);
+        Bitmap bitmap = textureView.getBitmap();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-//        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
-        return "";
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
     }
 
     void dispose() {
