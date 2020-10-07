@@ -27,6 +27,8 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,9 +50,14 @@ final class VlcPlayer {
 
     private final EventChannel eventChannel;
 
-    private boolean isInitialized = false;
-
     private final VlcPlayerOptions options;
+
+    private List<RendererDiscoverer> rendererDiscoverers;
+    private List<RendererItem> rendererItems;
+
+    private Uri getStreamUri(String streamPath, boolean isLocal) {
+        return isLocal ? Uri.fromFile(new File(streamPath)) : Uri.parse(streamPath);
+    }
 
     VlcPlayer(
             Context context,
@@ -65,12 +72,14 @@ final class VlcPlayer {
         libVLC = new LibVLC(context); // todo: add options
         mediaPlayer = new MediaPlayer(libVLC);
         mediaPlayer.setVideoTrackEnabled(true);
+        //
+        setupVlcMediaPlayer(eventChannel, textureEntry);
+        //
         Uri uri = Uri.parse(dataSource); // todo: add local stream file
         Media media = new Media(libVLC, uri);
         mediaPlayer.setMedia(media);
         media.release();
-        //
-        setupVlcMediaPlayer(eventChannel, textureEntry);
+        mediaPlayer.play();
     }
 
     private void setupVlcMediaPlayer(
@@ -92,68 +101,56 @@ final class VlcPlayer {
         surface = new Surface(textureEntry.surfaceTexture());
         mediaPlayer.getVLCVout().setVideoSurface(surface, null);
         mediaPlayer.getVLCVout().attachViews();
-
-        // todo: update isInitialized
         mediaPlayer.setEventListener(
                 new MediaPlayer.EventListener() {
+
+                    private int mWidth = 0;
+                    private int mHeight = 0;
+
                     @Override
                     public void onEvent(MediaPlayer.Event event) {
                         HashMap<String, Object> eventObject = new HashMap<>();
                         switch (event.type) {
 
                             case MediaPlayer.Event.Opening:
-                                eventObject.put("event", "buffering");
-                                eventObject.put("value", true);
+                                eventObject.put("event", "opening");
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Paused:
-                                eventObject.clear();
                                 eventObject.put("event", "paused");
-                                eventObject.put("value", true);
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Stopped:
-                                eventObject.clear();
                                 eventObject.put("event", "stopped");
-                                eventObject.put("value", true);
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Playing:
-                                eventObject.put("event", "buffering");
-                                eventObject.put("value", false);
-                                eventSink.success(eventObject.clone());
-                                eventObject.clear();
-
                                 // Now send playing info:
                                 int height = 0;
                                 int width = 0;
-
-//                                Media.VideoTrack currentVideoTrack = (Media.VideoTrack) mediaPlayer.getMedia().getTrack(
-//                                        mediaPlayer.getVideoTrack()
-//                                );
                                 Media.VideoTrack currentVideoTrack = mediaPlayer.getCurrentVideoTrack();
                                 if (currentVideoTrack != null) {
                                     height = currentVideoTrack.height;
                                     width = currentVideoTrack.width;
-                                    //
-                                    textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
+                                    // set surface width & height on media change
+                                    if ((mWidth != width) && (mHeight != height)) {
+                                        textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
+                                        mWidth = width;
+                                        mHeight = height;
+                                    }
                                 }
-
                                 eventObject.put("event", "playing");
-                                eventObject.put("value", true);
-                                eventObject.put("ratio", height > 0 ? (double) width / (double) height : 0D);
                                 eventObject.put("height", height);
                                 eventObject.put("width", width);
-                                eventObject.put("length", mediaPlayer.getLength());
-                                // add support for changing audio tracks and subtitles
+                                eventObject.put("speed", mediaPlayer.getRate());
+                                eventObject.put("duration", mediaPlayer.getLength());
                                 eventObject.put("audioTracksCount", mediaPlayer.getAudioTracksCount());
                                 eventObject.put("activeAudioTrack", mediaPlayer.getAudioTrack());
                                 eventObject.put("spuTracksCount", mediaPlayer.getSpuTracksCount());
                                 eventObject.put("activeSpuTrack", mediaPlayer.getSpuTrack());
-                                //
                                 eventSink.success(eventObject.clone());
                                 break;
 
@@ -164,34 +161,38 @@ final class VlcPlayer {
                             case MediaPlayer.Event.EndReached:
                                 mediaPlayer.stop();
                                 eventObject.put("event", "ended");
-                                eventSink.success(eventObject);
-
-                                eventObject.clear();
-                                eventObject.put("name", "playing");
-                                eventObject.put("value", false);
-                                eventObject.put("reason", "EndReached");
+                                eventObject.put("position", mediaPlayer.getTime());
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.Buffering:
                             case MediaPlayer.Event.TimeChanged:
-//                                event.getBuffering();
                                 eventObject.put("event", "timeChanged");
-                                eventObject.put("value", mediaPlayer.getTime());
+                                eventObject.put("position", mediaPlayer.getTime());
                                 eventObject.put("speed", mediaPlayer.getRate());
+                                eventObject.put("buffer", event.getBuffering());
                                 eventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.EncounteredError:
-                                eventSink.error("VideoError", "A VLC error occurred.", null);
+                                eventSink.error("vlc_error", "A VLC error occurred.", null);
+                                break;
+
+                            case MediaPlayer.Event.LengthChanged:
+                            case MediaPlayer.Event.MediaChanged:
+                            case MediaPlayer.Event.ESAdded:
+                            case MediaPlayer.Event.ESDeleted:
+                            case MediaPlayer.Event.ESSelected:
+                            case MediaPlayer.Event.PausableChanged:
+                            case MediaPlayer.Event.RecordChanged:
+                            case MediaPlayer.Event.SeekableChanged:
+                            case MediaPlayer.Event.PositionChanged:
+                            default:
                                 break;
                         }
                     }
                 }
         );
-        //
-        mediaPlayer.play(); // todo: remove this line
-
     }
 
     void play() {
@@ -215,7 +216,7 @@ final class VlcPlayer {
         mediaPlayer.stop();
         //
         Uri uri = Uri.parse(url);
-        Media media = new Media(libVLC, url);
+        Media media = new Media(libVLC, uri);
         mediaPlayer.setMedia(media);
         media.release();
         if (wasPlaying)
@@ -223,6 +224,7 @@ final class VlcPlayer {
     }
 
     void setLooping(boolean value) {
+        //todo: implement it
     }
 
     void setVolume(long value) {
@@ -250,14 +252,6 @@ final class VlcPlayer {
         return mediaPlayer.getTime();
     }
 
-    void setTime(int location) {
-        mediaPlayer.setTime(location);
-    }
-
-    long getTime() {
-        return mediaPlayer.getTime();
-    }
-
     long getDuration() {
         return mediaPlayer.getLength();
     }
@@ -266,9 +260,9 @@ final class VlcPlayer {
         return mediaPlayer.getSpuTracksCount();
     }
 
-    Map<Integer, String> getSpuTracks() {
+    HashMap<Integer, String> getSpuTracks() {
         MediaPlayer.TrackDescription[] spuTracks = mediaPlayer.getSpuTracks();
-        Map<Integer, String> subtitles = new HashMap<>();
+        HashMap<Integer, String> subtitles = new HashMap<>();
         if (spuTracks != null)
             for (MediaPlayer.TrackDescription trackDescription : spuTracks) {
                 if (trackDescription.id >= 0)
@@ -293,17 +287,17 @@ final class VlcPlayer {
         return mediaPlayer.getSpuDelay();
     }
 
-    void addSubtitleTrack(String subtitleUrl, boolean selected) {
-        mediaPlayer.addSlave(Media.Slave.Type.Subtitle, subtitleUrl, selected);
+    void addSubtitleTrack(String uri, boolean isLocal, boolean isSelected) {
+        mediaPlayer.addSlave(Media.Slave.Type.Subtitle, uri, isSelected);
     }
 
     int getAudioTracksCount() {
         return mediaPlayer.getAudioTracksCount();
     }
 
-    Map<Integer, String> getAudioTracks() {
+    HashMap<Integer, String> getAudioTracks() {
         MediaPlayer.TrackDescription[] audioTracks = mediaPlayer.getAudioTracks();
-        Map<Integer, String> audios = new HashMap<>();
+        HashMap<Integer, String> audios = new HashMap<>();
         if (audioTracks != null)
             for (MediaPlayer.TrackDescription trackDescription : audioTracks) {
                 if (trackDescription.id >= 0)
@@ -332,19 +326,15 @@ final class VlcPlayer {
         return mediaPlayer.getVideoTracksCount();
     }
 
-    Map<Integer, String> getVideoTracks() {
+    HashMap<Integer, String> getVideoTracks() {
         MediaPlayer.TrackDescription[] videoTracks = mediaPlayer.getVideoTracks();
-        Map<Integer, String> videos = new HashMap<>();
+        HashMap<Integer, String> videos = new HashMap<>();
         if (videoTracks != null)
             for (MediaPlayer.TrackDescription trackDescription : videoTracks) {
                 if (trackDescription.id >= 0)
                     videos.put(trackDescription.id, trackDescription.name);
             }
         return videos;
-    }
-
-    IMedia.VideoTrack getCurrentVideoTrack() {
-        return mediaPlayer.getCurrentVideoTrack();
     }
 
     void setVideoTrack(int index) {
@@ -371,46 +361,126 @@ final class VlcPlayer {
         return mediaPlayer.getAspectRatio();
     }
 
-    // todo: implement cast to devices
-    void discoverRenderers() {
+    void startRendererScanning(String rendererService) {
+
+        //
+        //  android -> chromecast -> "microdns"
+        //  ios -> chromecast -> "Bonjour_renderer"
+        //
+        rendererDiscoverers = new ArrayList<>();
+        rendererItems = new ArrayList<>();
+        //
+        RendererDiscoverer.Description[] renderers = RendererDiscoverer.list(libVLC);
+        for (RendererDiscoverer.Description renderer : renderers) {
+            RendererDiscoverer rendererDiscoverer = new RendererDiscoverer(libVLC, renderer.name);
+            try {
+                rendererDiscoverer.setEventListener(new RendererDiscoverer.EventListener() {
+                    @Override
+                    public void onEvent(RendererDiscoverer.Event event) {
+                        HashMap<String, Object> eventObject = new HashMap<>();
+                        RendererItem item = event.getItem();
+                        switch (event.type) {
+                            case RendererDiscoverer.Event.ItemAdded:
+                                rendererItems.add(item);
+                                eventObject.put("event", "rendererDiscovererItemAttached");
+                                eventObject.put("name", item.name);
+                                eventObject.put("displayName", item.displayName);
+                                eventSink.success(eventObject);
+                                break;
+
+                            case RendererDiscoverer.Event.ItemDeleted:
+                                rendererItems.remove(item);
+                                eventObject.put("event", "rendererDiscovererItemDetached");
+                                eventObject.put("name", item.name);
+                                eventObject.put("displayName", item.displayName);
+                                eventSink.success(eventObject);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                });
+                rendererDiscoverer.start();
+                rendererDiscoverers.add(rendererDiscoverer);
+            } catch (Exception ex) {
+                rendererDiscoverer.setEventListener(null);
+            }
+
+        }
 
     }
 
-    void stopCastDiscovery() {
+    void stopRendererScanning() {
+        for (RendererDiscoverer rendererDiscoverer : rendererDiscoverers) {
+            rendererDiscoverer.stop();
+            rendererDiscoverer.setEventListener(null);
 
+        }
+        rendererDiscoverers.clear();
+        rendererItems.clear();
+        //
+        // return back to default output
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+            mediaPlayer.setRenderer(null);
+            mediaPlayer.play();
+        }
     }
 
-    Map<String, String> getCastDevices() {
-        Map<String, String> casts = new HashMap<>();
-//        if (rendererItems != null)
-//            for (RendererItem item : rendererItems) {
-//                casts.put(item.name, item.displayName);
-//            }
-        return casts;
+    ArrayList<String> getAvailableRendererServices() {
+        RendererDiscoverer.Description[] renderers = RendererDiscoverer.list(libVLC);
+        ArrayList<String> availableRendererServices = new ArrayList<>();
+        for (RendererDiscoverer.Description renderer : renderers) {
+            availableRendererServices.add(renderer.name);
+        }
+        return availableRendererServices;
     }
 
-    void startCasting(String device) {
+    HashMap<String, String> getRendererDevices() {
+        HashMap<String, String> renderers = new HashMap<>();
+        if (rendererItems != null)
+            for (RendererItem rendererItem : rendererItems) {
+                renderers.put(rendererItem.name, rendererItem.displayName);
+            }
+        return renderers;
+    }
 
+    void castToRenderer(String rendererDevice) {
+        boolean isPlaying = mediaPlayer.isPlaying();
+        if (isPlaying)
+            mediaPlayer.pause();
+
+        // if you set it to null, it will start to render normally (i.e. locally) again
+        RendererItem rendererItem = null;
+        for (RendererItem item : rendererItems) {
+            if (item.name.equals(rendererDevice)) {
+                rendererItem = item;
+                break;
+            }
+        }
+        mediaPlayer.setRenderer(rendererItem);
+
+        // start the playback
+        mediaPlayer.play();
     }
 
     String getSnapshot() {
-//        Bitmap bitmap = .getBitmap();
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        Bitmap bitmap = textureView.getBitmap();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 //        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 //        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
         return "";
     }
 
     void dispose() {
-        if (isInitialized) {
-            mediaPlayer.stop();
-        }
         textureEntry.release();
         eventChannel.setStreamHandler(null);
         if (surface != null) {
             surface.release();
         }
         if (mediaPlayer != null) {
+            mediaPlayer.stop();
             mediaPlayer.release();
         }
         if (libVLC != null)

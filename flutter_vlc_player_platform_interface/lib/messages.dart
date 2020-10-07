@@ -81,28 +81,6 @@ class SetMediaMessage {
   }
 }
 
-class LoopingMessage {
-  int textureId;
-  bool isLooping;
-  // ignore: unused_element
-  Map<dynamic, dynamic> _toMap() {
-    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
-    pigeonMap['textureId'] = textureId;
-    pigeonMap['isLooping'] = isLooping;
-    return pigeonMap;
-  }
-  // ignore: unused_element
-  static LoopingMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    if (pigeonMap == null){
-      return null;
-    }
-    final LoopingMessage result = LoopingMessage();
-    result.textureId = pigeonMap['textureId'];
-    result.isLooping = pigeonMap['isLooping'];
-    return result;
-  }
-}
-
 class BooleanMessage {
   int textureId;
   bool result;
@@ -121,6 +99,28 @@ class BooleanMessage {
     final BooleanMessage result = BooleanMessage();
     result.textureId = pigeonMap['textureId'];
     result.result = pigeonMap['result'];
+    return result;
+  }
+}
+
+class LoopingMessage {
+  int textureId;
+  bool isLooping;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['isLooping'] = isLooping;
+    return pigeonMap;
+  }
+  // ignore: unused_element
+  static LoopingMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    if (pigeonMap == null){
+      return null;
+    }
+    final LoopingMessage result = LoopingMessage();
+    result.textureId = pigeonMap['textureId'];
+    result.isLooping = pigeonMap['isLooping'];
     return result;
   }
 }
@@ -483,68 +483,90 @@ class VideoAspectRatioMessage {
   }
 }
 
-class CastDiscoveryMessage {
+class RendererServicesMessage {
   int textureId;
-  String serviceName;
+  List services;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
-    pigeonMap['serviceName'] = serviceName;
+    pigeonMap['services'] = services;
     return pigeonMap;
   }
   // ignore: unused_element
-  static CastDiscoveryMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+  static RendererServicesMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
     if (pigeonMap == null){
       return null;
     }
-    final CastDiscoveryMessage result = CastDiscoveryMessage();
+    final RendererServicesMessage result = RendererServicesMessage();
     result.textureId = pigeonMap['textureId'];
-    result.serviceName = pigeonMap['serviceName'];
+    result.services = pigeonMap['services'];
     return result;
   }
 }
 
-class CastDevicesMessage {
+class RendererScanningMessage {
   int textureId;
-  Map castDevices;
+  String rendererService;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
-    pigeonMap['castDevices'] = castDevices;
+    pigeonMap['rendererService'] = rendererService;
     return pigeonMap;
   }
   // ignore: unused_element
-  static CastDevicesMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+  static RendererScanningMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
     if (pigeonMap == null){
       return null;
     }
-    final CastDevicesMessage result = CastDevicesMessage();
+    final RendererScanningMessage result = RendererScanningMessage();
     result.textureId = pigeonMap['textureId'];
-    result.castDevices = pigeonMap['castDevices'];
+    result.rendererService = pigeonMap['rendererService'];
     return result;
   }
 }
 
-class CastDeviceMessage {
+class RendererDevicesMessage {
   int textureId;
-  String castDevice;
+  Map rendererDevices;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
-    pigeonMap['castDevice'] = castDevice;
+    pigeonMap['rendererDevices'] = rendererDevices;
     return pigeonMap;
   }
   // ignore: unused_element
-  static CastDeviceMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+  static RendererDevicesMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
     if (pigeonMap == null){
       return null;
     }
-    final CastDeviceMessage result = CastDeviceMessage();
+    final RendererDevicesMessage result = RendererDevicesMessage();
     result.textureId = pigeonMap['textureId'];
-    result.castDevice = pigeonMap['castDevice'];
+    result.rendererDevices = pigeonMap['rendererDevices'];
+    return result;
+  }
+}
+
+class RenderDeviceMessage {
+  int textureId;
+  String rendererDevice;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['rendererDevice'] = rendererDevice;
+    return pigeonMap;
+  }
+  // ignore: unused_element
+  static RenderDeviceMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    if (pigeonMap == null){
+      return null;
+    }
+    final RenderDeviceMessage result = RenderDeviceMessage();
+    result.textureId = pigeonMap['textureId'];
+    result.rendererDevice = pigeonMap['rendererDevice'];
     return result;
   }
 }
@@ -619,28 +641,6 @@ class VlcPlayerApi {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
         BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setStreamUrl', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      // noop
-    }
-    
-  }
-  Future<void> setLooping(LoopingMessage arg) async {
-    final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setLooping', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -747,10 +747,10 @@ class VlcPlayerApi {
     }
     
   }
-  Future<void> setTime(PositionMessage arg) async {
+  Future<void> setLooping(LoopingMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setTime', StandardMessageCodec());
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setLooping', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -989,28 +989,6 @@ class VlcPlayerApi {
     }
     
   }
-  Future<SpuTrackMessage> getSpuTrack(TextureMessage arg) async {
-    final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getSpuTrack', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      return SpuTrackMessage._fromMap(replyMap['result']);
-    }
-    
-  }
   Future<void> setSpuTrack(SpuTrackMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -1030,6 +1008,28 @@ class VlcPlayerApi {
           details: error['details']);
     } else {
       // noop
+    }
+    
+  }
+  Future<SpuTrackMessage> getSpuTrack(TextureMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getSpuTrack', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return SpuTrackMessage._fromMap(replyMap['result']);
     }
     
   }
@@ -1143,28 +1143,6 @@ class VlcPlayerApi {
     }
     
   }
-  Future<AudioTrackMessage> getAudioTrack(TextureMessage arg) async {
-    final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getAudioTrack', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      return AudioTrackMessage._fromMap(replyMap['result']);
-    }
-    
-  }
   Future<void> setAudioTrack(AudioTrackMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -1184,6 +1162,28 @@ class VlcPlayerApi {
           details: error['details']);
     } else {
       // noop
+    }
+    
+  }
+  Future<AudioTrackMessage> getAudioTrack(TextureMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getAudioTrack', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return AudioTrackMessage._fromMap(replyMap['result']);
     }
     
   }
@@ -1275,10 +1275,10 @@ class VlcPlayerApi {
     }
     
   }
-  Future<VideoTrackMessage> getCurrentVideoTrack(TextureMessage arg) async {
+  Future<void> setVideoTrack(VideoTrackMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getCurrentVideoTrack', StandardMessageCodec());
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setVideoTrack', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -1293,7 +1293,7 @@ class VlcPlayerApi {
           message: error['message'],
           details: error['details']);
     } else {
-      return VideoTrackMessage._fromMap(replyMap['result']);
+      // noop
     }
     
   }
@@ -1407,10 +1407,32 @@ class VlcPlayerApi {
     }
     
   }
-  Future<void> startCastDiscovery(CastDiscoveryMessage arg) async {
+  Future<RendererServicesMessage> getAvailableRendererServices(TextureMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.startCastDiscovery', StandardMessageCodec());
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getAvailableRendererServices', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return RendererServicesMessage._fromMap(replyMap['result']);
+    }
+    
+  }
+  Future<void> startRendererScanning(RendererScanningMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.startRendererScanning', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -1429,10 +1451,10 @@ class VlcPlayerApi {
     }
     
   }
-  Future<void> stopCastDiscovery(TextureMessage arg) async {
+  Future<void> stopRendererScanning(TextureMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.stopCastDiscovery', StandardMessageCodec());
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.stopRendererScanning', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -1451,10 +1473,10 @@ class VlcPlayerApi {
     }
     
   }
-  Future<CastDevicesMessage> getCastDevices(TextureMessage arg) async {
+  Future<RendererDevicesMessage> getRendererDevices(TextureMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getCastDevices', StandardMessageCodec());
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getRendererDevices', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -1469,14 +1491,14 @@ class VlcPlayerApi {
           message: error['message'],
           details: error['details']);
     } else {
-      return CastDevicesMessage._fromMap(replyMap['result']);
+      return RendererDevicesMessage._fromMap(replyMap['result']);
     }
     
   }
-  Future<void> startCasting(CastDeviceMessage arg) async {
+  Future<void> castToRenderer(RenderDeviceMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.startCasting', StandardMessageCodec());
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.castToRenderer', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
@@ -1502,12 +1524,11 @@ abstract class TestHostVlcPlayerApi {
   TextureMessage create(CreateMessage arg);
   void dispose(TextureMessage arg);
   void setStreamUrl(SetMediaMessage arg);
-  void setLooping(LoopingMessage arg);
   void play(TextureMessage arg);
   void pause(TextureMessage arg);
   void stop(TextureMessage arg);
   BooleanMessage isPlaying(TextureMessage arg);
-  void setTime(PositionMessage arg);
+  void setLooping(LoopingMessage arg);
   void seekTo(PositionMessage arg);
   PositionMessage position(TextureMessage arg);
   DurationMessage duration(TextureMessage arg);
@@ -1518,29 +1539,30 @@ abstract class TestHostVlcPlayerApi {
   SnapshotMessage takeSnapshot(TextureMessage arg);
   TrackCountMessage getSpuTracksCount(TextureMessage arg);
   SpuTracksMessage getSpuTracks(TextureMessage arg);
-  SpuTrackMessage getSpuTrack(TextureMessage arg);
   void setSpuTrack(SpuTrackMessage arg);
+  SpuTrackMessage getSpuTrack(TextureMessage arg);
   void setSpuDelay(DelayMessage arg);
   DelayMessage getSpuDelay(TextureMessage arg);
   void addSubtitleTrack(AddSubtitleMessage arg);
   TrackCountMessage getAudioTracksCount(TextureMessage arg);
   AudioTracksMessage getAudioTracks(TextureMessage arg);
-  AudioTrackMessage getAudioTrack(TextureMessage arg);
   void setAudioTrack(AudioTrackMessage arg);
+  AudioTrackMessage getAudioTrack(TextureMessage arg);
   void setAudioDelay(DelayMessage arg);
   DelayMessage getAudioDelay(TextureMessage arg);
   TrackCountMessage getVideoTracksCount(TextureMessage arg);
   VideoTracksMessage getVideoTracks(TextureMessage arg);
-  VideoTrackMessage getCurrentVideoTrack(TextureMessage arg);
+  void setVideoTrack(VideoTrackMessage arg);
   VideoTrackMessage getVideoTrack(TextureMessage arg);
   void setVideoScale(VideoScaleMessage arg);
   VideoScaleMessage getVideoScale(TextureMessage arg);
   void setVideoAspectRatio(VideoAspectRatioMessage arg);
   VideoAspectRatioMessage getVideoAspectRatio(TextureMessage arg);
-  void startCastDiscovery(CastDiscoveryMessage arg);
-  void stopCastDiscovery(TextureMessage arg);
-  CastDevicesMessage getCastDevices(TextureMessage arg);
-  void startCasting(CastDeviceMessage arg);
+  RendererServicesMessage getAvailableRendererServices(TextureMessage arg);
+  void startRendererScanning(RendererScanningMessage arg);
+  void stopRendererScanning(TextureMessage arg);
+  RendererDevicesMessage getRendererDevices(TextureMessage arg);
+  void castToRenderer(RenderDeviceMessage arg);
   static void setup(TestHostVlcPlayerApi api) {
     {
       const BasicMessageChannel<dynamic> channel =
@@ -1577,16 +1599,6 @@ abstract class TestHostVlcPlayerApi {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
         final SetMediaMessage input = SetMediaMessage._fromMap(mapMessage);
         api.setStreamUrl(input);
-        return <dynamic, dynamic>{};
-      });
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setLooping', StandardMessageCodec());
-      channel.setMockMessageHandler((dynamic message) async {
-        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final LoopingMessage input = LoopingMessage._fromMap(mapMessage);
-        api.setLooping(input);
         return <dynamic, dynamic>{};
       });
     }
@@ -1632,11 +1644,11 @@ abstract class TestHostVlcPlayerApi {
     }
     {
       const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setTime', StandardMessageCodec());
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setLooping', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final PositionMessage input = PositionMessage._fromMap(mapMessage);
-        api.setTime(input);
+        final LoopingMessage input = LoopingMessage._fromMap(mapMessage);
+        api.setLooping(input);
         return <dynamic, dynamic>{};
       });
     }
@@ -1742,22 +1754,22 @@ abstract class TestHostVlcPlayerApi {
     }
     {
       const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getSpuTrack', StandardMessageCodec());
-      channel.setMockMessageHandler((dynamic message) async {
-        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final TextureMessage input = TextureMessage._fromMap(mapMessage);
-        final SpuTrackMessage output = api.getSpuTrack(input);
-        return <dynamic, dynamic>{'result': output._toMap()};
-      });
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
           BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setSpuTrack', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
         final SpuTrackMessage input = SpuTrackMessage._fromMap(mapMessage);
         api.setSpuTrack(input);
         return <dynamic, dynamic>{};
+      });
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getSpuTrack', StandardMessageCodec());
+      channel.setMockMessageHandler((dynamic message) async {
+        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+        final TextureMessage input = TextureMessage._fromMap(mapMessage);
+        final SpuTrackMessage output = api.getSpuTrack(input);
+        return <dynamic, dynamic>{'result': output._toMap()};
       });
     }
     {
@@ -1812,22 +1824,22 @@ abstract class TestHostVlcPlayerApi {
     }
     {
       const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getAudioTrack', StandardMessageCodec());
-      channel.setMockMessageHandler((dynamic message) async {
-        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final TextureMessage input = TextureMessage._fromMap(mapMessage);
-        final AudioTrackMessage output = api.getAudioTrack(input);
-        return <dynamic, dynamic>{'result': output._toMap()};
-      });
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
           BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setAudioTrack', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
         final AudioTrackMessage input = AudioTrackMessage._fromMap(mapMessage);
         api.setAudioTrack(input);
         return <dynamic, dynamic>{};
+      });
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getAudioTrack', StandardMessageCodec());
+      channel.setMockMessageHandler((dynamic message) async {
+        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+        final TextureMessage input = TextureMessage._fromMap(mapMessage);
+        final AudioTrackMessage output = api.getAudioTrack(input);
+        return <dynamic, dynamic>{'result': output._toMap()};
       });
     }
     {
@@ -1872,12 +1884,12 @@ abstract class TestHostVlcPlayerApi {
     }
     {
       const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getCurrentVideoTrack', StandardMessageCodec());
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.setVideoTrack', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final TextureMessage input = TextureMessage._fromMap(mapMessage);
-        final VideoTrackMessage output = api.getCurrentVideoTrack(input);
-        return <dynamic, dynamic>{'result': output._toMap()};
+        final VideoTrackMessage input = VideoTrackMessage._fromMap(mapMessage);
+        api.setVideoTrack(input);
+        return <dynamic, dynamic>{};
       });
     }
     {
@@ -1932,41 +1944,51 @@ abstract class TestHostVlcPlayerApi {
     }
     {
       const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.startCastDiscovery', StandardMessageCodec());
-      channel.setMockMessageHandler((dynamic message) async {
-        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final CastDiscoveryMessage input = CastDiscoveryMessage._fromMap(mapMessage);
-        api.startCastDiscovery(input);
-        return <dynamic, dynamic>{};
-      });
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.stopCastDiscovery', StandardMessageCodec());
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getAvailableRendererServices', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
         final TextureMessage input = TextureMessage._fromMap(mapMessage);
-        api.stopCastDiscovery(input);
-        return <dynamic, dynamic>{};
-      });
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getCastDevices', StandardMessageCodec());
-      channel.setMockMessageHandler((dynamic message) async {
-        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final TextureMessage input = TextureMessage._fromMap(mapMessage);
-        final CastDevicesMessage output = api.getCastDevices(input);
+        final RendererServicesMessage output = api.getAvailableRendererServices(input);
         return <dynamic, dynamic>{'result': output._toMap()};
       });
     }
     {
       const BasicMessageChannel<dynamic> channel =
-          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.startCasting', StandardMessageCodec());
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.startRendererScanning', StandardMessageCodec());
       channel.setMockMessageHandler((dynamic message) async {
         final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
-        final CastDeviceMessage input = CastDeviceMessage._fromMap(mapMessage);
-        api.startCasting(input);
+        final RendererScanningMessage input = RendererScanningMessage._fromMap(mapMessage);
+        api.startRendererScanning(input);
+        return <dynamic, dynamic>{};
+      });
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.stopRendererScanning', StandardMessageCodec());
+      channel.setMockMessageHandler((dynamic message) async {
+        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+        final TextureMessage input = TextureMessage._fromMap(mapMessage);
+        api.stopRendererScanning(input);
+        return <dynamic, dynamic>{};
+      });
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.getRendererDevices', StandardMessageCodec());
+      channel.setMockMessageHandler((dynamic message) async {
+        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+        final TextureMessage input = TextureMessage._fromMap(mapMessage);
+        final RendererDevicesMessage output = api.getRendererDevices(input);
+        return <dynamic, dynamic>{'result': output._toMap()};
+      });
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.castToRenderer', StandardMessageCodec());
+      channel.setMockMessageHandler((dynamic message) async {
+        final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+        final RenderDeviceMessage input = RenderDeviceMessage._fromMap(mapMessage);
+        api.castToRenderer(input);
         return <dynamic, dynamic>{};
       });
     }

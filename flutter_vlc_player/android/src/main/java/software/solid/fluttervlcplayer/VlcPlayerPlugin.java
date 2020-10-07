@@ -6,12 +6,9 @@ import android.util.Log;
 import android.util.LongSparseArray;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import io.flutter.embedding.engine.loader.FlutterLoader;
-import io.flutter.embedding.engine.plugins.activity.ActivityAware;
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
@@ -22,19 +19,36 @@ import software.solid.fluttervlcplayer.Messages.PositionMessage;
 import software.solid.fluttervlcplayer.Messages.TextureMessage;
 import software.solid.fluttervlcplayer.Messages.VlcPlayerApi;
 import software.solid.fluttervlcplayer.Messages.VolumeMessage;
+import software.solid.fluttervlcplayer.Messages.AddSubtitleMessage;
+import software.solid.fluttervlcplayer.Messages.AudioTrackMessage;
+import software.solid.fluttervlcplayer.Messages.AudioTracksMessage;
+import software.solid.fluttervlcplayer.Messages.BooleanMessage;
+import software.solid.fluttervlcplayer.Messages.RenderDeviceMessage;
+import software.solid.fluttervlcplayer.Messages.RendererServicesMessage;
+import software.solid.fluttervlcplayer.Messages.RendererDevicesMessage;
+import software.solid.fluttervlcplayer.Messages.RendererScanningMessage;
+import software.solid.fluttervlcplayer.Messages.DelayMessage;
+import software.solid.fluttervlcplayer.Messages.DurationMessage;
+import software.solid.fluttervlcplayer.Messages.SetMediaMessage;
+import software.solid.fluttervlcplayer.Messages.SnapshotMessage;
+import software.solid.fluttervlcplayer.Messages.SpuTrackMessage;
+import software.solid.fluttervlcplayer.Messages.SpuTracksMessage;
+import software.solid.fluttervlcplayer.Messages.TrackCountMessage;
+import software.solid.fluttervlcplayer.Messages.VideoAspectRatioMessage;
+import software.solid.fluttervlcplayer.Messages.VideoScaleMessage;
+import software.solid.fluttervlcplayer.Messages.VideoTrackMessage;
+import software.solid.fluttervlcplayer.Messages.VideoTracksMessage;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 
 /**
  * Android platform implementation of the VlcPlayerPlugin.
  */
-public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerApi {
+public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
     private static final String TAG = "VlcPlayerPlugin";
     private final LongSparseArray<VlcPlayer> vlcPlayers = new LongSparseArray<>();
     private FlutterState flutterState;
     private VlcPlayerOptions options = new VlcPlayerOptions();
-//    private @Nullable
-//    FlutterPluginBinding flutterPluginBinding;
-
 
     /**
      * Register this with the v2 embedding for the plugin to respond to lifecycle callbacks.
@@ -72,7 +86,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-//        this.flutterPluginBinding = binding;
         @SuppressWarnings("deprecation") final FlutterLoader flutterLoader = FlutterLoader.getInstance();
         this.flutterState =
                 new FlutterState(
@@ -87,7 +100,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-//        this.flutterPluginBinding = null;
         if (flutterState == null) {
             Log.wtf(TAG, "Detached from the engine before registering to it.");
         }
@@ -120,6 +132,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                 new EventChannel(
                         flutterState.binaryMessenger, "flutter_video_plugin/getVideoEvents_" + handle.id());
 
+        //todo: check for local file
         VlcPlayer player;
         if (arg.getIsLocalMedia() != null) {
             player =
@@ -141,9 +154,9 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
             vlcPlayers.put(handle.id(), player);
         }
 
-        TextureMessage result = new TextureMessage();
-        result.setTextureId(handle.id());
-        return result;
+        TextureMessage message = new TextureMessage();
+        message.setTextureId(handle.id());
+        return message;
     }
 
     @Override
@@ -154,14 +167,63 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     }
 
     @Override
-    public void setStreamUrl(Messages.SetMediaMessage arg) {
+    public void setStreamUrl(SetMediaMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.changeUrl(arg.getUri());
+    }
 
+    @Override
+    public void play(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.play();
+    }
+
+    @Override
+    public void pause(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.pause();
+    }
+
+    @Override
+    public void stop(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.stop();
+    }
+
+    @Override
+    public BooleanMessage isPlaying(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        BooleanMessage message = new BooleanMessage();
+        message.setResult(player.isPlaying());
+        return message;
     }
 
     @Override
     public void setLooping(LoopingMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
         player.setLooping(arg.getIsLooping());
+    }
+
+    @Override
+    public void seekTo(PositionMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.seekTo(arg.getPosition().intValue());
+    }
+
+    @Override
+    public PositionMessage position(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        PositionMessage message = new PositionMessage();
+        message.setPosition(player.getPosition());
+        return message;
+    }
+
+    @Override
+    public DurationMessage duration(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        DurationMessage message = new DurationMessage();
+        message.setDuration(player.getDuration());
+        return message;
     }
 
     @Override
@@ -172,7 +234,10 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
 
     @Override
     public VolumeMessage getVolume(TextureMessage arg) {
-        return null;
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        VolumeMessage message = new VolumeMessage();
+        message.setVolume((long) player.getVolume());
+        return message;
     }
 
     @Override
@@ -183,221 +248,206 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
 
     @Override
     public PlaybackSpeedMessage getPlaybackSpeed(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.SnapshotMessage takeSnapshot(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.TrackCountMessage getSpuTracksCount(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.SpuTracksMessage getSpuTracks(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.SpuTrackMessage getSpuTrack(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void setSpuTrack(Messages.SpuTrackMessage arg) {
-
-    }
-
-    @Override
-    public void setSpuDelay(Messages.DelayMessage arg) {
-
-    }
-
-    @Override
-    public Messages.DelayMessage getSpuDelay(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void addSubtitleTrack(Messages.AddSubtitleMessage arg) {
-
-    }
-
-    @Override
-    public Messages.TrackCountMessage getAudioTracksCount(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.AudioTracksMessage getAudioTracks(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.AudioTrackMessage getAudioTrack(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void setAudioTrack(Messages.AudioTrackMessage arg) {
-
-    }
-
-    @Override
-    public void setAudioDelay(Messages.DelayMessage arg) {
-
-    }
-
-    @Override
-    public Messages.DelayMessage getAudioDelay(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.TrackCountMessage getVideoTracksCount(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.VideoTracksMessage getVideoTracks(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.VideoTrackMessage getCurrentVideoTrack(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public Messages.VideoTrackMessage getVideoTrack(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void setVideoScale(Messages.VideoScaleMessage arg) {
-
-    }
-
-    @Override
-    public Messages.VideoScaleMessage getVideoScale(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void setVideoAspectRatio(Messages.VideoAspectRatioMessage arg) {
-
-    }
-
-    @Override
-    public Messages.VideoAspectRatioMessage getVideoAspectRatio(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void startCastDiscovery(Messages.CastDiscoveryMessage arg) {
-
-    }
-
-    @Override
-    public void stopCastDiscovery(TextureMessage arg) {
-
-    }
-
-    @Override
-    public Messages.CastDevicesMessage getCastDevices(TextureMessage arg) {
-        return null;
-    }
-
-    @Override
-    public void startCasting(Messages.CastDeviceMessage arg) {
-
-    }
-
-    @Override
-    public void play(TextureMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        player.play();
+        PlaybackSpeedMessage message = new PlaybackSpeedMessage();
+        message.setSpeed((double) player.getPlaybackSpeed());
+        return message;
     }
 
     @Override
-    public PositionMessage position(TextureMessage arg) {
+    public SnapshotMessage takeSnapshot(TextureMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        PositionMessage result = new PositionMessage();
-        result.setPosition(player.getPosition());
-        return result;
+        SnapshotMessage message = new SnapshotMessage();
+        message.setSnapshot(player.getSnapshot());
+        return message;
     }
 
     @Override
-    public Messages.DurationMessage duration(TextureMessage arg) {
+    public TrackCountMessage getSpuTracksCount(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        TrackCountMessage message = new TrackCountMessage();
+        message.setCount((long) player.getSpuTracksCount());
+        return message;
+    }
+
+    @Override
+    public SpuTracksMessage getSpuTracks(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        SpuTracksMessage message = new SpuTracksMessage();
+        message.setSubtitles(player.getSpuTracks());
+        return message;
+    }
+
+    @Override
+    public void setSpuTrack(SpuTrackMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.setSpuTrack(arg.getSpuTrackNumber().intValue());
+    }
+
+    @Override
+    public SpuTrackMessage getSpuTrack(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        SpuTrackMessage message = new SpuTrackMessage();
+        message.setSpuTrackNumber((long) player.getSpuTrack());
+        return message;
+    }
+
+    @Override
+    public void setSpuDelay(DelayMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.setSpuDelay(arg.getDelay());
+    }
+
+    @Override
+    public DelayMessage getSpuDelay(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        DelayMessage message = new DelayMessage();
+        message.setDelay(player.getSpuDelay());
+        return message;
+    }
+
+    @Override
+    public void addSubtitleTrack(AddSubtitleMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.addSubtitleTrack(arg.getUri(), arg.getIsLocal(), arg.getIsSelected());
+    }
+
+    @Override
+    public TrackCountMessage getAudioTracksCount(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        TrackCountMessage message = new TrackCountMessage();
+        message.setCount((long) player.getAudioTracksCount());
+        return message;
+    }
+
+    @Override
+    public AudioTracksMessage getAudioTracks(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        AudioTracksMessage message = new AudioTracksMessage();
+        message.setAudios(player.getAudioTracks());
+        return message;
+    }
+
+    @Override
+    public void setAudioTrack(AudioTrackMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.setAudioTrack(arg.getAudioTrackNumber().intValue());
+    }
+
+    @Override
+    public AudioTrackMessage getAudioTrack(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        AudioTrackMessage message = new AudioTrackMessage();
+        message.setAudioTrackNumber((long) player.getAudioTrack());
+        return message;
+    }
+
+    @Override
+    public void setAudioDelay(DelayMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.setAudioDelay(arg.getDelay());
+    }
+
+    @Override
+    public DelayMessage getAudioDelay(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        DelayMessage message = new DelayMessage();
+        message.setDelay(player.getAudioDelay());
+        return message;
+    }
+
+    @Override
+    public TrackCountMessage getVideoTracksCount(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        TrackCountMessage message = new TrackCountMessage();
+        message.setCount((long) player.getVideoTracksCount());
+        return message;
+    }
+
+    @Override
+    public VideoTracksMessage getVideoTracks(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        VideoTracksMessage message = new VideoTracksMessage();
+        message.setVideos(player.getVideoTracks());
+        return message;
+    }
+
+    @Override
+    public void setVideoTrack(VideoTrackMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.setVideoTrack(arg.getVideoTrackNumber().intValue());
+    }
+
+    @Override
+    public VideoTrackMessage getVideoTrack(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        VideoTrackMessage message = new VideoTrackMessage();
+        message.setVideoTrackNumber((long) player.getVideoTrack());
         return null;
     }
 
     @Override
-    public void seekTo(Messages.PositionMessage arg) {
+    public void setVideoScale(VideoScaleMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        player.seekTo(arg.getPosition().intValue());
+        player.setVideoScale(arg.getScale().floatValue());
     }
 
     @Override
-    public void pause(Messages.TextureMessage arg) {
+    public VideoScaleMessage getVideoScale(TextureMessage arg) {
         VlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        player.pause();
+        VideoScaleMessage message = new VideoScaleMessage();
+        message.setScale((double) player.getVideoScale());
+        return message;
     }
 
     @Override
-    public void stop(TextureMessage arg) {
-
+    public void setVideoAspectRatio(VideoAspectRatioMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.setVideoAspectRatio(arg.getAspectRatio());
     }
 
     @Override
-    public Messages.BooleanMessage isPlaying(TextureMessage arg) {
-        return null;
+    public VideoAspectRatioMessage getVideoAspectRatio(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        VideoAspectRatioMessage message = new VideoAspectRatioMessage();
+        message.setAspectRatio(player.getVideoAspectRatio());
+        return message;
     }
 
     @Override
-    public void setTime(PositionMessage arg) {
-
+    public RendererServicesMessage getAvailableRendererServices(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        RendererServicesMessage message = new RendererServicesMessage();
+        message.setServices(player.getAvailableRendererServices());
+        return message;
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-//        final FlutterLoader flutterLoader = FlutterLoader.getInstance();
-//        this.flutterState =
-//                new FlutterState(
-//                        flutterPluginBinding.getApplicationContext(),
-//                        flutterPluginBinding.getBinaryMessenger(),
-//                        flutterLoader::getLookupKeyForAsset,
-//                        flutterLoader::getLookupKeyForAsset,
-//                        flutterPluginBinding.getTextureRegistry());
-//        flutterState.startListening(this, flutterPluginBinding.getBinaryMessenger());
+    public void startRendererScanning(RendererScanningMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.startRendererScanning(arg.getRendererService());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onDetachedFromActivityForConfigChanges() {
-//        onDetachedFromActivity();
+    public void stopRendererScanning(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.stopRendererScanning();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-//        onAttachedToActivity(binding);
+    public RendererDevicesMessage getRendererDevices(TextureMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        RendererDevicesMessage message = new RendererDevicesMessage();
+        message.setRendererDevices(player.getRendererDevices());
+        return message;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onDetachedFromActivity() {
-//        if (flutterState == null) {
-//            Log.wtf(TAG, "Detached from the engine before registering to it.");
-//        }
-//        flutterState.stopListening(flutterPluginBinding.getBinaryMessenger());
-//        flutterState = null;
+    public void castToRenderer(RenderDeviceMessage arg) {
+        VlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.castToRenderer(arg.getRendererDevice());
     }
+
 
     // extra helpers
 

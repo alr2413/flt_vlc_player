@@ -63,61 +63,60 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
         final Map<dynamic, dynamic> map = event;
         //
         switch (map['event']) {
-          case 'initialized':
+          case 'opening':
             return VlcMediaEvent(
-              mediaEventType: VlcMediaEventType.INITIALIZED,
-              duration: Duration(milliseconds: map['duration']),
-              size: Size(
-                map['width']?.toDouble() ?? 0.0,
-                map['height']?.toDouble() ?? 0.0,
-              ),
-              playbackSpeed: map['playbackSpeed'] ?? 1.0,
-              aspectRatio: map['ratio'] ?? 0.0,
-              audioTracksCount: map['audioTracksCount'] ?? 1,
-              activeAudioTrack: map['activeAudioTrack'] ?? 0,
-              spuTracksCount: map['spuTracksCount'] ?? 0,
-              activeSpuTrack: map['activeSpuTrack'] ?? -1,
+              mediaEventType: VlcMediaEventType.opening,
             );
 
-          case 'buffering':
+          case 'paused':
             return VlcMediaEvent(
-              mediaEventType: VlcMediaEventType.BUFFERING,
-              bufferPercent: map['percent'],
+              mediaEventType: VlcMediaEventType.paused,
+            );
+
+          case 'stopped':
+            return VlcMediaEvent(
+              mediaEventType: VlcMediaEventType.stopped,
             );
 
           case 'playing':
             return VlcMediaEvent(
-              mediaEventType: VlcMediaEventType.PLAYING,
-              duration: Duration(milliseconds: map['duration']),
+              mediaEventType: VlcMediaEventType.playing,
               size: Size(
                 map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0,
               ),
-              playbackSpeed: map['playbackSpeed'] ?? 1.0,
-              aspectRatio: map['ratio'] ?? 0.0,
+              playbackSpeed: map['speed'] ?? 1.0,
+              duration: Duration(milliseconds: map['duration'] ?? 0),
               audioTracksCount: map['audioTracksCount'] ?? 1,
               activeAudioTrack: map['activeAudioTrack'] ?? 0,
               spuTracksCount: map['spuTracksCount'] ?? 0,
               activeSpuTrack: map['activeSpuTrack'] ?? -1,
             );
 
-          case 'paused':
-            return VlcMediaEvent(mediaEventType: VlcMediaEventType.PAUSED);
-
-          case 'stopped':
-            return VlcMediaEvent(mediaEventType: VlcMediaEventType.STOPPED);
-
-          case 'timeChanged':
+          case 'ended':
             return VlcMediaEvent(
-              mediaEventType: VlcMediaEventType.TIME_CHANGED,
-              position: Duration(milliseconds: map['position']),
+              mediaEventType: VlcMediaEventType.ended,
+              position: Duration(milliseconds: map['position'] ?? 0),
             );
 
-          case 'error':
-            return VlcMediaEvent(mediaEventType: VlcMediaEventType.ERROR);
+          case 'buffering':
+          case 'timeChanged':
+            return VlcMediaEvent(
+              mediaEventType: VlcMediaEventType.timeChanged,
+              position: Duration(milliseconds: map['position'] ?? 0),
+              playbackSpeed: map['speed'] ?? 1.0,
+              bufferPercent: map['buffer'] ?? 100,
+            );
+
+          case 'mediaChanged':
+            return VlcMediaEvent(
+              mediaEventType: VlcMediaEventType.mediaChanged,
+            );
 
           default:
-            return VlcMediaEvent(mediaEventType: VlcMediaEventType.UNKNOWN);
+            return VlcMediaEvent(
+              mediaEventType: VlcMediaEventType.unknown,
+            );
         }
       },
     );
@@ -166,24 +165,10 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Future<void> setTime(int textureId, Duration position) {
-    return _api.seekTo(PositionMessage()
-      ..textureId = textureId
-      ..position = position.inMilliseconds);
-  }
-
-  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage()
       ..textureId = textureId
       ..position = position.inMilliseconds);
-  }
-
-  @override
-  Future<Duration> getTime(int textureId) async {
-    PositionMessage response =
-        await _api.position(TextureMessage()..textureId = textureId);
-    return Duration(milliseconds: response.position);
   }
 
   @override
@@ -274,15 +259,15 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   @override
   Future<void> addSubtitleTrack(
     int textureId,
-    String subtitleUri, {
-    bool isLocalSubtitle,
-    bool isSubtitleSelected,
+    String uri, {
+    bool isLocal,
+    bool isSelected,
   }) async {
     AddSubtitleMessage message = AddSubtitleMessage();
     message.textureId = textureId;
-    message.uri = subtitleUri;
-    message.isLocal = isLocalSubtitle;
-    message.isSelected = isSubtitleSelected;
+    message.uri = uri;
+    message.isLocal = isLocal;
+    message.isSelected = isSelected;
     return await _api.addSubtitleTrack(message);
   }
 
@@ -343,9 +328,10 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Future<dynamic> getCurrentVideoTrack(int textureId) async {
-    return await _api.getVideoTrack(TextureMessage()..textureId = textureId);
-    // todo: change dynamic to appropriate value
+  Future<void> setVideoTrack(int textureId, int videoTrackNumber) async {
+    return await _api.setVideoTrack(VideoTrackMessage()
+      ..textureId = textureId
+      ..videoTrackNumber = videoTrackNumber);
   }
 
   @override
@@ -393,30 +379,38 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Future<void> startCastDiscovery(int textureId, {String serviceName}) async {
-    return await _api.startCastDiscovery(CastDiscoveryMessage()
-      ..textureId = textureId
-      ..serviceName = serviceName ?? '');
+  Future<List<String>> getAvailableRendererServices(int textureId) async {
+    RendererServicesMessage response = await _api
+        .getAvailableRendererServices(TextureMessage()..textureId = textureId);
+    return response.services.cast<String>();
   }
 
   @override
-  Future<void> stopCastDiscovery(int textureId) async {
+  Future<void> startRendererScanning(int textureId,
+      {String rendererService}) async {
+    return await _api.startRendererScanning(RendererScanningMessage()
+      ..textureId = textureId
+      ..rendererService = rendererService ?? '');
+  }
+
+  @override
+  Future<void> stopRendererScanning(int textureId) async {
     return await _api
-        .stopCastDiscovery(TextureMessage()..textureId = textureId);
+        .stopRendererScanning(TextureMessage()..textureId = textureId);
   }
 
   @override
-  Future<Map<String, String>> getCastDevices(int textureId) async {
-    CastDevicesMessage response =
-        await _api.getCastDevices(TextureMessage()..textureId = textureId);
-    return response.castDevices.cast<String, String>();
+  Future<Map<String, String>> getRendererDevices(int textureId) async {
+    RendererDevicesMessage response =
+        await _api.getRendererDevices(TextureMessage()..textureId = textureId);
+    return response.rendererDevices.cast<String, String>();
   }
 
   @override
-  Future<void> startCasting(int textureId, String castDevice) async {
-    return await _api.startCasting(CastDeviceMessage()
+  Future<void> castToRenderer(int textureId, String rendererDevice) async {
+    return await _api.castToRenderer(RenderDeviceMessage()
       ..textureId = textureId
-      ..castDevice = castDevice);
+      ..rendererDevice = rendererDevice);
   }
 
   @override

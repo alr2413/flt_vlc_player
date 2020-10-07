@@ -110,19 +110,24 @@ class VideoAspectRatioMessage {
   String aspectRatio;
 }
 
-class CastDiscoveryMessage {
+class RendererServicesMessage {
   int textureId;
-  String serviceName;
+  List<String> services;
 }
 
-class CastDevicesMessage {
+class RendererScanningMessage {
   int textureId;
-  Map castDevices;
+  String rendererService;
 }
 
-class CastDeviceMessage {
+class RendererDevicesMessage {
   int textureId;
-  String castDevice;
+  Map rendererDevices;
+}
+
+class RenderDeviceMessage {
+  int textureId;
+  String rendererDevice;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVlcPlayerApi')
@@ -132,12 +137,11 @@ abstract class VlcPlayerApi {
   void dispose(TextureMessage msg);
   // general
   void setStreamUrl(SetMediaMessage msg);
-  void setLooping(LoopingMessage msg);
   void play(TextureMessage msg);
   void pause(TextureMessage msg);
   void stop(TextureMessage msg);
   BooleanMessage isPlaying(TextureMessage msg);
-  void setTime(PositionMessage msg);
+  void setLooping(LoopingMessage msg);
   void seekTo(PositionMessage msg);
   PositionMessage position(TextureMessage msg);
   DurationMessage duration(TextureMessage msg);
@@ -149,32 +153,33 @@ abstract class VlcPlayerApi {
   // captions & subtitles
   TrackCountMessage getSpuTracksCount(TextureMessage msg);
   SpuTracksMessage getSpuTracks(TextureMessage msg);
-  SpuTrackMessage getSpuTrack(TextureMessage msg);
   void setSpuTrack(SpuTrackMessage msg);
+  SpuTrackMessage getSpuTrack(TextureMessage msg);
   void setSpuDelay(DelayMessage msg);
   DelayMessage getSpuDelay(TextureMessage msg);
   void addSubtitleTrack(AddSubtitleMessage msg);
   // audios
   TrackCountMessage getAudioTracksCount(TextureMessage msg);
   AudioTracksMessage getAudioTracks(TextureMessage msg);
-  AudioTrackMessage getAudioTrack(TextureMessage msg);
   void setAudioTrack(AudioTrackMessage msg);
+  AudioTrackMessage getAudioTrack(TextureMessage msg);
   void setAudioDelay(DelayMessage msg);
   DelayMessage getAudioDelay(TextureMessage msg);
   // videos
   TrackCountMessage getVideoTracksCount(TextureMessage msg);
   VideoTracksMessage getVideoTracks(TextureMessage msg);
-  VideoTrackMessage getCurrentVideoTrack(TextureMessage msg); // todo
-  VideoTrackMessage getVideoTrack(TextureMessage msg); // todo
+  void setVideoTrack(VideoTrackMessage msg);
+  VideoTrackMessage getVideoTrack(TextureMessage msg);
   void setVideoScale(VideoScaleMessage msg);
   VideoScaleMessage getVideoScale(TextureMessage msg);
   void setVideoAspectRatio(VideoAspectRatioMessage msg);
   VideoAspectRatioMessage getVideoAspectRatio(TextureMessage msg);
-  // casts
-  void startCastDiscovery(CastDiscoveryMessage msg);
-  void stopCastDiscovery(TextureMessage msg);
-  CastDevicesMessage getCastDevices(TextureMessage msg);
-  void startCasting(CastDeviceMessage msg);
+  // casts & renderers
+  RendererServicesMessage getAvailableRendererServices(TextureMessage msg);
+  void startRendererScanning(RendererScanningMessage msg);
+  void stopRendererScanning(TextureMessage msg);
+  RendererDevicesMessage getRendererDevices(TextureMessage msg);
+  void castToRenderer(RenderDeviceMessage msg);
 }
 
 void configurePigeon(PigeonOptions opts) {

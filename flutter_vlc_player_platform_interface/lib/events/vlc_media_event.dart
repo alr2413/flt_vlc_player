@@ -16,7 +16,6 @@ class VlcMediaEvent {
     this.duration,
     this.size,
     this.position,
-    this.aspectRatio,
     this.playbackSpeed,
     this.audioTracksCount,
     this.activeAudioTrack,
@@ -42,11 +41,6 @@ class VlcMediaEvent {
   ///
   /// Only used if [eventType] is [VlcMediaEventType.INITIALIZED, VlcMediaEventType.PLAYING].
   final Duration position;
-
-  /// Aspect Ratio of the video.
-  ///
-  /// Only used if [eventType] is [VlcMediaEventType.INITIALIZED, VlcMediaEventType.PLAYING].
-  final double aspectRatio;
 
   /// Playback speed of the video.
   ///

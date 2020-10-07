@@ -201,14 +201,14 @@ abstract class VlcPlayerPlatform {
   }
 
   /// Add extra subtitle to media.
-  /// [subtitleUrl] - URL of subtitle
-  /// [isLocalSubtitle] - Set true if subtitle is on local storage
-  /// [isSubtitleSelected] - Set true if you wanna force the added subtitle to start display on media.
+  /// [uri] - URL of subtitle
+  /// [isLocal] - Set true if subtitle is on local storage
+  /// [isSelected] - Set true if you wanna force the added subtitle to start display on media.
   Future<void> addSubtitleTrack(
     int textureId,
-    String subtitleUri, {
-    bool isLocalSubtitle,
-    bool isSubtitleSelected,
+    String uri, {
+    bool isLocal,
+    bool isSelected,
   }) {
     throw UnimplementedError('addSubtitleTrack() has not been implemented.');
   }
@@ -257,10 +257,10 @@ abstract class VlcPlayerPlatform {
     throw UnimplementedError('getVideoTracks() has not been implemented.');
   }
 
-  /// Returns an object which contains information about current video track
-  Future<dynamic> getCurrentVideoTrack(int textureId) {
-    throw UnimplementedError(
-        'getCurrentVideoTrack() has not been implemented.');
+  /// Change active video track index.
+  /// [videoTrackNumber] - the video track index obtained from getVideoTracks()
+  Future<void> setVideoTrack(int textureId, int videoTrackNumber) {
+    throw UnimplementedError('setVideoTrack() has not been implemented.');
   }
 
   /// Returns selected video track index
@@ -295,26 +295,35 @@ abstract class VlcPlayerPlatform {
     throw UnimplementedError('takeSnapshot() has not been implemented.');
   }
 
-  /// Start vlc cast discovery to find external display devices (chromecast)
-  Future<void> startCastDiscovery(int textureId, {String serviceName}) {
-    throw UnimplementedError('startCastDiscovery() has not been implemented.');
+  /// Returns list of all avialble vlc renderer services
+  Future<List<String>> getAvailableRendererServices(int textureId) {
+    throw UnimplementedError(
+        'getAvailableRendererServices() has not been implemented.');
   }
 
-  /// Stop vlc cast and cast discovery
-  Future<void> stopCastDiscovery(int textureId) {
-    throw UnimplementedError('stopCastDiscovery() has not been implemented.');
+  /// Start vlc renderer discovery to find external display devices (chromecast)
+  Future<void> startRendererScanning(int textureId, {String rendererService}) {
+    throw UnimplementedError(
+        'startRendererScanning() has not been implemented.');
   }
 
-  /// Returns all detected cast devices as array of <String, String>
-  /// The key parameter is the name of cast device and the value is the display name of cast device
-  Future<Map<String, String>> getCastDevices(int textureId) {
-    throw UnimplementedError('getCastDevices() has not been implemented.');
+  /// Stop vlc renderer and cast discovery
+  Future<void> stopRendererScanning(int textureId) {
+    throw UnimplementedError(
+        'stopRendererScanning() has not been implemented.');
   }
 
-  /// [castDevice] - name of cast device
-  /// Start vlc video casting to the selected device. Set null if you wanna to stop video casting.
-  Future<void> startCasting(int textureId, String castDevice) {
-    throw UnimplementedError('startCasting() has not been implemented.');
+  /// Returns all detected renderer devices as array of <String, String>
+  /// The key parameter is the name of renderer device and the value is the display name of renderer device
+  Future<Map<String, String>> getRendererDevices(int textureId) {
+    throw UnimplementedError('getRendererDevices() has not been implemented.');
+  }
+
+  /// [rendererDevice] - name of renderer device
+  /// Start vlc video casting to the renderered device.
+  ///  Set null if you wanna to stop video casting.
+  Future<void> castToRenderer(int textureId, String rendererDevice) {
+    throw UnimplementedError('castToRenderer() has not been implemented.');
   }
 
   /// Returns a Stream of [VlcCastEvent]s.

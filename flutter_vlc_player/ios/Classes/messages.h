@@ -10,8 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TextureMessage;
 @class CreateMessage;
 @class SetMediaMessage;
-@class LoopingMessage;
 @class BooleanMessage;
+@class LoopingMessage;
 @class PositionMessage;
 @class DurationMessage;
 @class VolumeMessage;
@@ -28,9 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class VideoTrackMessage;
 @class VideoScaleMessage;
 @class VideoAspectRatioMessage;
-@class CastDiscoveryMessage;
-@class CastDevicesMessage;
-@class CastDeviceMessage;
+@class RendererServicesMessage;
+@class RendererScanningMessage;
+@class RendererDevicesMessage;
+@class RenderDeviceMessage;
 
 @interface TextureMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
@@ -50,14 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * isLocalMedia;
 @end
 
-@interface LoopingMessage : NSObject
-@property(nonatomic, strong, nullable) NSNumber * textureId;
-@property(nonatomic, strong, nullable) NSNumber * isLooping;
-@end
-
 @interface BooleanMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
 @property(nonatomic, strong, nullable) NSNumber * result;
+@end
+
+@interface LoopingMessage : NSObject
+@property(nonatomic, strong, nullable) NSNumber * textureId;
+@property(nonatomic, strong, nullable) NSNumber * isLooping;
 @end
 
 @interface PositionMessage : NSObject
@@ -142,19 +143,24 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * aspectRatio;
 @end
 
-@interface CastDiscoveryMessage : NSObject
+@interface RendererServicesMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
-@property(nonatomic, copy, nullable) NSString * serviceName;
+@property(nonatomic, strong, nullable) NSArray * services;
 @end
 
-@interface CastDevicesMessage : NSObject
+@interface RendererScanningMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
-@property(nonatomic, strong, nullable) NSDictionary * castDevices;
+@property(nonatomic, copy, nullable) NSString * rendererService;
 @end
 
-@interface CastDeviceMessage : NSObject
+@interface RendererDevicesMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
-@property(nonatomic, copy, nullable) NSString * castDevice;
+@property(nonatomic, strong, nullable) NSDictionary * rendererDevices;
+@end
+
+@interface RenderDeviceMessage : NSObject
+@property(nonatomic, strong, nullable) NSNumber * textureId;
+@property(nonatomic, copy, nullable) NSString * rendererDevice;
 @end
 
 @protocol VlcPlayerApi
@@ -162,12 +168,11 @@ NS_ASSUME_NONNULL_BEGIN
 -(nullable TextureMessage *)create:(CreateMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)dispose:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setStreamUrl:(SetMediaMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(void)setLooping:(LoopingMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)play:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)pause:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)stop:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable BooleanMessage *)isPlaying:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(void)setTime:(PositionMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)setLooping:(LoopingMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)seekTo:(PositionMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable PositionMessage *)position:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable DurationMessage *)duration:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
@@ -178,29 +183,30 @@ NS_ASSUME_NONNULL_BEGIN
 -(nullable SnapshotMessage *)takeSnapshot:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable TrackCountMessage *)getSpuTracksCount:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable SpuTracksMessage *)getSpuTracks:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(nullable SpuTrackMessage *)getSpuTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setSpuTrack:(SpuTrackMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable SpuTrackMessage *)getSpuTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setSpuDelay:(DelayMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable DelayMessage *)getSpuDelay:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)addSubtitleTrack:(AddSubtitleMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable TrackCountMessage *)getAudioTracksCount:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable AudioTracksMessage *)getAudioTracks:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(nullable AudioTrackMessage *)getAudioTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setAudioTrack:(AudioTrackMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable AudioTrackMessage *)getAudioTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setAudioDelay:(DelayMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable DelayMessage *)getAudioDelay:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable TrackCountMessage *)getVideoTracksCount:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable VideoTracksMessage *)getVideoTracks:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(nullable VideoTrackMessage *)getCurrentVideoTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)setVideoTrack:(VideoTrackMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable VideoTrackMessage *)getVideoTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setVideoScale:(VideoScaleMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable VideoScaleMessage *)getVideoScale:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setVideoAspectRatio:(VideoAspectRatioMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable VideoAspectRatioMessage *)getVideoAspectRatio:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(void)startCastDiscovery:(CastDiscoveryMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(void)stopCastDiscovery:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(nullable CastDevicesMessage *)getCastDevices:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
--(void)startCasting:(CastDeviceMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable RendererServicesMessage *)getAvailableRendererServices:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)startRendererScanning:(RendererScanningMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)stopRendererScanning:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable RendererDevicesMessage *)getRendererDevices:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)castToRenderer:(RenderDeviceMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void VlcPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<VlcPlayerApi> _Nullable api);
