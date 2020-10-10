@@ -1,5 +1,6 @@
 package software.solid.fluttervlcplayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -9,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import io.flutter.embedding.engine.loader.FlutterLoader;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
@@ -44,12 +47,12 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 /**
  * Android platform implementation of the VlcPlayerPlugin.
  */
-public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
+public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerApi {
     private static final String TAG = "VlcPlayerPlugin";
     private final LongSparseArray<VlcPlayer> vlcPlayers = new LongSparseArray<>();
     private FlutterState flutterState;
     private VlcPlayerOptions options = new VlcPlayerOptions();
-
+    private FlutterPluginBinding flutterPluginBinding;
     /**
      * Register this with the v2 embedding for the plugin to respond to lifecycle callbacks.
      */
@@ -62,6 +65,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
         this.flutterState =
                 new FlutterState(
                         registrar.context(),
+                        registrar.activity(),
                         registrar.messenger(),
                         registrar::lookupKeyForAsset,
                         registrar::lookupKeyForAsset,
@@ -86,26 +90,67 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-        @SuppressWarnings("deprecation") final FlutterLoader flutterLoader = FlutterLoader.getInstance();
-        this.flutterState =
-                new FlutterState(
-                        binding.getApplicationContext(),
-                        binding.getBinaryMessenger(),
-                        flutterLoader::getLookupKeyForAsset,
-                        flutterLoader::getLookupKeyForAsset,
-                        binding.getTextureRegistry());
-        flutterState.startListening(this, binding.getBinaryMessenger());
+        flutterPluginBinding = binding;
+//        @SuppressWarnings("deprecation") final FlutterLoader flutterLoader = FlutterLoader.getInstance();
+//        this.flutterState =
+//                new FlutterState(
+//                        binding.getApplicationContext(),
+//                        binding.getBinaryMessenger(),
+//                        flutterLoader::getLookupKeyForAsset,
+//                        flutterLoader::getLookupKeyForAsset,
+//                        binding.getTextureRegistry());
+//        flutterState.startListening(this, binding.getBinaryMessenger());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        flutterPluginBinding = null;
+//        if (flutterState == null) {
+//            Log.wtf(TAG, "Detached from the engine before registering to it.");
+//        }
+//        flutterState.stopListening(binding.getBinaryMessenger());
+//        flutterState = null;
+    }
+
+    // activity aware
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        @SuppressWarnings("deprecation") final FlutterLoader flutterLoader = FlutterLoader.getInstance();
+        this.flutterState =
+                new FlutterState(
+                        flutterPluginBinding.getApplicationContext(),
+                        binding.getActivity(),
+                        flutterPluginBinding.getBinaryMessenger(),
+                        flutterLoader::getLookupKeyForAsset,
+                        flutterLoader::getLookupKeyForAsset,
+                        flutterPluginBinding.getTextureRegistry());
+        flutterState.startListening(this, flutterPluginBinding.getBinaryMessenger());
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onDetachedFromActivity() {
         if (flutterState == null) {
             Log.wtf(TAG, "Detached from the engine before registering to it.");
         }
-        flutterState.stopListening(binding.getBinaryMessenger());
+        flutterState.stopListening(flutterPluginBinding.getBinaryMessenger());
         flutterState = null;
     }
+
+    // vlc methods
 
     private void disposeAllPlayers() {
         for (int i = 0; i < vlcPlayers.size(); i++) {
@@ -138,6 +183,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
             player =
                     new VlcPlayer(
                             flutterState.applicationContext,
+                            flutterState.applicationActivity,
                             eventChannel,
                             handle,
                             arg.getUri(),
@@ -147,6 +193,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
             player =
                     new VlcPlayer(
                             flutterState.applicationContext,
+                            flutterState.applicationActivity,
                             eventChannel,
                             handle,
                             arg.getUri(),
@@ -448,7 +495,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
         player.castToRenderer(arg.getRendererDevice());
     }
 
-
     // extra helpers
 
     private interface KeyForAssetFn {
@@ -461,6 +507,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
 
     private static final class FlutterState {
         private final Context applicationContext;
+        private final Activity applicationActivity;
         private final BinaryMessenger binaryMessenger;
         private final KeyForAssetFn keyForAsset;
         private final KeyForAssetAndPackageName keyForAssetAndPackageName;
@@ -468,11 +515,13 @@ public class VlcPlayerPlugin implements FlutterPlugin, VlcPlayerApi {
 
         FlutterState(
                 Context applicationContext,
+                Activity applicationActivity,
                 BinaryMessenger messenger,
                 KeyForAssetFn keyForAsset,
                 KeyForAssetAndPackageName keyForAssetAndPackageName,
                 TextureRegistry textureRegistry) {
             this.applicationContext = applicationContext;
+            this.applicationActivity = applicationActivity;
             this.binaryMessenger = messenger;
             this.keyForAsset = keyForAsset;
             this.keyForAssetAndPackageName = keyForAssetAndPackageName;

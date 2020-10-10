@@ -10,8 +10,10 @@ import org.videolan.libvlc.RendererItem;
 import org.videolan.libvlc.media.VideoView;
 import org.videolan.libvlc.util.VLCVideoLayout;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +24,8 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.TextureView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
@@ -40,11 +44,15 @@ final class VlcPlayer {
 
     private Context context;
 
+    private Activity activity;
+
     private LibVLC libVLC;
 
     private MediaPlayer mediaPlayer;
 
     private Surface surface;
+
+    private TextureView textureView;
 
     private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
@@ -63,11 +71,13 @@ final class VlcPlayer {
 
     VlcPlayer(
             Context context,
+            Activity activity,
             EventChannel eventChannel,
             TextureRegistry.SurfaceTextureEntry textureEntry,
             String dataSource,
             VlcPlayerOptions options) {
         this.context = context;
+        this.activity = activity;
         this.eventChannel = eventChannel;
         this.textureEntry = textureEntry;
         this.options = options;
@@ -100,11 +110,42 @@ final class VlcPlayer {
                         eventSink.setDelegate(null);
                     }
                 });
-
-        surface = new Surface(textureEntry.surfaceTexture());
-        mediaPlayer.getVLCVout().setVideoSurface(surface, null);
-        //
+//        # method 1
+//        surface = new Surface(textureEntry.surfaceTexture());
+//        mediaPlayer.getVLCVout().setVideoSurface(surface, null);
+//        mediaPlayer.getVLCVout().attachViews();
+//
+//        # method 2
+        textureView = new TextureView(context);
+//        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
+//        textureView.forceLayout();
+//        textureView.setFitsSystemWindows(true);
+        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(500, 400);
+//        mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
+        mediaPlayer.getVLCVout().setVideoView(textureView);
         mediaPlayer.getVLCVout().attachViews();
+        textureView.setLayoutParams(lp);
+        activity.addContentView(textureView, lp);
+//
+//        # method 3
+//        VLCVideoLayout frameLayout = new VLCVideoLayout(context);
+//        textureView = new TextureView(context);
+//        frameLayout.addView(textureView);
+//        textureEntry.surfaceTexture().setDefaultBufferSize(100, 200);
+//        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
+//        mediaPlayer.getVLCVout().setVideoView(textureView);
+//        mediaPlayer.getVLCVout().attachViews();
+//        mediaPlayer.attachViews(frameLayout, null, false, true);
+        //
+//        SurfaceView surfaceView = new SurfaceView(context);
+//        surfaceView.getHolder().setFixedSize(100,200);
+//        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(100, 200);
+//        surfaceView.setLayoutParams(lp);
+//        activity.addContentView(surfaceView, lp);
+//        surfaceView.invalidate();
+//        mediaPlayer.getVLCVout().setVideoView(surfaceView);
+//        mediaPlayer.getVLCVout().attachViews();
+        //
         mediaPlayer.setEventListener(
                 new MediaPlayer.EventListener() {
 
@@ -141,7 +182,7 @@ final class VlcPlayer {
                                     width = currentVideoTrack.width;
                                     // set surface width & height on media change
                                     if ((mWidth != width) && (mHeight != height)) {
-                                        textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
+//                                        textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
                                         mWidth = width;
                                         mHeight = height;
                                     }
@@ -471,10 +512,6 @@ final class VlcPlayer {
     }
 
     String getSnapshot() {
-        TextureView textureView = new TextureView(context);
-        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
-        textureView.forceLayout();
-        textureView.setFitsSystemWindows(true);
         Bitmap bitmap = textureView.getBitmap();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);

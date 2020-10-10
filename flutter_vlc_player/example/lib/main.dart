@@ -90,7 +90,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
         setState(() {});
       }
     });
-    _controller.initialize();
+    // _controller.initialize();
   }
 
   @override
@@ -121,6 +121,12 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
                 ],
               ),
             ),
+          ),
+          RaisedButton(
+            onPressed: () async {
+              await _controller.initialize();
+            },
+            child: Text("Initialize"),
           ),
           SizedBox(height: 10),
           Row(
