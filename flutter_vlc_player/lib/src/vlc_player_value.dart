@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'enums/playing_state.dart';
+part of vlc_player_flutter;
 
 /// The duration, current position, buffering state, error state and settings
 /// of a [VlcPlayerController].

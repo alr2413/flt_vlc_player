@@ -1,15 +1,4 @@
-import 'dart:async';
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_vlc_player_platform_interface/enums/vlc_hardware_acceleration.dart';
-import 'package:flutter_vlc_player_platform_interface/enums/vlc_media_event_type.dart';
-import 'package:flutter_vlc_player_platform_interface/events/vlc_media_event.dart';
-import 'package:flutter_vlc_player_platform_interface/vlc_player_platform_interface.dart';
-import 'enums/playing_state.dart';
-import 'vlc_app_life_cycle_observer.dart';
-import 'vlc_player_value.dart';
+part of vlc_player_flutter;
 
 final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 // This will clear all open videos on the platform when a full restart is
@@ -27,6 +16,9 @@ final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 ///
 /// After [dispose] all further calls are ignored.
 class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
+  /// The textureId for this controller
+  int _textureId;
+
   /// Constructs a [VlcPlayerController] playing a video from an local file.
   ///
   /// The name of the local file is given by the [dataSource] argument and must not be
@@ -67,8 +59,6 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   final bool autoPlay;
 
   bool _isLocalMedia;
-
-  int _textureId;
 
   bool _isDisposed = false;
   Completer<void> _creatingCompleter;
@@ -640,79 +630,5 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return null;
     }
     return await _vlcPlayerPlatform.castToRenderer(_textureId, castDevice);
-  }
-}
-
-class VlcPlayer extends StatefulWidget {
-  final VlcPlayerController controller;
-  final double aspectRatio;
-  final Widget placeholder;
-
-  VlcPlayer({
-    Key key,
-
-    /// The [VlcPlayerController] responsible for the video being rendered in
-    /// this widget.
-    @required this.controller,
-
-    /// The aspect ratio used to display the video.
-    /// This MUST be provided, however it could simply be (parentWidth / parentHeight) - where parentWidth and
-    /// parentHeight are the width and height of the parent perhaps as defined by a LayoutBuilder.
-    @required this.aspectRatio,
-
-    /// Before the platform view has initialized, this placeholder will be rendered instead of the video player.
-    /// This can simply be a [CircularProgressIndicator] (see the example.)
-    this.placeholder,
-  }) : super(key: key);
-
-  @override
-  _VlcPlayerState createState() => _VlcPlayerState();
-}
-
-class _VlcPlayerState extends State<VlcPlayer> {
-  _VlcPlayerState() {
-    _listener = () {
-      final int newTextureId = widget.controller.textureId;
-      if (newTextureId != _textureId) {
-        setState(() {
-          _textureId = newTextureId;
-        });
-      }
-    };
-  }
-
-  VoidCallback _listener;
-  int _textureId;
-
-  @override
-  void initState() {
-    super.initState();
-    _textureId = widget.controller.textureId;
-    // Need to listen for initialization events since the actual texture ID
-    // becomes available after asynchronous initialization finishes.
-    widget.controller.addListener(_listener);
-  }
-
-  @override
-  void didUpdateWidget(VlcPlayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if(oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_listener);
-      _textureId = widget.controller.textureId;
-      widget.controller.addListener(_listener);
-    }
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    widget.controller.removeListener(_listener);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _textureId == null
-        ? widget.placeholder ?? Container()
-        : _vlcPlayerPlatform.buildView(_textureId);
   }
 }

@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:meta/meta.dart';
 
-import '../enums/vlc_media_event_type.dart';
+import '../enums/media_event_type.dart';
 
 class VlcMediaEvent {
   /// Creates an instance of [VlcMediaEvent].

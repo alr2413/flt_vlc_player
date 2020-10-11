@@ -12,7 +12,8 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+
+import 'package:flutter_vlc_player/vlc_player_flutter.dart';
 
 void main() {
   runApp(

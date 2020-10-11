@@ -1,4 +1,4 @@
-import 'package:flutter_vlc_player_platform_interface/enums/vlc_cast_event_type.dart';
+import '../enums/cast_event_type.dart';
 import 'package:meta/meta.dart';
 
 class VlcCastEvent {

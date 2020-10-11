@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+part of vlc_player_flutter;
 
 class VlcAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   VlcAppLifeCycleObserver(this._controller);

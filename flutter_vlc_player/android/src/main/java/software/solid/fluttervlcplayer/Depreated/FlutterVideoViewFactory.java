@@ -21,7 +21,7 @@ class FlutterVideoViewFactory extends PlatformViewFactory {
 
     @Override
     public PlatformView create(Context context, int i, Object o) {
-        final FlutterVideoView videoView = new FlutterVideoView(context, registrar, messenger, i);
+        final software.solid.fluttervlcplayer.FlutterVideoView videoView = new software.solid.fluttervlcplayer.FlutterVideoView(context, registrar, messenger, i);
 
         registrar.addViewDestroyListener(
                 new PluginRegistry.ViewDestroyListener() {

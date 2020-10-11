@@ -2,26 +2,25 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'enums/vlc_hardware_acceleration.dart';
-import 'events/vlc_cast_event.dart';
-import 'events/vlc_media_event.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import '../enums/hardware_acceleration.dart';
+import '../events/cast_event.dart';
+import '../events/media_event.dart';
 
-import 'method_channel_vlc_player.dart';
+import '../method_channel/method_channel_vlc_player.dart';
 
 /// The interface that implementations of vlc must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `vlc`
 /// does not consider newly added methods to be breaking changes.
-abstract class VlcPlayerPlatform {
-  /// Only mock implementations should set this to true.
-  ///
-  /// Mockito mocks are implementing this class with `implements` which is forbidden for anything
-  /// other than mocks (see class docs). This property provides a backdoor for mockito mocks to
-  /// skip the verification that the class isn't implemented with `implements`.
-  @visibleForTesting
-  bool get isMock => false;
+abstract class VlcPlayerPlatform extends PlatformInterface {
+  /// Constructs a VlcPlayerPlatform.
+  VlcPlayerPlatform() : super(token: _token);
+
+  static final Object _token = Object();
 
   static VlcPlayerPlatform _instance = MethodChannelVlcPlayer();
 
@@ -33,24 +32,17 @@ abstract class VlcPlayerPlatform {
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [VlcPlayerPlatform] when they register themselves.
   static set instance(VlcPlayerPlatform instance) {
-    if (!instance.isMock) {
-      try {
-        instance._verifyProvidesDefaultImplementations();
-      } on NoSuchMethodError catch (_) {
-        throw AssertionError(
-            'Platform interfaces must not be implemented with `implements`');
-      }
-    }
+    PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
 
-  /// This method makes sure that VlcPlayer isn't implemented with `implements`.
-  ///
-  /// See class doc for more details on why implementing this class is forbidden.
-  ///
-  /// This private method is called by the instance setter, which fails if the class is
-  /// implemented with `implements`.
-  void _verifyProvidesDefaultImplementations() {}
+  /// Returns a widget displaying the video with a given textureID.
+  Widget buildView(
+    int textureId,
+    PlatformViewCreatedCallback onPlatformViewCreated,
+  ) {
+    throw UnimplementedError('buildView() has not been implemented.');
+  }
 
   /// Initializes the platform interface and disposes all existing players.
   ///
@@ -74,11 +66,6 @@ abstract class VlcPlayerPlatform {
     List<String> options,
   }) {
     throw UnimplementedError('create() has not been implemented.');
-  }
-
-  /// Returns a widget displaying the video with a given textureID.
-  Widget buildView(int textureId) {
-    throw UnimplementedError('buildView() has not been implemented.');
   }
 
   /// Returns a Stream of [VlcMediaEvent]s.

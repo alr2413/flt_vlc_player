@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.util.LongSparseArray;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -14,6 +15,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.platform.PlatformView;
 import io.flutter.view.TextureRegistry;
 import software.solid.fluttervlcplayer.Messages.CreateMessage;
 import software.solid.fluttervlcplayer.Messages.LoopingMessage;
@@ -53,6 +55,10 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     private FlutterState flutterState;
     private VlcPlayerOptions options = new VlcPlayerOptions();
     private FlutterPluginBinding flutterPluginBinding;
+
+
+    private static final String VIEW_TYPE = "flutter_video_plugin/getVideoView";
+
     /**
      * Register this with the v2 embedding for the plugin to respond to lifecycle callbacks.
      */
@@ -65,7 +71,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
         this.flutterState =
                 new FlutterState(
                         registrar.context(),
-                        registrar.activity(),
                         registrar.messenger(),
                         registrar::lookupKeyForAsset,
                         registrar::lookupKeyForAsset,
@@ -85,32 +90,23 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                     plugin.onDestroy();
                     return false; // We are not interested in assuming ownership of the NativeView.
                 });
+
+//        final VlcPlayerPlugin plugin = new VlcPlayerPlugin();
+//        registrar
+//                .platformViewRegistry()
+//                .registerViewFactory(VIEW_TYPE, new VlcPlayerViewFactory(registrar.messenger(), null));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         flutterPluginBinding = binding;
-//        @SuppressWarnings("deprecation") final FlutterLoader flutterLoader = FlutterLoader.getInstance();
-//        this.flutterState =
-//                new FlutterState(
-//                        binding.getApplicationContext(),
-//                        binding.getBinaryMessenger(),
-//                        flutterLoader::getLookupKeyForAsset,
-//                        flutterLoader::getLookupKeyForAsset,
-//                        binding.getTextureRegistry());
-//        flutterState.startListening(this, binding.getBinaryMessenger());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         flutterPluginBinding = null;
-//        if (flutterState == null) {
-//            Log.wtf(TAG, "Detached from the engine before registering to it.");
-//        }
-//        flutterState.stopListening(binding.getBinaryMessenger());
-//        flutterState = null;
     }
 
     // activity aware
@@ -122,32 +118,38 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
         this.flutterState =
                 new FlutterState(
                         flutterPluginBinding.getApplicationContext(),
-                        binding.getActivity(),
                         flutterPluginBinding.getBinaryMessenger(),
                         flutterLoader::getLookupKeyForAsset,
                         flutterLoader::getLookupKeyForAsset,
                         flutterPluginBinding.getTextureRegistry());
         flutterState.startListening(this, flutterPluginBinding.getBinaryMessenger());
-    }
 
-    @Override
-    public void onDetachedFromActivityForConfigChanges() {
-
-    }
-
-    @Override
-    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-
+//        flutterPluginBinding
+//                .getPlatformViewRegistry()
+//                .registerViewFactory(VIEW_TYPE, new VlcPlayerViewFactory(flutterPluginBinding.getBinaryMessenger(), null));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onDetachedFromActivity() {
+
         if (flutterState == null) {
             Log.wtf(TAG, "Detached from the engine before registering to it.");
         }
         flutterState.stopListening(flutterPluginBinding.getBinaryMessenger());
         flutterState = null;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        onAttachedToActivity(binding);
     }
 
     // vlc methods
@@ -173,6 +175,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
 
         TextureRegistry.SurfaceTextureEntry handle =
                 flutterState.textureRegistry.createSurfaceTexture();
+
         EventChannel eventChannel =
                 new EventChannel(
                         flutterState.binaryMessenger, "flutter_video_plugin/getVideoEvents_" + handle.id());
@@ -183,7 +186,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
             player =
                     new VlcPlayer(
                             flutterState.applicationContext,
-                            flutterState.applicationActivity,
                             eventChannel,
                             handle,
                             arg.getUri(),
@@ -193,7 +195,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
             player =
                     new VlcPlayer(
                             flutterState.applicationContext,
-                            flutterState.applicationActivity,
                             eventChannel,
                             handle,
                             arg.getUri(),
@@ -507,7 +508,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
 
     private static final class FlutterState {
         private final Context applicationContext;
-        private final Activity applicationActivity;
         private final BinaryMessenger binaryMessenger;
         private final KeyForAssetFn keyForAsset;
         private final KeyForAssetAndPackageName keyForAssetAndPackageName;
@@ -515,13 +515,11 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
 
         FlutterState(
                 Context applicationContext,
-                Activity applicationActivity,
                 BinaryMessenger messenger,
                 KeyForAssetFn keyForAsset,
                 KeyForAssetAndPackageName keyForAssetAndPackageName,
                 TextureRegistry textureRegistry) {
             this.applicationContext = applicationContext;
-            this.applicationActivity = applicationActivity;
             this.binaryMessenger = messenger;
             this.keyForAsset = keyForAsset;
             this.keyForAssetAndPackageName = keyForAssetAndPackageName;

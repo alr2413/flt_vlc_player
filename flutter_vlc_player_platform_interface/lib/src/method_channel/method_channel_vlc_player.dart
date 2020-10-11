@@ -1,16 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cryptoutils/utils.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'enums/vlc_hardware_acceleration.dart';
-import 'enums/vlc_media_event_type.dart';
-import 'events/vlc_cast_event.dart';
-import 'events/vlc_media_event.dart';
+import '../enums/hardware_acceleration.dart';
+import '../enums/media_event_type.dart';
+import '../events/cast_event.dart';
+import '../events/media_event.dart';
 
-import 'messages.dart';
-import 'vlc_player_platform_interface.dart';
+import '../messages/messages.dart';
+import '../platform_interface/vlc_player_platform_interface.dart';
 
 /// An implementation of [VlcPlayerPlatform] that uses method channels.
 class MethodChannelVlcPlayer extends VlcPlayerPlatform {
@@ -51,8 +53,30 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     return _api.dispose(TextureMessage()..textureId = textureId);
   }
 
+  /// This method builds the appropriate platform view where the player
+  /// can be rendered.
+  /// The `textureId` is passed as a parameter from the framework on the
+  /// `onPlatformViewCreated` callback.
   @override
-  Widget buildView(int textureId) {
+  Widget buildView(
+    int textureId,
+    PlatformViewCreatedCallback onPlatformViewCreated,
+  ) {
+    if (Platform.isAndroid) {
+      return AndroidView(
+        viewType: 'flutter_video_plugin/getVideoView',
+        hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+        onPlatformViewCreated: onPlatformViewCreated,
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    } else if (Platform.isIOS) {
+      return UiKitView(
+        viewType: 'flutter_video_plugin/getVideoView',
+        onPlatformViewCreated: onPlatformViewCreated,
+        hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    }
     return Texture(textureId: textureId);
   }
 

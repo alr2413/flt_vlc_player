@@ -27,7 +27,12 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.platform.PlatformView;
+import io.flutter.plugin.platform.PlatformViewFactory;
+import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.view.TextureRegistry;
 
 import java.io.ByteArrayOutputStream;
@@ -40,11 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-final class VlcPlayer {
+final class VlcPlayer implements PlatformView {
 
     private Context context;
-
-    private Activity activity;
 
     private LibVLC libVLC;
 
@@ -65,19 +68,26 @@ final class VlcPlayer {
     private List<RendererDiscoverer> rendererDiscoverers;
     private List<RendererItem> rendererItems;
 
+    // Platform view
+
+    @Override
+    public View getView() {
+        return textureView;
+    }
+
+    // VLC Player
+
     private Uri getStreamUri(String streamPath, boolean isLocal) {
         return isLocal ? Uri.fromFile(new File(streamPath)) : Uri.parse(streamPath);
     }
 
     VlcPlayer(
             Context context,
-            Activity activity,
             EventChannel eventChannel,
             TextureRegistry.SurfaceTextureEntry textureEntry,
             String dataSource,
             VlcPlayerOptions options) {
         this.context = context;
-        this.activity = activity;
         this.eventChannel = eventChannel;
         this.textureEntry = textureEntry;
         this.options = options;
@@ -110,6 +120,7 @@ final class VlcPlayer {
                         eventSink.setDelegate(null);
                     }
                 });
+
 //        # method 1
 //        surface = new Surface(textureEntry.surfaceTexture());
 //        mediaPlayer.getVLCVout().setVideoSurface(surface, null);
@@ -117,15 +128,15 @@ final class VlcPlayer {
 //
 //        # method 2
         textureView = new TextureView(context);
-//        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
-//        textureView.forceLayout();
-//        textureView.setFitsSystemWindows(true);
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(500, 400);
-//        mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
-        mediaPlayer.getVLCVout().setVideoView(textureView);
+        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
+        textureView.forceLayout();
+        textureView.setFitsSystemWindows(true);
+//        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(500, 400);
+        mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
+//        mediaPlayer.getVLCVout().setVideoView(textureView);
         mediaPlayer.getVLCVout().attachViews();
-        textureView.setLayoutParams(lp);
-        activity.addContentView(textureView, lp);
+//        textureView.setLayoutParams(lp);
+//        activity.addContentView(textureView, lp);
 //
 //        # method 3
 //        VLCVideoLayout frameLayout = new VLCVideoLayout(context);
@@ -182,7 +193,7 @@ final class VlcPlayer {
                                     width = currentVideoTrack.width;
                                     // set surface width & height on media change
                                     if ((mWidth != width) && (mHeight != height)) {
-//                                        textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
+                                        textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
                                         mWidth = width;
                                         mHeight = height;
                                     }
@@ -518,7 +529,7 @@ final class VlcPlayer {
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
     }
 
-    void dispose() {
+    public void dispose() {
         textureEntry.release();
         eventChannel.setStreamHandler(null);
         if (surface != null) {
@@ -531,4 +542,6 @@ final class VlcPlayer {
         if (libVLC != null)
             libVLC.release();
     }
+
+
 }
