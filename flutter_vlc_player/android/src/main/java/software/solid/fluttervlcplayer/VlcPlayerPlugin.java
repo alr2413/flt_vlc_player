@@ -1,11 +1,9 @@
 package software.solid.fluttervlcplayer;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.util.LongSparseArray;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -15,7 +13,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.platform.PlatformView;
 import io.flutter.view.TextureRegistry;
 import software.solid.fluttervlcplayer.Messages.CreateMessage;
 import software.solid.fluttervlcplayer.Messages.LoopingMessage;
@@ -56,9 +53,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     private VlcPlayerOptions options = new VlcPlayerOptions();
     private FlutterPluginBinding flutterPluginBinding;
 
-
-    private static final String VIEW_TYPE = "flutter_video_plugin/getVideoView";
-
     /**
      * Register this with the v2 embedding for the plugin to respond to lifecycle callbacks.
      */
@@ -90,11 +84,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                     plugin.onDestroy();
                     return false; // We are not interested in assuming ownership of the NativeView.
                 });
-
-//        final VlcPlayerPlugin plugin = new VlcPlayerPlugin();
-//        registrar
-//                .platformViewRegistry()
-//                .registerViewFactory(VIEW_TYPE, new VlcPlayerViewFactory(registrar.messenger(), null));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -124,9 +113,6 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                         flutterPluginBinding.getTextureRegistry());
         flutterState.startListening(this, flutterPluginBinding.getBinaryMessenger());
 
-//        flutterPluginBinding
-//                .getPlatformViewRegistry()
-//                .registerViewFactory(VIEW_TYPE, new VlcPlayerViewFactory(flutterPluginBinding.getBinaryMessenger(), null));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

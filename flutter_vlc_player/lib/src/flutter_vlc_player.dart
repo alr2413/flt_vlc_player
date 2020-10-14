@@ -68,9 +68,10 @@ class _VlcPlayerState extends State<VlcPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return _textureId == null
-        ? widget.placeholder ?? Container()
-        : _vlcPlayerPlatform.buildView(_textureId, onPlatformViewCreated);
+    return _vlcPlayerPlatform.buildView(_textureId, onPlatformViewCreated);
+    // return _textureId == null
+    //     ? widget.placeholder ?? Container()
+    //     : _vlcPlayerPlatform.buildView(_textureId, onPlatformViewCreated);
   }
 
   Future<void> onPlatformViewCreated(int viewId) async {
