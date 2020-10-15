@@ -42,14 +42,12 @@ final class FlutterVlcPlayer implements PlatformView {
     private List<RendererItem> rendererItems;
 
     // Platform view
-
     @Override
     public View getView() {
         return textureView;
     }
 
     // VLC Player
-
     FlutterVlcPlayer(int viewId, Context context, BinaryMessenger binaryMessenger, TextureRegistry textureRegistry) {
         this.context = context;
         //
