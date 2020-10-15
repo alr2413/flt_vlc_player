@@ -1,73 +1,43 @@
 package software.solid.fluttervlcplayer;
 
-import org.videolan.libvlc.interfaces.IMedia;
-import org.videolan.libvlc.interfaces.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.RendererDiscoverer;
 import org.videolan.libvlc.RendererItem;
-import org.videolan.libvlc.media.VideoView;
-import org.videolan.libvlc.util.VLCVideoLayout;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.SurfaceTexture;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.platform.PlatformView;
-import io.flutter.plugin.platform.PlatformViewFactory;
-import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.view.TextureRegistry;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 final class FlutterVlcPlayer implements PlatformView {
 
-    private Context context;
+    private final Context context;
 
     private LibVLC libVLC;
-
     private MediaPlayer mediaPlayer;
-
-    private Surface surface;
-
     private TextureView textureView;
-
-    private final TextureRegistry.SurfaceTextureEntry textureEntry;
-    private final TextureRegistry textureRegistry;
-
+    private TextureRegistry.SurfaceTextureEntry textureEntry;
     private QueuingEventSink eventSink = new QueuingEventSink();
-
-    private final EventChannel eventChannel;
-    private final BinaryMessenger binaryMessenger;
-
-    private final int viewId;
-
+    private EventChannel eventChannel;
     private List<RendererDiscoverer> rendererDiscoverers;
     private List<RendererItem> rendererItems;
 
@@ -80,42 +50,29 @@ final class FlutterVlcPlayer implements PlatformView {
 
     // VLC Player
 
+    FlutterVlcPlayer(int viewId, Context context, BinaryMessenger binaryMessenger, TextureRegistry textureRegistry) {
+        this.context = context;
+        //
+        eventChannel = new EventChannel(binaryMessenger, "flutter_video_plugin/getVideoEvents_" + viewId);
+        textureEntry = textureRegistry.createSurfaceTexture();
+        textureView = new TextureView(context);
+        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
+        textureView.forceLayout();
+        textureView.setFitsSystemWindows(true);
+    }
+
     private Uri getStreamUri(String streamPath, boolean isLocal) {
         return isLocal ? Uri.fromFile(new File(streamPath)) : Uri.parse(streamPath);
     }
 
-    FlutterVlcPlayer(
-            int viewId,
-            Context context,
-            BinaryMessenger binaryMessenger,
-            TextureRegistry textureRegistry) {
-        this.context = context;
-        this.binaryMessenger = binaryMessenger;
-        this.textureRegistry = textureRegistry;
-        this.viewId = viewId;
-        //
-        eventChannel = new EventChannel(
-                binaryMessenger, "flutter_video_plugin/getVideoEvents_" + viewId
-        );
-        textureEntry = textureRegistry.createSurfaceTexture();
-        //
+    public void initialize() {
         libVLC = new LibVLC(context); // todo: add options
         mediaPlayer = new MediaPlayer(libVLC);
         mediaPlayer.setVideoTrackEnabled(true);
-        //
-        setupVlcMediaPlayer(eventChannel, textureEntry);
-        //
-        String dataSource = "http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4";
-        Uri uri = Uri.parse(dataSource); // todo: add local stream file
-        Media media = new Media(libVLC, uri);
-        mediaPlayer.setMedia(media);
-        media.release();
-        mediaPlayer.play();
+        setupVlcMediaPlayer();
     }
 
-    private void setupVlcMediaPlayer(
-            EventChannel eventChannel, TextureRegistry.SurfaceTextureEntry textureEntry) {
-
+    private void setupVlcMediaPlayer() {
         eventChannel.setStreamHandler(
                 new EventChannel.StreamHandler() {
                     @Override
@@ -128,39 +85,9 @@ final class FlutterVlcPlayer implements PlatformView {
                         eventSink.setDelegate(null);
                     }
                 });
-
-//        # method 1
-//        surface = new Surface(textureEntry.surfaceTexture());
-//        mediaPlayer.getVLCVout().setVideoSurface(surface, null);
-//        mediaPlayer.getVLCVout().attachViews();
-//
-//        # method 2
-        textureView = new TextureView(context);
-        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
-        textureView.forceLayout();
-        textureView.setFitsSystemWindows(true);
-        mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
-//        mediaPlayer.getVLCVout().setVideoView(textureView);
-        mediaPlayer.getVLCVout().attachViews();
-//
-//        # method 3
-//        VLCVideoLayout frameLayout = new VLCVideoLayout(context);
-//        textureView = new TextureView(context);
-//        frameLayout.addView(textureView);
-//        textureEntry.surfaceTexture().setDefaultBufferSize(100, 200);
-//        textureView.setSurfaceTexture(textureEntry.surfaceTexture());
-//        mediaPlayer.getVLCVout().setVideoView(textureView);
-//        mediaPlayer.getVLCVout().attachViews();
-//        mediaPlayer.attachViews(frameLayout, null, false, true);
         //
-//        SurfaceView surfaceView = new SurfaceView(context);
-//        surfaceView.getHolder().setFixedSize(100,200);
-//        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(100, 200);
-//        surfaceView.setLayoutParams(lp);
-//        activity.addContentView(surfaceView, lp);
-//        surfaceView.invalidate();
-//        mediaPlayer.getVLCVout().setVideoView(surfaceView);
-//        mediaPlayer.getVLCVout().attachViews();
+        mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
+        mediaPlayer.getVLCVout().attachViews();
         //
         mediaPlayer.setEventListener(
                 new MediaPlayer.EventListener() {
@@ -272,7 +199,7 @@ final class FlutterVlcPlayer implements PlatformView {
         return mediaPlayer.isPlaying();
     }
 
-    void changeUrl(String url) {
+    void setStreamUrl(String url) {
         boolean wasPlaying = mediaPlayer.isPlaying();
         mediaPlayer.stop();
         //
@@ -280,8 +207,8 @@ final class FlutterVlcPlayer implements PlatformView {
         Media media = new Media(libVLC, uri);
         mediaPlayer.setMedia(media);
         media.release();
-        if (wasPlaying)
-            mediaPlayer.play();
+//        if (wasPlaying)
+        mediaPlayer.play();
     }
 
     void setLooping(boolean value) {
@@ -537,9 +464,6 @@ final class FlutterVlcPlayer implements PlatformView {
     public void dispose() {
         textureEntry.release();
         eventChannel.setStreamHandler(null);
-        if (surface != null) {
-            surface.release();
-        }
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();

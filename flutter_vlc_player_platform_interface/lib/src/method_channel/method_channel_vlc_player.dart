@@ -28,7 +28,8 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Future<int> create({
+  Future<void> create({
+    int viewId,
     @required String uri,
     bool isLocalMedia,
     bool autoPlay,
@@ -39,13 +40,13 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     bool isSubtitleSelected,
   }) async {
     CreateMessage message = CreateMessage();
+    message.textureId = viewId;
     message.uri = uri;
     message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
     message.isLocalMedia = isLocalMedia ?? true;
     message.autoPlay = autoPlay ?? true;
     message.options = options ?? [];
-    TextureMessage response = await _api.create(message);
-    return response.textureId;
+    return await _api.create(message);
   }
 
   @override
@@ -58,10 +59,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   /// The `textureId` is passed as a parameter from the framework on the
   /// `onPlatformViewCreated` callback.
   @override
-  Widget buildView(
-    int textureId,
-    PlatformViewCreatedCallback onPlatformViewCreated,
-  ) {
+  Widget buildView(PlatformViewCreatedCallback onPlatformViewCreated) {
     if (Platform.isAndroid) {
       return AndroidView(
         viewType: 'flutter_video_plugin/getVideoView',
@@ -77,7 +75,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
-    return Texture(textureId: textureId);
+    return new Text('Requested platform is not yet supported by this plugin');
   }
 
   @override

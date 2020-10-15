@@ -157,6 +157,13 @@ final class VlcPlayer implements PlatformView {
 //        mediaPlayer.getVLCVout().setVideoView(surfaceView);
 //        mediaPlayer.getVLCVout().attachViews();
         //
+
+//        ViewGroup parent = (ViewGroup) textureView.getParent();
+//        parent.removeView(textureView);
+//        parent.addView(textureView, 0);
+//        SurfaceTexture surfaceTexture = previewOutput.getSurfaceTexture();
+//        textureView.setSurfaceTexture(surfaceTexture);
+
         mediaPlayer.setEventListener(
                 new MediaPlayer.EventListener() {
 

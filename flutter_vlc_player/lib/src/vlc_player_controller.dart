@@ -16,8 +16,8 @@ final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 ///
 /// After [dispose] all further calls are ignored.
 class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
-  /// The textureId for this controller
-  int _textureId;
+  /// The viewId for this controller
+  int _viewId;
 
   /// Constructs a [VlcPlayerController] playing a video from an local file.
   ///
@@ -68,7 +68,11 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// This is just exposed for testing. It shouldn't be used by anyone depending
   /// on the plugin.
   @visibleForTesting
-  int get textureId => _textureId;
+  int get viewId => _viewId;
+
+  void _setViewId(int viewId) {
+    _viewId = viewId;
+  }
 
   /// Attempts to open the given [url] and load metadata about the video.
   Future<void> initialize() async {
@@ -76,7 +80,8 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
 
-    _textureId = await _vlcPlayerPlatform.create(
+    await _vlcPlayerPlatform.create(
+      viewId: _viewId,
       uri: this.dataSource,
       isLocalMedia: _isLocalMedia,
       hwAcc: this.hwAcc ?? HwAcc.AUTO,
@@ -141,7 +146,6 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
           );
           break;
 
-        // todo: maybe we need to separate buffering and time change event
         case VlcMediaEventType.buffering:
         case VlcMediaEventType.timeChanged:
           value = value.copyWith(
@@ -168,7 +172,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     }
 
     _eventSubscription = _vlcPlayerPlatform
-        .mediaEventsFor(_textureId)
+        .mediaEventsFor(_viewId)
         .listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
   }
@@ -180,7 +184,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       if (!_isDisposed) {
         _isDisposed = true;
         await _eventSubscription?.cancel();
-        await _vlcPlayerPlatform.dispose(_textureId);
+        await _vlcPlayerPlatform.dispose(_viewId);
       }
       _lifeCycleObserver.dispose();
     }
@@ -199,7 +203,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     }
     bool wasPlaying = value.isPlaying;
     await _vlcPlayerPlatform.setStreamUrl(
-      _textureId,
+      _viewId,
       uri,
       isLocalMedia: isLocalMedia ?? false,
     );
@@ -216,7 +220,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await _vlcPlayerPlatform.play(_textureId);
+    await _vlcPlayerPlatform.play(_viewId);
     // This ensures that the correct playback speed is always applied when
     // playing back. This is necessary because we do not set playback speed
     // when paused.
@@ -228,7 +232,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await _vlcPlayerPlatform.pause(_textureId);
+    await _vlcPlayerPlatform.pause(_viewId);
   }
 
   /// stops the video.
@@ -236,7 +240,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    await _vlcPlayerPlatform.stop(_textureId);
+    await _vlcPlayerPlatform.stop(_viewId);
   }
 
   /// Sets whether or not the video should loop after playing once.
@@ -245,12 +249,12 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return;
     }
     value = value.copyWith(isLooping: looping);
-    await _vlcPlayerPlatform.setLooping(_textureId, looping);
+    await _vlcPlayerPlatform.setLooping(_viewId, looping);
   }
 
   /// Returns true if media is playing.
   Future<bool> isPlaying() async {
-    return await _vlcPlayerPlatform.isPlaying(_textureId);
+    return await _vlcPlayerPlatform.isPlaying(_viewId);
   }
 
   /// Set video timestamp in millisecond
@@ -272,7 +276,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     } else if (position < const Duration()) {
       position = const Duration();
     }
-    await _vlcPlayerPlatform.seekTo(_textureId, position);
+    await _vlcPlayerPlatform.seekTo(_viewId, position);
   }
 
   /// Get the video timestamp in millisecond
@@ -286,7 +290,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    Duration position = await _vlcPlayerPlatform.getPosition(_textureId);
+    Duration position = await _vlcPlayerPlatform.getPosition(_viewId);
     value = value.copyWith(position: position);
     return position;
   }
@@ -300,7 +304,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return;
     }
     value = value.copyWith(volume: volume.clamp(0, 100));
-    await _vlcPlayerPlatform.setVolume(_textureId, value.volume);
+    await _vlcPlayerPlatform.setVolume(_viewId, value.volume);
   }
 
   /// Returns current vlc volume level.
@@ -308,7 +312,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return 0;
     }
-    int volume = await _vlcPlayerPlatform.getVolume(_textureId);
+    int volume = await _vlcPlayerPlatform.getVolume(_viewId);
     value = value.copyWith(volume: volume.clamp(0, 100));
     return volume;
   }
@@ -318,7 +322,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return Duration.zero;
     }
-    Duration duration = await _vlcPlayerPlatform.getDuration(_textureId);
+    Duration duration = await _vlcPlayerPlatform.getDuration(_viewId);
     value = value.copyWith(duration: duration);
     return duration;
   }
@@ -352,7 +356,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     // the video is manually played from Flutter.
     if (!value.isPlaying) return;
     await _vlcPlayerPlatform.setPlaybackSpeed(
-      _textureId,
+      _viewId,
       value.playbackSpeed,
     );
   }
@@ -363,7 +367,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return value.playbackSpeed;
     }
     //
-    double speed = await _vlcPlayerPlatform.getPlaybackSpeed(_textureId);
+    double speed = await _vlcPlayerPlatform.getPlaybackSpeed(_viewId);
     value = value.copyWith(playbackSpeed: speed);
     return speed;
   }
@@ -373,7 +377,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    int spuTracksCount = await _vlcPlayerPlatform.getSpuTracksCount(_textureId);
+    int spuTracksCount = await _vlcPlayerPlatform.getSpuTracksCount(_viewId);
     value = value.copyWith(spuTracksCount: spuTracksCount);
     return spuTracksCount;
   }
@@ -385,7 +389,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.getSpuTracks(_textureId);
+    return await _vlcPlayerPlatform.getSpuTracks(_viewId);
   }
 
   /// Change active subtitle index (set -1 to disable subtitle).
@@ -394,7 +398,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    return await _vlcPlayerPlatform.setSpuTrack(_textureId, spuTrackNumber);
+    return await _vlcPlayerPlatform.setSpuTrack(_viewId, spuTrackNumber);
   }
 
   /// Returns active spu track index
@@ -402,7 +406,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    int activeSpuTrack = await _vlcPlayerPlatform.getSpuTrack(_textureId);
+    int activeSpuTrack = await _vlcPlayerPlatform.getSpuTrack(_viewId);
     value = value.copyWith(activeSpuTrack: activeSpuTrack);
     return activeSpuTrack;
   }
@@ -414,7 +418,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return;
     }
     value = value.copyWith(spuDelay: spuDelay);
-    return await _vlcPlayerPlatform.setSpuDelay(_textureId, spuDelay);
+    return await _vlcPlayerPlatform.setSpuDelay(_viewId, spuDelay);
   }
 
   /// Returns the amount of subtitle time delay.
@@ -422,7 +426,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    int spuDelay = await _vlcPlayerPlatform.getSpuDelay(_textureId);
+    int spuDelay = await _vlcPlayerPlatform.getSpuDelay(_viewId);
     value = value.copyWith(spuDelay: spuDelay);
     return spuDelay;
   }
@@ -440,7 +444,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return;
     }
     return await _vlcPlayerPlatform.addSubtitleTrack(
-      _textureId,
+      _viewId,
       uri,
       isLocal: isLocal ?? false,
       isSelected: isSelected ?? true,
@@ -453,7 +457,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return null;
     }
     int audioTracksCount =
-        await _vlcPlayerPlatform.getAudioTracksCount(_textureId);
+        await _vlcPlayerPlatform.getAudioTracksCount(_viewId);
     value = value.copyWith(audioTracksCount: audioTracksCount);
     return audioTracksCount;
   }
@@ -465,7 +469,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.getAudioTracks(_textureId);
+    return await _vlcPlayerPlatform.getAudioTracks(_viewId);
   }
 
   /// Returns active audio track index
@@ -473,7 +477,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    int activeAudioTrack = await _vlcPlayerPlatform.getAudioTrack(_textureId);
+    int activeAudioTrack = await _vlcPlayerPlatform.getAudioTrack(_viewId);
     value = value.copyWith(activeAudioTrack: activeAudioTrack);
     return activeAudioTrack;
   }
@@ -484,7 +488,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.setAudioTrack(_textureId, audioTrackNumber);
+    return await _vlcPlayerPlatform.setAudioTrack(_viewId, audioTrackNumber);
   }
 
   /// [audioDelay] - the amount of time in milliseconds which vlc audio should be delayed.
@@ -494,7 +498,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return;
     }
     value = value.copyWith(audioDelay: audioDelay);
-    return await _vlcPlayerPlatform.setAudioDelay(_textureId, audioDelay);
+    return await _vlcPlayerPlatform.setAudioDelay(_viewId, audioDelay);
   }
 
   /// Returns the amount of audio track time delay in millisecond.
@@ -502,7 +506,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    int audioDelay = await _vlcPlayerPlatform.getAudioDelay(_textureId);
+    int audioDelay = await _vlcPlayerPlatform.getAudioDelay(_viewId);
     value = value.copyWith(audioDelay: audioDelay);
     return audioDelay;
   }
@@ -513,7 +517,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return null;
     }
     int videoTracksCount =
-        await _vlcPlayerPlatform.getVideoTracksCount(_textureId);
+        await _vlcPlayerPlatform.getVideoTracksCount(_viewId);
     value = value.copyWith(videoTracksCount: videoTracksCount);
     return videoTracksCount;
   }
@@ -524,7 +528,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.getVideoTracks(_textureId);
+    return await _vlcPlayerPlatform.getVideoTracks(_viewId);
   }
 
   /// Change active video track index.
@@ -533,7 +537,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.setVideoTrack(_textureId, videoTrackNumber);
+    return await _vlcPlayerPlatform.setVideoTrack(_viewId, videoTrackNumber);
   }
 
   /// Returns active video track index
@@ -541,7 +545,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    int activeVideoTrack = await _vlcPlayerPlatform.getVideoTrack(_textureId);
+    int activeVideoTrack = await _vlcPlayerPlatform.getVideoTrack(_viewId);
     value = value.copyWith(activeVideoTrack: activeVideoTrack);
     return activeVideoTrack;
   }
@@ -553,7 +557,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       return;
     }
     value = value.copyWith(videoScale: videoScale);
-    return await _vlcPlayerPlatform.setVideoScale(_textureId, videoScale);
+    return await _vlcPlayerPlatform.setVideoScale(_viewId, videoScale);
   }
 
   /// Returns video scale
@@ -561,7 +565,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    double videoScale = await _vlcPlayerPlatform.getVideoScale(_textureId);
+    double videoScale = await _vlcPlayerPlatform.getVideoScale(_viewId);
     value = value.copyWith(videoScale: videoScale);
     return videoScale;
   }
@@ -573,7 +577,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    return _vlcPlayerPlatform.setVideoAspectRatio(_textureId, aspectRatio);
+    return _vlcPlayerPlatform.setVideoAspectRatio(_viewId, aspectRatio);
   }
 
   /// Returns video aspect ratio in string format
@@ -583,7 +587,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return _vlcPlayerPlatform.getVideoAspectRatio(_textureId);
+    return _vlcPlayerPlatform.getVideoAspectRatio(_viewId);
   }
 
   /// Returns binary data for a snapshot of the media at the current frame.
@@ -592,7 +596,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.takeSnapshot(_textureId);
+    return await _vlcPlayerPlatform.takeSnapshot(_viewId);
   }
 
   /// Start vlc cast discovery to find external display devices (chromecast)
@@ -601,7 +605,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.startRendererScanning(textureId,
+    return await _vlcPlayerPlatform.startRendererScanning(viewId,
         rendererService: rendererService ?? '');
   }
 
@@ -610,7 +614,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.stopRendererScanning(textureId);
+    return await _vlcPlayerPlatform.stopRendererScanning(viewId);
   }
 
   /// Returns all detected renderer devices as array of <String, String>
@@ -619,7 +623,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.getRendererDevices(_textureId);
+    return await _vlcPlayerPlatform.getRendererDevices(_viewId);
   }
 
   /// [castDevice] - name of renderer device
@@ -629,6 +633,6 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     if (!value.initialized || _isDisposed) {
       return null;
     }
-    return await _vlcPlayerPlatform.castToRenderer(_textureId, castDevice);
+    return await _vlcPlayerPlatform.castToRenderer(_viewId, castDevice);
   }
 }

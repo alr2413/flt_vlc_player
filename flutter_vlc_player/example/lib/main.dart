@@ -12,7 +12,6 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 import 'package:flutter_vlc_player/vlc_player_flutter.dart';
 
 void main() {
@@ -124,10 +123,10 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
             ),
           ),
           RaisedButton(
+            child: Text("Initialize"),
             onPressed: () async {
               await _controller.initialize();
             },
-            child: Text("Initialize"),
           ),
           SizedBox(height: 10),
           Row(

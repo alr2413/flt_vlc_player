@@ -27,54 +27,13 @@ class VlcPlayer extends StatefulWidget {
 }
 
 class _VlcPlayerState extends State<VlcPlayer> {
-  _VlcPlayerState() {
-    _listener = () {
-      final int newTextureId = widget.controller.textureId;
-      if (newTextureId != _textureId) {
-        setState(() {
-          _textureId = newTextureId;
-        });
-      }
-    };
-  }
-
-  VoidCallback _listener;
-  int _textureId;
-
-  @override
-  void initState() {
-    super.initState();
-    _textureId = widget.controller.textureId;
-    // Need to listen for initialization events since the actual texture ID
-    // becomes available after asynchronous initialization finishes.
-    widget.controller.addListener(_listener);
-  }
-
-  @override
-  void didUpdateWidget(VlcPlayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_listener);
-      _textureId = widget.controller.textureId;
-      widget.controller.addListener(_listener);
-    }
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    widget.controller.removeListener(_listener);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return _vlcPlayerPlatform.buildView(_textureId, onPlatformViewCreated);
-    // return _textureId == null
-    //     ? widget.placeholder ?? Container()
-    //     : _vlcPlayerPlatform.buildView(_textureId, onPlatformViewCreated);
+    return _vlcPlayerPlatform.buildView(onPlatformViewCreated);
   }
 
   Future<void> onPlatformViewCreated(int viewId) async {
-    _textureId = viewId;
+    // we should initialize controller after view becomes ready
+    if (viewId != null) widget.controller._setViewId(viewId);
   }
 }

@@ -19,36 +19,32 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
 
     void stopListening(BinaryMessenger messenger) {
         Messages.VlcPlayerApi.setup(messenger, null);
+        disposeAllPlayers();
     }
 
-    FlutterVlcPlayer build(
-            int viewId,
-            Context context,
-            BinaryMessenger binaryMessenger,
-            TextureRegistry textureRegistry) {
-
-        final FlutterVlcPlayer vlcPlayer = new FlutterVlcPlayer(
-                viewId,
-                context,
-                binaryMessenger,
-                textureRegistry
-        );
-        //
+    FlutterVlcPlayer build(int viewId, Context context, BinaryMessenger binaryMessenger, TextureRegistry textureRegistry) {
+        FlutterVlcPlayer vlcPlayer = new FlutterVlcPlayer(viewId, context, binaryMessenger, textureRegistry);
         vlcPlayers.append(viewId, vlcPlayer);
-        //
         return vlcPlayer;
+    }
+
+    private void disposeAllPlayers() {
+        for (int i = 0; i < vlcPlayers.size(); i++) {
+            vlcPlayers.valueAt(i).dispose();
+        }
+        vlcPlayers.clear();
     }
 
     @Override
     public void initialize() {
-
+        disposeAllPlayers();
     }
 
     @Override
-    public Messages.TextureMessage create(Messages.CreateMessage arg) {
-        Messages.TextureMessage message = new Messages.TextureMessage();
-        message.setTextureId((long) 0);
-        return message;
+    public void create(Messages.CreateMessage arg) {
+        FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        player.initialize();
+        player.setStreamUrl(arg.getUri());
     }
 
     @Override
@@ -61,7 +57,7 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
     @Override
     public void setStreamUrl(Messages.SetMediaMessage arg) {
         FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        player.changeUrl(arg.getUri());
+        player.setStreamUrl(arg.getUri());
     }
 
     @Override
