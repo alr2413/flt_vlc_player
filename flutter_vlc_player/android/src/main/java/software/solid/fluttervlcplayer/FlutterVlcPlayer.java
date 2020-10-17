@@ -98,82 +98,84 @@ final class FlutterVlcPlayer implements PlatformView {
         mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
 
         // method 1
-//        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
-//
-//            boolean wasPlaying = false;
-//
-//            private final Runnable mRunnable = new Runnable() {
-//                @Override
-//                public void run() {
-//                    if (vout == null) return;
-//                    vout.setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
-//                    vout.attachViews();
-//                    textureView.forceLayout();
-//                    mediaPlayer.play();
-//                    wasPlaying = false;
-//                }
-//            };
-//
-//            @Override
-//            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-////                mHandler.removeCallbacks(mRunnable);
-////                mHandler.postDelayed(mRunnable, 1000);
-//                vout.setWindowSize(width, height);
-//                vout.setVideoSurface(new Surface(surface), null);
-//                vout.attachViews();
-//                mediaPlayer.play();
-//            }
-//
-//            @Override
-//            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-//                vout.setWindowSize(width, height);
-//            }
-//
-//            @Override
-//            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-//                if (playerDisposed) {
-//                    if (mediaPlayer != null) {
-//                        mediaPlayer.stop();
-//                        mediaPlayer.setEventListener(null);
-//                        mediaPlayer.getVLCVout().detachViews();
-//                        mediaPlayer.release();
-//                        libVLC.release();
-//                        libVLC = null;
-//                        mediaPlayer = null;
-//                        vout = null;
-//                    }
-//                    return true;
-//                } else {
-//                    if (mediaPlayer != null && vout != null) {
-//                        wasPlaying = mediaPlayer.isPlaying();
-//                        mediaPlayer.pause();
-//                        vout.detachViews();
-//                    }
-//                    return true;
-//                }
-//            }
-//
-//            @Override
-//            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-//            }
-//
-//        });
+        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+
+            boolean wasPlaying = false;
+
+            private final Runnable mRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (vout == null) return;
+                    vout.setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
+                    vout.attachViews();
+                    textureView.forceLayout();
+                    mediaPlayer.play();
+                    wasPlaying = false;
+                }
+            };
+
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+//                mHandler.removeCallbacks(mRunnable);
+//                mHandler.postDelayed(mRunnable, 1000);
+                vout.setWindowSize(width, height);
+                vout.setVideoSurface(new Surface(surface), null);
+                textureView.forceLayout();
+                vout.attachViews();
+                mediaPlayer.play();
+                wasPlaying = false;
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+                vout.setWindowSize(width, height);
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                if (playerDisposed) {
+                    if (mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.setEventListener(null);
+                        mediaPlayer.getVLCVout().detachViews();
+                        mediaPlayer.release();
+                        libVLC.release();
+                        libVLC = null;
+                        mediaPlayer = null;
+                        vout = null;
+                    }
+                    return true;
+                } else {
+                    if (mediaPlayer != null && vout != null) {
+                        wasPlaying = mediaPlayer.isPlaying();
+                        mediaPlayer.pause();
+                        vout.detachViews();
+                    }
+                    return true;
+                }
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            }
+
+        });
 
         // method 2
-        Surface surface = new Surface(textureView.getSurfaceTexture());
-        mediaPlayer.getVLCVout().setVideoSurface(surface, null);
+//        Surface surface = new Surface(textureView.getSurfaceTexture());
+//        mediaPlayer.getVLCVout().setVideoSurface(surface, null);
         //
-        textureView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//                if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
-                    mediaPlayer.getVLCVout().detachViews();
-                    mediaPlayer.getVLCVout().setWindowSize(view.getWidth(), view.getHeight());
-                    mediaPlayer.getVLCVout().setVideoView((TextureView) view);
-                    mediaPlayer.getVLCVout().attachViews();
-//                }
-            }
-        });
+//        textureView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+//            @Override
+//            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+////                if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
+//                    mediaPlayer.getVLCVout().detachViews();
+//                    mediaPlayer.getVLCVout().setWindowSize(view.getWidth(), view.getHeight());
+//                    mediaPlayer.getVLCVout().setVideoView((TextureView) view);
+//                    mediaPlayer.getVLCVout().attachViews();
+////                }
+//            }
+//        });
 
         mediaPlayer.getVLCVout().attachViews();
         //
