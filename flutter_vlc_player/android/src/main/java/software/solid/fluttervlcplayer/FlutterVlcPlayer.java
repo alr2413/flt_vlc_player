@@ -5,9 +5,12 @@ import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.RendererDiscoverer;
 import org.videolan.libvlc.RendererItem;
+import org.videolan.libvlc.interfaces.ILibVLC;
+import org.videolan.libvlc.interfaces.IVLCVout;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,6 +34,7 @@ import java.util.List;
 final class FlutterVlcPlayer implements PlatformView {
 
     private final Context context;
+
     private LibVLC libVLC;
     private MediaPlayer mediaPlayer;
     private TextureView textureView;
@@ -39,6 +43,9 @@ final class FlutterVlcPlayer implements PlatformView {
     private EventChannel eventChannel;
     private List<RendererDiscoverer> rendererDiscoverers;
     private List<RendererItem> rendererItems;
+    private IVLCVout vout;
+    Handler mHandler = new Handler(Looper.getMainLooper());
+    private boolean playerDisposed;
 
     // Platform view
     @Override
@@ -46,25 +53,10 @@ final class FlutterVlcPlayer implements PlatformView {
         return textureView;
     }
 
-    @Override
-    public void dispose() {
-        if (eventChannel != null)
-            eventChannel.setStreamHandler(null);
-        if (mediaPlayer != null) {
-            mediaPlayer.setEventListener(null);
-            mediaPlayer.stop();
-            mediaPlayer.getVLCVout().detachViews();
-            mediaPlayer.release();
-        }
-        if (textureEntry != null)
-            textureEntry.release();
-        if (libVLC != null)
-            libVLC.release();
-    }
-
     // VLC Player
     FlutterVlcPlayer(int viewId, Context context, BinaryMessenger binaryMessenger, TextureRegistry textureRegistry) {
         this.context = context;
+        this.playerDisposed = false;
         //
         eventChannel = new EventChannel(binaryMessenger, "flutter_video_plugin/getVideoEvents_" + viewId);
         textureEntry = textureRegistry.createSurfaceTexture();
@@ -72,6 +64,9 @@ final class FlutterVlcPlayer implements PlatformView {
         textureView.setSurfaceTexture(textureEntry.surfaceTexture());
         textureView.forceLayout();
         textureView.setFitsSystemWindows(true);
+
+
+
     }
 
     private Uri getStreamUri(String streamPath, boolean isLocal) {
@@ -99,8 +94,73 @@ final class FlutterVlcPlayer implements PlatformView {
                     }
                 });
         //
+        vout = mediaPlayer.getVLCVout();
         mediaPlayer.getVLCVout().setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
+
+        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+
+            boolean wasPlaying = false;
+
+            private final Runnable mRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (vout == null) return;
+                    vout.setVideoSurface(new Surface(textureView.getSurfaceTexture()), null);
+                    vout.attachViews();
+                    textureView.forceLayout();
+                    mediaPlayer.play();
+                    wasPlaying = false;
+                }
+            };
+
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                mHandler.removeCallbacks(mRunnable);
+                mHandler.postDelayed(mRunnable, 1000);
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                if (playerDisposed) {
+                    if (mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.setEventListener(null);
+                        mediaPlayer.getVLCVout().detachViews();
+                        mediaPlayer.release();
+                        libVLC.release();
+                        libVLC = null;
+                        mediaPlayer = null;
+                        vout = null;
+                    }
+                    return true;
+                } else {
+                    if (mediaPlayer != null && vout != null) {
+                        wasPlaying = mediaPlayer.isPlaying();
+                        mediaPlayer.pause();
+                        vout.detachViews();
+                    }
+                    return true;
+                }
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            //TODO implement vlc width and height changes here 
+            }
+
+        });
+
+
         mediaPlayer.getVLCVout().attachViews();
+
+
+
+
         //
         mediaPlayer.setEventListener(
                 new MediaPlayer.EventListener() {
@@ -417,6 +477,7 @@ final class FlutterVlcPlayer implements PlatformView {
         for (RendererDiscoverer rendererDiscoverer : rendererDiscoverers) {
             rendererDiscoverer.stop();
             rendererDiscoverer.setEventListener(null);
+
         }
         rendererDiscoverers.clear();
         rendererItems.clear();
@@ -472,5 +533,18 @@ final class FlutterVlcPlayer implements PlatformView {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
     }
+
+    public void dispose() {
+        playerDisposed = true;
+        textureEntry.release();
+        eventChannel.setStreamHandler(null);
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        if (libVLC != null)
+            libVLC.release();
+    }
+
 
 }
