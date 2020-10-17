@@ -14,11 +14,26 @@ import java.util.HashMap;
 public class Messages {
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class CreateMessage {
+  public static class TextureMessage {
     private Long textureId;
     public Long getTextureId() { return textureId; }
     public void setTextureId(Long setterArg) { this.textureId = setterArg; }
 
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      return toMapResult;
+    }
+    static TextureMessage fromMap(HashMap map) {
+      TextureMessage fromMapResult = new TextureMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class CreateMessage {
     private String uri;
     public String getUri() { return uri; }
     public void setUri(String setterArg) { this.uri = setterArg; }
@@ -41,7 +56,6 @@ public class Messages {
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("textureId", textureId);
       toMapResult.put("uri", uri);
       toMapResult.put("isLocalMedia", isLocalMedia);
       toMapResult.put("autoPlay", autoPlay);
@@ -51,8 +65,6 @@ public class Messages {
     }
     static CreateMessage fromMap(HashMap map) {
       CreateMessage fromMapResult = new CreateMessage();
-      Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       Object uri = map.get("uri");
       fromMapResult.uri = (String)uri;
       Object isLocalMedia = map.get("isLocalMedia");
@@ -63,25 +75,6 @@ public class Messages {
       fromMapResult.hwAcc = (hwAcc == null) ? null : ((hwAcc instanceof Integer) ? (Integer)hwAcc : (Long)hwAcc);
       Object options = map.get("options");
       fromMapResult.options = (ArrayList)options;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class TextureMessage {
-    private Long textureId;
-    public Long getTextureId() { return textureId; }
-    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("textureId", textureId);
-      return toMapResult;
-    }
-    static TextureMessage fromMap(HashMap map) {
-      TextureMessage fromMapResult = new TextureMessage();
-      Object textureId = map.get("textureId");
-      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       return fromMapResult;
     }
   }
@@ -708,7 +701,7 @@ public class Messages {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface VlcPlayerApi {
     void initialize();
-    void create(CreateMessage arg);
+    TextureMessage create(CreateMessage arg);
     void dispose(TextureMessage arg);
     void setStreamUrl(SetMediaMessage arg);
     void play(TextureMessage arg);
@@ -781,8 +774,8 @@ public class Messages {
             try {
               @SuppressWarnings("ConstantConditions")
               CreateMessage input = CreateMessage.fromMap((HashMap)message);
-              api.create(input);
-              wrapped.put("result", null);
+              TextureMessage output = api.create(input);
+              wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));

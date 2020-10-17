@@ -157,7 +157,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
     }
 
     @Override
-    public void create(CreateMessage arg) {
+    public TextureMessage create(CreateMessage arg) {
 
         TextureRegistry.SurfaceTextureEntry handle =
                 flutterState.textureRegistry.createSurfaceTexture();
@@ -187,9 +187,9 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                             options);
             vlcPlayers.put(handle.id(), player);
         }
-//        TextureMessage message = new TextureMessage();
-//        message.setTextureId(handle.id());
-        return;
+        TextureMessage message = new TextureMessage();
+        message.setTextureId(handle.id());
+        return message;
     }
 
     @Override

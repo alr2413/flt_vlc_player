@@ -42,10 +42,11 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
     }
 
     @Override
-    public void create(Messages.CreateMessage arg) {
-        FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        player.initialize();
-        player.setStreamUrl(arg.getUri());
+    public Messages.TextureMessage create(Messages.CreateMessage arg) {
+//        FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
+//        player.initialize();
+//        player.setStreamUrl(arg.getUri());
+        return new Messages.TextureMessage();
     }
 
     @Override

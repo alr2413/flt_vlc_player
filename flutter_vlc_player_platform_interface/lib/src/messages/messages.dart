@@ -6,37 +6,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
-class CreateMessage {
-  int textureId;
-  String uri;
-  bool isLocalMedia;
-  bool autoPlay;
-  int hwAcc;
-  List options;
-  // ignore: unused_element
-  Map<dynamic, dynamic> _toMap() {
-    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
-    pigeonMap['textureId'] = textureId;
-    pigeonMap['uri'] = uri;
-    pigeonMap['isLocalMedia'] = isLocalMedia;
-    pigeonMap['autoPlay'] = autoPlay;
-    pigeonMap['hwAcc'] = hwAcc;
-    pigeonMap['options'] = options;
-    return pigeonMap;
-  }
-  // ignore: unused_element
-  static CreateMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    final CreateMessage result = CreateMessage();
-    result.textureId = pigeonMap['textureId'];
-    result.uri = pigeonMap['uri'];
-    result.isLocalMedia = pigeonMap['isLocalMedia'];
-    result.autoPlay = pigeonMap['autoPlay'];
-    result.hwAcc = pigeonMap['hwAcc'];
-    result.options = pigeonMap['options'];
-    return result;
-  }
-}
-
 class TextureMessage {
   int textureId;
   // ignore: unused_element
@@ -49,6 +18,34 @@ class TextureMessage {
   static TextureMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final TextureMessage result = TextureMessage();
     result.textureId = pigeonMap['textureId'];
+    return result;
+  }
+}
+
+class CreateMessage {
+  String uri;
+  bool isLocalMedia;
+  bool autoPlay;
+  int hwAcc;
+  List options;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['uri'] = uri;
+    pigeonMap['isLocalMedia'] = isLocalMedia;
+    pigeonMap['autoPlay'] = autoPlay;
+    pigeonMap['hwAcc'] = hwAcc;
+    pigeonMap['options'] = options;
+    return pigeonMap;
+  }
+  // ignore: unused_element
+  static CreateMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final CreateMessage result = CreateMessage();
+    result.uri = pigeonMap['uri'];
+    result.isLocalMedia = pigeonMap['isLocalMedia'];
+    result.autoPlay = pigeonMap['autoPlay'];
+    result.hwAcc = pigeonMap['hwAcc'];
+    result.options = pigeonMap['options'];
     return result;
   }
 }
@@ -521,7 +518,7 @@ class VlcPlayerApi {
     }
     
   }
-  Future<void> create(CreateMessage arg) async {
+  Future<TextureMessage> create(CreateMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
         BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.create', StandardMessageCodec());
@@ -539,7 +536,7 @@ class VlcPlayerApi {
           message: error['message'],
           details: error['details']);
     } else {
-      // noop
+      return TextureMessage._fromMap(replyMap['result']);
     }
     
   }
@@ -1449,7 +1446,7 @@ class VlcPlayerApi {
 
 abstract class TestHostVlcPlayerApi {
   void initialize();
-  void create(CreateMessage arg);
+  TextureMessage create(CreateMessage arg);
   void dispose(TextureMessage arg);
   void setStreamUrl(SetMediaMessage arg);
   void play(TextureMessage arg);
@@ -1515,8 +1512,8 @@ abstract class TestHostVlcPlayerApi {
         channel.setMockMessageHandler((dynamic message) async {
           final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
           final CreateMessage input = CreateMessage._fromMap(mapMessage);
-          api.create(input);
-          return <dynamic, dynamic>{};
+          final TextureMessage output = api.create(input);
+          return <dynamic, dynamic>{'result': output._toMap()};
         });
       }
     }

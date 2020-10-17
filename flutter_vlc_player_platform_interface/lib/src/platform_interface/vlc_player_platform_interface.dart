@@ -37,7 +37,8 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
   }
 
   /// Returns a widget displaying the video.
-  Widget buildView(PlatformViewCreatedCallback onPlatformViewCreated) {
+  Widget buildView(
+      int viewId, PlatformViewCreatedCallback onPlatformViewCreated) {
     throw UnimplementedError('buildView() has not been implemented.');
   }
 
@@ -55,8 +56,7 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
   }
 
   /// Creates an instance of a vlc player
-  Future<void> create({
-    @required int viewId,
+  Future<int> create({
     @required String uri,
     bool isLocalMedia,
     bool autoPlay,

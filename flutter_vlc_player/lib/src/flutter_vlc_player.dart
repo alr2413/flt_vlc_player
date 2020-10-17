@@ -35,22 +35,22 @@ class _VlcPlayerState extends State<VlcPlayer>
     _listener = () {
       if (!mounted) return;
       //
-      final bool isInitialized = widget.controller.value.initialized;
-      if (isInitialized != _initialized) {
+      final int newViewId = widget.controller.viewId;
+      if (_viewId != newViewId) {
         setState(() {
-          _initialized = isInitialized;
+          _viewId = newViewId;
         });
       }
     };
   }
 
   VoidCallback _listener;
-  bool _initialized;
+  int _viewId;
 
   @override
   void initState() {
     super.initState();
-    _initialized = widget.controller.value.initialized;
+    _viewId = widget.controller.viewId;
     // Need to listen for initialization events since the actual texture ID
     // becomes available after asynchronous initialization finishes.
     widget.controller.addListener(_listener);
@@ -75,32 +75,20 @@ class _VlcPlayerState extends State<VlcPlayer>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return AspectRatio(
-      aspectRatio: widget.aspectRatio,
-      child: Stack(
-        children: <Widget>[
-          Offstage(
-            offstage: _initialized,
-            child: widget.placeholder ?? Container(),
-          ),
-          Offstage(
-            offstage: !_initialized,
-            child: _vlcPlayerPlatform.buildView(onPlatformViewCreated),
-          ),
-        ],
-      ),
-    );
+    return _viewId == null
+        ? Container()
+        : _vlcPlayerPlatform.buildView(_viewId, onPlatformViewCreated);
   }
 
   Future<void> onPlatformViewCreated(int viewId) async {
-    if (viewId == null) return;
-    widget.controller._viewId = viewId;
-    // we should initialize controller after view becomes ready
-    if (widget.controller.autoInitialize) {
-      await widget.controller.initialize();
-    }
-    //
-    widget.controller._isReadyToInitialize = true;
+    // if (viewId == null) return;
+    // widget.controller._viewId = viewId;
+    // // we should initialize controller after view becomes ready
+    // if (widget.controller.autoInitialize) {
+    //   await widget.controller.initialize();
+    // }
+    // //
+    // widget.controller._isReadyToInitialize = true;
   }
 
   @override

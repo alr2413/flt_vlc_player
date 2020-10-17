@@ -107,8 +107,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
 
-    await _vlcPlayerPlatform.create(
-      viewId: _viewId,
+    _viewId = await _vlcPlayerPlatform.create(
       uri: this.dataSource,
       isLocalMedia: _isLocalMedia,
       hwAcc: this.hwAcc ?? HwAcc.AUTO,

@@ -7,8 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class CreateMessage;
 @class TextureMessage;
+@class CreateMessage;
 @class SetMediaMessage;
 @class BooleanMessage;
 @class LoopingMessage;
@@ -33,17 +33,16 @@ NS_ASSUME_NONNULL_BEGIN
 @class RendererDevicesMessage;
 @class RenderDeviceMessage;
 
-@interface CreateMessage : NSObject
+@interface TextureMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
+@end
+
+@interface CreateMessage : NSObject
 @property(nonatomic, copy, nullable) NSString * uri;
 @property(nonatomic, strong, nullable) NSNumber * isLocalMedia;
 @property(nonatomic, strong, nullable) NSNumber * autoPlay;
 @property(nonatomic, strong, nullable) NSNumber * hwAcc;
 @property(nonatomic, strong, nullable) NSArray * options;
-@end
-
-@interface TextureMessage : NSObject
-@property(nonatomic, strong, nullable) NSNumber * textureId;
 @end
 
 @interface SetMediaMessage : NSObject
@@ -166,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol VlcPlayerApi
 -(void)initialize:(FlutterError *_Nullable *_Nonnull)error;
--(void)create:(CreateMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(nullable TextureMessage *)create:(CreateMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)dispose:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setStreamUrl:(SetMediaMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)play:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;

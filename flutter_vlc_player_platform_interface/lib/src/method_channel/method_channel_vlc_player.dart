@@ -28,8 +28,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Future<void> create({
-    int viewId,
+  Future<int> create({
     @required String uri,
     bool isLocalMedia,
     bool autoPlay,
@@ -40,13 +39,13 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     bool isSubtitleSelected,
   }) async {
     CreateMessage message = CreateMessage();
-    message.textureId = viewId;
     message.uri = uri;
     message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
     message.isLocalMedia = isLocalMedia ?? true;
     message.autoPlay = autoPlay ?? true;
     message.options = options ?? [];
-    return await _api.create(message);
+    TextureMessage response = await _api.create(message);
+    return response.textureId;
   }
 
   @override
@@ -59,23 +58,25 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   /// The `textureId` is passed as a parameter from the framework on the
   /// `onPlatformViewCreated` callback.
   @override
-  Widget buildView(PlatformViewCreatedCallback onPlatformViewCreated) {
-    if (Platform.isAndroid) {
-      return AndroidView(
-        viewType: 'flutter_video_plugin/getVideoView',
-        hitTestBehavior: PlatformViewHitTestBehavior.transparent,
-        onPlatformViewCreated: onPlatformViewCreated,
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    } else if (Platform.isIOS) {
-      return UiKitView(
-        viewType: 'flutter_video_plugin/getVideoView',
-        onPlatformViewCreated: onPlatformViewCreated,
-        hitTestBehavior: PlatformViewHitTestBehavior.transparent,
-        creationParamsCodec: const StandardMessageCodec(),
-      );
-    }
-    return new Text('Requested platform is not yet supported by this plugin');
+  Widget buildView(
+      int viewId, PlatformViewCreatedCallback onPlatformViewCreated) {
+    // if (Platform.isAndroid) {
+    //   return AndroidView(
+    //     viewType: 'flutter_video_plugin/getVideoView',
+    //     hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+    //     onPlatformViewCreated: onPlatformViewCreated,
+    //     creationParamsCodec: const StandardMessageCodec(),
+    //   );
+    // } else if (Platform.isIOS) {
+    //   return UiKitView(
+    //     viewType: 'flutter_video_plugin/getVideoView',
+    //     onPlatformViewCreated: onPlatformViewCreated,
+    //     hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+    //     creationParamsCodec: const StandardMessageCodec(),
+    //   );
+    // }
+    // return new Text('Requested platform is not yet supported by this plugin');
+    return Texture(textureId: viewId);
   }
 
   @override

@@ -14,7 +14,7 @@ flutter:
     platforms:
       android:
         package: software.solid.fluttervlcplayer
-        pluginClass: FlutterVlcPlayerPlugin
+        pluginClass: VlcPlayerPlugin
       ios:
         pluginClass: VlcPlayerPlugin
 
