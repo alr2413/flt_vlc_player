@@ -18,8 +18,8 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
     }
 
     void stopListening(BinaryMessenger messenger) {
+//        disposeAllPlayers();
         Messages.VlcPlayerApi.setup(messenger, null);
-        disposeAllPlayers();
     }
 
     FlutterVlcPlayer build(int viewId, Context context, BinaryMessenger binaryMessenger, TextureRegistry textureRegistry) {
@@ -33,11 +33,12 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
             vlcPlayers.valueAt(i).dispose();
         }
         vlcPlayers.clear();
+
     }
 
     @Override
     public void initialize() {
-        disposeAllPlayers();
+//        disposeAllPlayers();
     }
 
     @Override

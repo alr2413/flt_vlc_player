@@ -3,7 +3,6 @@ part of vlc_player_flutter;
 class VlcPlayer extends StatefulWidget {
   final VlcPlayerController controller;
   final double aspectRatio;
-  final bool autoInitialize;
   final Widget placeholder;
 
   VlcPlayer({
@@ -18,9 +17,6 @@ class VlcPlayer extends StatefulWidget {
     /// parentHeight are the width and height of the parent perhaps as defined by a LayoutBuilder.
     @required this.aspectRatio,
 
-    /// Initialize vlc player when the platform is ready automatically
-    this.autoInitialize = true,
-
     /// Before the platform view has initialized, this placeholder will be rendered instead of the video player.
     /// This can simply be a [CircularProgressIndicator] (see the example.)
     this.placeholder,
@@ -30,9 +26,15 @@ class VlcPlayer extends StatefulWidget {
   _VlcPlayerState createState() => _VlcPlayerState();
 }
 
-class _VlcPlayerState extends State<VlcPlayer> {
+class _VlcPlayerState extends State<VlcPlayer>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   _VlcPlayerState() {
     _listener = () {
+      if (!mounted) return;
+      //
       final bool isInitialized = widget.controller.value.initialized;
       if (isInitialized != _initialized) {
         setState(() {
@@ -57,11 +59,11 @@ class _VlcPlayerState extends State<VlcPlayer> {
   @override
   void didUpdateWidget(VlcPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_listener);
-      _initialized = widget.controller.value.initialized;
-      widget.controller.addListener(_listener);
-    }
+    // if (oldWidget.controller != widget.controller) {
+    //   oldWidget.controller.removeListener(_listener);
+    //   _initialized = widget.controller.value.initialized;
+    //   widget.controller.addListener(_listener);
+    // }
   }
 
   @override
@@ -72,6 +74,7 @@ class _VlcPlayerState extends State<VlcPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return AspectRatio(
       aspectRatio: widget.aspectRatio,
       child: Stack(
@@ -90,11 +93,19 @@ class _VlcPlayerState extends State<VlcPlayer> {
   }
 
   Future<void> onPlatformViewCreated(int viewId) async {
-    // we should initialize controller after view becomes ready
     if (viewId == null) return;
-    widget.controller._setViewId(viewId);
-    if (widget.autoInitialize) {
+    widget.controller._viewId = viewId;
+    // we should initialize controller after view becomes ready
+    if (widget.controller.autoInitialize) {
       await widget.controller.initialize();
     }
+    //
+    widget.controller._isReadyToInitialize = true;
+  }
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
   }
 }

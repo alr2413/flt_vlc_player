@@ -5,6 +5,8 @@ final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 // performed.
   ..init();
 
+typedef CastCallback = void Function(VlcCastEventType, String, String);
+
 /// Controls a platform vlc player, and provides updates when the state is
 /// changing.
 ///
@@ -16,19 +18,21 @@ final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 ///
 /// After [dispose] all further calls are ignored.
 class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
-  /// The viewId for this controller
-  int _viewId;
-
   /// Constructs a [VlcPlayerController] playing a video from an local file.
   ///
   /// The name of the local file is given by the [dataSource] argument and must not be
   /// null.
   VlcPlayerController.local(
     this.dataSource, {
-    this.hwAcc,
-    this.autoPlay,
+    this.autoInitialize = true,
+    this.hwAcc = HwAcc.AUTO,
+    this.autoPlay = true,
     this.options,
+    VoidCallback onInit,
+    CastCallback onCastHandler,
   })  : _isLocalMedia = true,
+        _onInit = onInit,
+        _onCastHandler = onCastHandler,
         super(VlcPlayerValue(duration: null));
 
   /// Constructs a [VlcPlayerController] playing a video from obtained from
@@ -38,10 +42,15 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// null.
   VlcPlayerController.network(
     this.dataSource, {
-    this.hwAcc,
-    this.autoPlay,
+    this.autoInitialize = true,
+    this.hwAcc = HwAcc.AUTO,
+    this.autoPlay = true,
     this.options,
+    VoidCallback onInit,
+    CastCallback onCastHandler,
   })  : _isLocalMedia = false,
+        _onInit = onInit,
+        _onCastHandler = onCastHandler,
         super(VlcPlayerValue(duration: null));
 
   /// The URI to the video file. This will be in different formats depending on
@@ -58,24 +67,42 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// The video should be played automatically.
   final bool autoPlay;
 
-  bool _isLocalMedia;
+  /// Initialize vlc player when the platform is ready automatically
+  final bool autoInitialize;
 
-  bool _isDisposed = false;
-  Completer<void> _creatingCompleter;
-  StreamSubscription<dynamic> _eventSubscription;
-  VlcAppLifeCycleObserver _lifeCycleObserver;
+  /// Determine if platform is ready to call initialize method
+  bool get isReadyToInitialize => _isReadyToInitialize;
+  bool _isReadyToInitialize;
 
   /// This is just exposed for testing. It shouldn't be used by anyone depending
   /// on the plugin.
   @visibleForTesting
   int get viewId => _viewId;
 
-  void _setViewId(int viewId) {
-    _viewId = viewId;
-  }
+  /// The viewId for this controller
+  int _viewId;
+
+  /// This is a callback that will be executed once the platform view has been initialized.
+  /// If you want the media to play as soon as the platform view has initialized, you could just call
+  /// [VlcPlayerController.play] in this callback. (see the example)
+  VoidCallback _onInit;
+
+  /// This is a callback that will be executed every time a new cast device detected/removed
+  /// It should be defined as "void Function(CastStatus, String, String)", where the CastStatus is an enum { DEVICE_ADDED, DEVICE_DELETED } and the next two String arguments are name and displayName of cast device, respectively.
+  CastCallback _onCastHandler;
+
+  bool _isLocalMedia;
+  bool _isDisposed = false;
+  Completer<void> _creatingCompleter;
+  StreamSubscription<dynamic> _eventSubscription;
+  VlcAppLifeCycleObserver _lifeCycleObserver;
 
   /// Attempts to open the given [url] and load metadata about the video.
   Future<void> initialize() async {
+    if (value.initialized) {
+      throw new Exception('Already Initialized');
+    }
+
     _lifeCycleObserver = VlcAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = Completer<void>();
@@ -174,6 +201,9 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     _eventSubscription = _vlcPlayerPlatform
         .mediaEventsFor(_viewId)
         .listen(eventListener, onError: errorListener);
+
+    if (_onInit != null) _onInit();
+
     return initializingCompleter.future;
   }
 

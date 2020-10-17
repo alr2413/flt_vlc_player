@@ -33,13 +33,13 @@ public class FlutterVlcPlayerPlugin implements FlutterPlugin, ActivityAware {
                         VIEW_TYPE,
                         flutterVlcPlayerFactory
                 );
-//        registrar.addViewDestroyListener(new PluginRegistry.ViewDestroyListener() {
-//            @Override
-//            public boolean onViewDestroy(FlutterNativeView view) {
-//                stopListening();
-//                return false;
-//            }
-//        });
+        registrar.addViewDestroyListener(new PluginRegistry.ViewDestroyListener() {
+            @Override
+            public boolean onViewDestroy(FlutterNativeView view) {
+                stopListening();
+                return false;
+            }
+        });
         //
         startListening();
     }

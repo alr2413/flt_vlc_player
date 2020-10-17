@@ -108,18 +108,18 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
           const Text('With remote mp4'),
           Container(
             color: Colors.black,
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VlcPlayer(
+            height: 250,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: <Widget>[
+                Center(
+                  child: VlcPlayer(
                     controller: _controller,
                     aspectRatio: 16 / 9,
                   ),
-                  _ControlsOverlay(controller: _controller),
-                ],
-              ),
+                ),
+                _ControlsOverlay(controller: _controller),
+              ],
             ),
           ),
           RaisedButton(
