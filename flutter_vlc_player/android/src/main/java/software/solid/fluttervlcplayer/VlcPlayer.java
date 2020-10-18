@@ -1,14 +1,10 @@
 package software.solid.fluttervlcplayer;
 
-import org.videolan.libvlc.interfaces.IMedia;
-import org.videolan.libvlc.interfaces.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.RendererDiscoverer;
 import org.videolan.libvlc.RendererItem;
-import org.videolan.libvlc.media.VideoView;
-import org.videolan.libvlc.util.VLCVideoLayout;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,8 +22,6 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.platform.PlatformView;
@@ -282,7 +276,7 @@ final class VlcPlayer implements PlatformView {
         Media media = new Media(libVLC, uri);
         mediaPlayer.setMedia(media);
         media.release();
-        if (wasPlaying)
+//        if (wasPlaying)
             mediaPlayer.play();
     }
 
@@ -549,6 +543,4 @@ final class VlcPlayer implements PlatformView {
         if (libVLC != null)
             libVLC.release();
     }
-
-
 }
