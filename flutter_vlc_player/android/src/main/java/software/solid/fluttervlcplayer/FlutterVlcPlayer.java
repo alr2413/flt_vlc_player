@@ -90,6 +90,7 @@ final class FlutterVlcPlayer implements PlatformView {
         options.add("--no-drop-late-frames");
         options.add("--no-skip-frames");
         options.add("--network-caching=2000");
+        options.add("--sout-mux-caching=1500");
         options.add("--rtsp-tcp");
 //        options.add("-vvv");
         libVLC = new LibVLC(context, options); // todo: add options
