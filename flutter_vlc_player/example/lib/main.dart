@@ -65,6 +65,13 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
       // "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4",
       // "/storage/emulated/0/Download/Test.mp4",
       // "/sdcard/Download/Test.mp4",
+      autoPlay: false,
+      onInit: () {
+        print('onInit ${_controller.value.playingState}');
+      },
+      onRendererHandler: (type, id, name) {
+        print('onRendererHandler $type $id $name');
+      },
     );
 
     _controller.addListener(() {
@@ -72,25 +79,26 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
       if (_controller.value.initialized) {
         var oPosition = _controller.value.position;
         var oDuration = _controller.value.duration;
-        if (oDuration.inHours == 0) {
-          var strPosition = oPosition.toString().split('.')[0];
-          var strDuration = oDuration.toString().split('.')[0];
-          position =
-              "${strPosition.split(':')[1]}:${strPosition.split(':')[2]}";
-          duration =
-              "${strDuration.split(':')[1]}:${strDuration.split(':')[2]}";
-        } else {
-          position = oPosition.toString().split('.')[0];
-          duration = oDuration.toString().split('.')[0];
+        if (oPosition != null && oDuration != null) {
+          if (oDuration.inHours == 0) {
+            var strPosition = oPosition.toString().split('.')[0];
+            var strDuration = oDuration.toString().split('.')[0];
+            position =
+                "${strPosition.split(':')[1]}:${strPosition.split(':')[2]}";
+            duration =
+                "${strDuration.split(':')[1]}:${strDuration.split(':')[2]}";
+          } else {
+            position = oPosition.toString().split('.')[0];
+            duration = oDuration.toString().split('.')[0];
+          }
+          sliderValue = _controller.value.position.inSeconds.toDouble();
         }
-        sliderValue = _controller.value.position.inSeconds.toDouble();
         numberOfCaptions = _controller.value.spuTracksCount;
         numberOfAudioTracks = _controller.value.audioTracksCount;
         //
         setState(() {});
       }
     });
-    // _controller.initialize();
   }
 
   @override
@@ -116,6 +124,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
                   child: VlcPlayer(
                     controller: _controller,
                     aspectRatio: 16 / 9,
+                    placeholder: Center(child: CircularProgressIndicator()),
                   ),
                 ),
                 _ControlsOverlay(controller: _controller),
@@ -205,6 +214,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
                   child: Text("Change URL"),
                   onPressed: () => _controller.setStreamUrl(
                     changeUrl,
+                    DataSourceType.network,
                   ),
                 ),
               ),

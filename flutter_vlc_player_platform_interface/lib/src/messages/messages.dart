@@ -9,7 +9,8 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 class CreateMessage {
   int textureId;
   String uri;
-  bool isLocalMedia;
+  int type;
+  String packageName;
   bool autoPlay;
   int hwAcc;
   List options;
@@ -18,7 +19,8 @@ class CreateMessage {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
     pigeonMap['uri'] = uri;
-    pigeonMap['isLocalMedia'] = isLocalMedia;
+    pigeonMap['type'] = type;
+    pigeonMap['packageName'] = packageName;
     pigeonMap['autoPlay'] = autoPlay;
     pigeonMap['hwAcc'] = hwAcc;
     pigeonMap['options'] = options;
@@ -29,7 +31,8 @@ class CreateMessage {
     final CreateMessage result = CreateMessage();
     result.textureId = pigeonMap['textureId'];
     result.uri = pigeonMap['uri'];
-    result.isLocalMedia = pigeonMap['isLocalMedia'];
+    result.type = pigeonMap['type'];
+    result.packageName = pigeonMap['packageName'];
     result.autoPlay = pigeonMap['autoPlay'];
     result.hwAcc = pigeonMap['hwAcc'];
     result.options = pigeonMap['options'];
@@ -56,13 +59,19 @@ class TextureMessage {
 class SetMediaMessage {
   int textureId;
   String uri;
-  bool isLocalMedia;
+  int type;
+  String packageName;
+  bool autoPlay;
+  int hwAcc;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
     pigeonMap['uri'] = uri;
-    pigeonMap['isLocalMedia'] = isLocalMedia;
+    pigeonMap['type'] = type;
+    pigeonMap['packageName'] = packageName;
+    pigeonMap['autoPlay'] = autoPlay;
+    pigeonMap['hwAcc'] = hwAcc;
     return pigeonMap;
   }
   // ignore: unused_element
@@ -70,7 +79,10 @@ class SetMediaMessage {
     final SetMediaMessage result = SetMediaMessage();
     result.textureId = pigeonMap['textureId'];
     result.uri = pigeonMap['uri'];
-    result.isLocalMedia = pigeonMap['isLocalMedia'];
+    result.type = pigeonMap['type'];
+    result.packageName = pigeonMap['packageName'];
+    result.autoPlay = pigeonMap['autoPlay'];
+    result.hwAcc = pigeonMap['hwAcc'];
     return result;
   }
 }

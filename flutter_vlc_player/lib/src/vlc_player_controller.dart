@@ -5,7 +5,7 @@ final VlcPlayerPlatform _vlcPlayerPlatform = VlcPlayerPlatform.instance
 // performed.
   ..init();
 
-typedef CastCallback = void Function(VlcCastEventType, String, String);
+typedef RendererCallback = void Function(VlcRendererEventType, String, String);
 
 /// Controls a platform vlc player, and provides updates when the state is
 /// changing.
@@ -18,21 +18,40 @@ typedef CastCallback = void Function(VlcCastEventType, String, String);
 ///
 /// After [dispose] all further calls are ignored.
 class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
+  ///
+  /// The name of the asset is given by the [dataSource] argument and must not be
+  /// null. The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
+  VlcPlayerController.asset(
+    this.dataSource, {
+    this.autoInitialize = true,
+    this.package,
+    this.hwAcc = HwAcc.AUTO,
+    this.autoPlay = true,
+    this.options,
+    VoidCallback onInit,
+    RendererCallback onRendererHandler,
+  })  : _dataSourceType = DataSourceType.asset,
+        _onInit = onInit,
+        _onRendererHandler = onRendererHandler,
+        super(VlcPlayerValue(duration: null));
+
   /// Constructs a [VlcPlayerController] playing a video from an local file.
   ///
   /// The name of the local file is given by the [dataSource] argument and must not be
   /// null.
-  VlcPlayerController.local(
+  VlcPlayerController.file(
     this.dataSource, {
     this.autoInitialize = true,
     this.hwAcc = HwAcc.AUTO,
     this.autoPlay = true,
     this.options,
     VoidCallback onInit,
-    CastCallback onCastHandler,
-  })  : _isLocalMedia = true,
+    RendererCallback onRendererHandler,
+  })  : package = null,
+        _dataSourceType = DataSourceType.file,
         _onInit = onInit,
-        _onCastHandler = onCastHandler,
+        _onRendererHandler = onRendererHandler,
         super(VlcPlayerValue(duration: null));
 
   /// Constructs a [VlcPlayerController] playing a video from obtained from
@@ -47,10 +66,11 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     this.autoPlay = true,
     this.options,
     VoidCallback onInit,
-    CastCallback onCastHandler,
-  })  : _isLocalMedia = false,
+    RendererCallback onRendererHandler,
+  })  : package = null,
+        _dataSourceType = DataSourceType.network,
         _onInit = onInit,
-        _onCastHandler = onCastHandler,
+        _onRendererHandler = onRendererHandler,
         super(VlcPlayerValue(duration: null));
 
   /// The URI to the video file. This will be in different formats depending on
@@ -70,6 +90,14 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// Initialize vlc player when the platform is ready automatically
   final bool autoInitialize;
 
+  /// Only set for [asset] videos. The package that the asset was loaded from.
+  final String package;
+
+  /// Describes the type of data source this [VlcPlayerController]
+  /// is constructed with.
+  DataSourceType get dataSourceType => _dataSourceType;
+  DataSourceType _dataSourceType;
+
   /// Determine if platform is ready to call initialize method
   bool get isReadyToInitialize => _isReadyToInitialize;
   bool _isReadyToInitialize;
@@ -87,14 +115,14 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// [VlcPlayerController.play] in this callback. (see the example)
   VoidCallback _onInit;
 
-  /// This is a callback that will be executed every time a new cast device detected/removed
-  /// It should be defined as "void Function(CastStatus, String, String)", where the CastStatus is an enum { DEVICE_ADDED, DEVICE_DELETED } and the next two String arguments are name and displayName of cast device, respectively.
-  CastCallback _onCastHandler;
+  /// This is a callback that will be executed every time a new renderer cast device attached/detached
+  /// It should be defined as "void Function(VlcRendererEventType, String, String)", where the VlcRendererEventType is an enum { attached, detached } and the next two String arguments are unique-id and name of renderer device, respectively.
+  RendererCallback _onRendererHandler;
 
-  bool _isLocalMedia;
   bool _isDisposed = false;
   Completer<void> _creatingCompleter;
-  StreamSubscription<dynamic> _eventSubscription;
+  StreamSubscription<dynamic> _mediaEventSubscription;
+  StreamSubscription<dynamic> _rendererEventSubscription;
   VlcAppLifeCycleObserver _lifeCycleObserver;
 
   /// Attempts to open the given [url] and load metadata about the video.
@@ -110,7 +138,8 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     await _vlcPlayerPlatform.create(
       viewId: _viewId,
       uri: this.dataSource,
-      isLocalMedia: _isLocalMedia,
+      type: this.dataSourceType,
+      package: this.package,
       hwAcc: this.hwAcc ?? HwAcc.AUTO,
       autoPlay: this.autoPlay ?? true,
       options: this.options ?? [],
@@ -119,7 +148,9 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     _creatingCompleter.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
-    void eventListener(VlcMediaEvent event) {
+    // listen for media events
+
+    void mediaEventListener(VlcMediaEvent event) {
       if (_isDisposed) {
         return;
       }
@@ -198,11 +229,37 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       }
     }
 
-    _eventSubscription = _vlcPlayerPlatform
+    _mediaEventSubscription = _vlcPlayerPlatform
         .mediaEventsFor(_viewId)
-        .listen(eventListener, onError: errorListener);
+        .listen(mediaEventListener, onError: errorListener);
+
+    // listen for renderer devices events
+    void rendererEventListener(VlcRendererEvent event) {
+      if (_isDisposed) {
+        return;
+      }
+      switch (event.eventType) {
+        case VlcRendererEventType.attached:
+          if (_onRendererHandler != null)
+            _onRendererHandler(VlcRendererEventType.attached, event.rendererId,
+                event.rendererName);
+          break;
+        case VlcRendererEventType.detached:
+          if (_onRendererHandler != null)
+            _onRendererHandler(VlcRendererEventType.detached, event.rendererId,
+                event.rendererName);
+          break;
+        case VlcRendererEventType.unknown:
+          break;
+      }
+    }
+
+    _rendererEventSubscription = _vlcPlayerPlatform
+        .rendererEventsFor(_viewId)
+        .listen(rendererEventListener);
 
     if (_onInit != null) _onInit();
+    value._initialized = true;
 
     return initializingCompleter.future;
   }
@@ -213,10 +270,11 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       await _creatingCompleter.future;
       if (!_isDisposed) {
         _isDisposed = true;
-        await _eventSubscription?.cancel();
+        await _mediaEventSubscription?.cancel();
+        await _rendererEventSubscription?.cancel();
         await _vlcPlayerPlatform.dispose(_viewId);
       }
-      _lifeCycleObserver.dispose();
+      _lifeCycleObserver?.dispose();
     }
     _isDisposed = true;
     super.dispose();
@@ -226,18 +284,27 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   /// its state before the method was called. (i.e. if setStreamUrl is called whilst media is playing, once the new
   /// URL has been loaded, the new stream will begin playing.)
   /// [uri] - the URL of the stream to start playing.
-  /// [isLocalMedia] - Set true if the media url is on local storage.
-  Future<void> setStreamUrl(String uri, {bool isLocalMedia}) async {
+  /// [dataSourceType] - the source type of media.
+  Future<void> setStreamUrl(
+    String uri,
+    DataSourceType dataSourceType, {
+    String package,
+    bool autoPlay,
+    HwAcc hwAcc,
+  }) async {
     if (!value.initialized || _isDisposed) {
       return;
     }
-    bool wasPlaying = value.isPlaying;
+    value._initialized = false;
     await _vlcPlayerPlatform.setStreamUrl(
       _viewId,
-      uri,
-      isLocalMedia: isLocalMedia ?? false,
+      uri: uri,
+      type: this.dataSourceType,
+      package: this.package,
+      hwAcc: this.hwAcc ?? HwAcc.AUTO,
+      autoPlay: this.autoPlay ?? true,
     );
-    if (wasPlaying) play();
+    value._initialized = true;
     return;
   }
 

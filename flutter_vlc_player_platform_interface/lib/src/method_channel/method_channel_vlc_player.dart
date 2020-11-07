@@ -6,10 +6,12 @@ import 'package:cryptoutils/utils.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_vlc_player_platform_interface/vlc_player_flutter_platform_interface.dart';
 import '../enums/hardware_acceleration.dart';
 import '../enums/media_event_type.dart';
-import '../events/cast_event.dart';
+import '../enums/renderer_event_type.dart';
 import '../events/media_event.dart';
+import '../events/renderer_event.dart';
 
 import '../messages/messages.dart';
 import '../platform_interface/vlc_player_platform_interface.dart';
@@ -18,8 +20,12 @@ import '../platform_interface/vlc_player_platform_interface.dart';
 class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   VlcPlayerApi _api = VlcPlayerApi();
 
-  EventChannel _eventChannelFor(int textureId) {
+  EventChannel _mediaEventChannelFor(int textureId) {
     return EventChannel('flutter_video_plugin/getVideoEvents_$textureId');
+  }
+
+  EventChannel _rendererEventChannelFor(int textureId) {
+    return EventChannel('flutter_video_plugin/getRendererEvents_$textureId');
   }
 
   @override
@@ -29,21 +35,20 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
 
   @override
   Future<void> create({
-    int viewId,
+    @required int viewId,
     @required String uri,
-    bool isLocalMedia,
+    @required DataSourceType type,
+    String package,
     bool autoPlay,
     HwAcc hwAcc,
     List<String> options,
-    String subtitleUrl,
-    bool isLocalSubtitle,
-    bool isSubtitleSelected,
   }) async {
     CreateMessage message = CreateMessage();
     message.textureId = viewId;
     message.uri = uri;
+    message.type = type.index;
+    message.packageName = package;
     message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
-    message.isLocalMedia = isLocalMedia ?? true;
     message.autoPlay = autoPlay ?? true;
     message.options = options ?? [];
     return await _api.create(message);
@@ -80,7 +85,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
 
   @override
   Stream<VlcMediaEvent> mediaEventsFor(int textureId) {
-    return _eventChannelFor(textureId).receiveBroadcastStream().map(
+    return _mediaEventChannelFor(textureId).receiveBroadcastStream().map(
       (dynamic event) {
         final Map<dynamic, dynamic> map = event;
         //
@@ -146,14 +151,20 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
 
   @override
   Future<void> setStreamUrl(
-    int textureId,
-    String uri, {
-    bool isLocalMedia,
+    int textureId, {
+    @required String uri,
+    @required DataSourceType type,
+    String package,
+    bool autoPlay,
+    HwAcc hwAcc,
   }) async {
     SetMediaMessage message = SetMediaMessage();
     message.textureId = textureId;
     message.uri = uri;
-    message.isLocalMedia = isLocalMedia ?? false;
+    message.type = type.index;
+    message.packageName = package;
+    message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
+    message.autoPlay = autoPlay ?? true;
     return await _api.setStreamUrl(message);
   }
 
@@ -436,8 +447,33 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
   }
 
   @override
-  Stream<VlcCastEvent> castEventsFor(int textureId) {
-    // TODO: implement castEventsFor
-    throw ('castEventsFor channel not implemented');
+  Stream<VlcRendererEvent> rendererEventsFor(int textureId) {
+    return _rendererEventChannelFor(textureId).receiveBroadcastStream().map(
+      (dynamic event) {
+        final Map<dynamic, dynamic> map = event;
+        //
+        switch (map['event']) {
+          case 'attached':
+            return VlcRendererEvent(
+              eventType: VlcRendererEventType.attached,
+              rendererId: map['id'],
+              rendererName: map['name'],
+            );
+            break;
+          //
+          case 'detached':
+            return VlcRendererEvent(
+              eventType: VlcRendererEventType.detached,
+              rendererId: map['id'],
+              rendererName: map['name'],
+            );
+            break;
+          //
+          default:
+            return VlcRendererEvent(eventType: VlcRendererEventType.unknown);
+            break;
+        }
+      },
+    );
   }
 }

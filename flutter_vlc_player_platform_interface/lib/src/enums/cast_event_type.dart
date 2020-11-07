@@ -1,4 +1,0 @@
-enum VlcCastEventType {
-  ATTACHED,
-  DETACHED,
-}

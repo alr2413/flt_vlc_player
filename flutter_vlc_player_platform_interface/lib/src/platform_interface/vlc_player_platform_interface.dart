@@ -4,10 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_vlc_player_platform_interface/vlc_player_flutter_platform_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import '../enums/hardware_acceleration.dart';
-import '../events/cast_event.dart';
+import '../events/renderer_event.dart';
 import '../events/media_event.dart';
 
 import '../method_channel/method_channel_vlc_player.dart';
@@ -58,7 +59,8 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
   Future<void> create({
     @required int viewId,
     @required String uri,
-    bool isLocalMedia,
+    @required DataSourceType type,
+    String package,
     bool autoPlay,
     HwAcc hwAcc,
     List<String> options,
@@ -73,9 +75,12 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
 
   /// Set/Change video streaming url
   Future<void> setStreamUrl(
-    int viewId,
-    String uri, {
-    bool isLocalMedia,
+    int viewId, {
+    @required String uri,
+    @required DataSourceType type,
+    String package,
+    bool autoPlay,
+    HwAcc hwAcc,
   }) {
     throw UnimplementedError('setStreamUrl() has not been implemented.');
   }
@@ -311,8 +316,8 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('castToRenderer() has not been implemented.');
   }
 
-  /// Returns a Stream of [VlcCastEvent]s.
-  Stream<VlcCastEvent> castEventsFor(int viewId) {
-    throw UnimplementedError('castEventsFor() has not been implemented.');
+  /// Returns a Stream of [VlcRendererEvent]s.
+  Stream<VlcRendererEvent> rendererEventsFor(int viewId) {
+    throw UnimplementedError('rendererEventsFor() has not been implemented.');
   }
 }

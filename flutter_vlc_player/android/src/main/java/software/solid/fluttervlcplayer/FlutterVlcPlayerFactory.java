@@ -13,15 +13,27 @@ import io.flutter.view.TextureRegistry;
 
 public class FlutterVlcPlayerFactory extends PlatformViewFactory {
 
+    public interface KeyForAssetFn {
+        String get(String asset);
+    }
+
+    public interface KeyForAssetAndPackageName {
+        String get(String asset, String packageName);
+    }
+
     private final BinaryMessenger messenger;
     private final TextureRegistry textureRegistry;
+    private final KeyForAssetFn keyForAsset;
+    private final KeyForAssetAndPackageName keyForAssetAndPackageName;
     //
     private FlutterVlcPlayerBuilder flutterVlcPlayerBuilder;
 
-    public FlutterVlcPlayerFactory(BinaryMessenger messenger, TextureRegistry textureRegistry) {
+    public FlutterVlcPlayerFactory(BinaryMessenger messenger, TextureRegistry textureRegistry, KeyForAssetFn keyForAsset, KeyForAssetAndPackageName keyForAssetAndPackageName) {
         super(StandardMessageCodec.INSTANCE);
         this.messenger = messenger;
         this.textureRegistry = textureRegistry;
+        this.keyForAsset = keyForAsset;
+        this.keyForAssetAndPackageName = keyForAssetAndPackageName;
         //
         flutterVlcPlayerBuilder = new FlutterVlcPlayerBuilder();
     }
@@ -29,7 +41,7 @@ public class FlutterVlcPlayerFactory extends PlatformViewFactory {
     @Override
     public PlatformView create(Context context, int viewId, Object args) {
 //        Map<String, Object> params = (Map<String, Object>) args;
-        return flutterVlcPlayerBuilder.build(viewId, context, messenger, textureRegistry);
+        return flutterVlcPlayerBuilder.build(viewId, context, messenger, textureRegistry, keyForAsset, keyForAssetAndPackageName);
     }
 
     public void startListening() {

@@ -29,16 +29,19 @@ class VlcPlayerValue {
   });
 
   /// Returns an instance with a `null` [Duration].
-  VlcPlayerValue.uninitialized() : this(duration: null);
+  factory VlcPlayerValue.uninitialized() {
+    return VlcPlayerValue(duration: null).._initialized = false;
+  }
 
   /// Returns an instance with a `null` [Duration], the playing state error
   /// and the given [errorDescription].
-  VlcPlayerValue.erroneous(String errorDescription)
-      : this(
-          duration: null,
-          playingState: PlayingState.error,
-          errorDescription: errorDescription,
-        );
+  factory VlcPlayerValue.erroneous(String errorDescription) {
+    return VlcPlayerValue(
+      duration: null,
+      playingState: PlayingState.error,
+      errorDescription: errorDescription,
+    ).._initialized = false;
+  }
 
   /// The total duration of the video.
   ///
@@ -48,6 +51,7 @@ class VlcPlayerValue {
   /// The current playback position.
   final Duration position;
 
+  /// The playing state of player
   final PlayingState playingState;
 
   /// True if the video is playing. False if it's paused or stopped.
@@ -105,8 +109,9 @@ class VlcPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
-  /// Indicates whether or not the video has been loaded and is ready to play.
-  bool get initialized => duration != null;
+  /// Indicates whether or not the vlc is ready to play.
+  bool get initialized => _initialized;
+  bool _initialized = false;
 
   /// Indicates whether or not the video is in an error state. If this is true
   /// [errorDescription] should have information about the problem.
@@ -170,7 +175,7 @@ class VlcPlayerValue {
       videoTracksCount: videoTracksCount ?? this.videoTracksCount,
       activeVideoTrack: activeVideoTrack ?? this.activeVideoTrack,
       errorDescription: errorDescription ?? this.errorDescription,
-    );
+    ).._initialized = this._initialized;
   }
 
   @override

@@ -134,9 +134,13 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.uri == [NSNull null]) {
     result.uri = nil;
   }
-  result.isLocalMedia = dict[@"isLocalMedia"];
-  if ((NSNull *)result.isLocalMedia == [NSNull null]) {
-    result.isLocalMedia = nil;
+  result.type = dict[@"type"];
+  if ((NSNull *)result.type == [NSNull null]) {
+    result.type = nil;
+  }
+  result.packageName = dict[@"packageName"];
+  if ((NSNull *)result.packageName == [NSNull null]) {
+    result.packageName = nil;
   }
   result.autoPlay = dict[@"autoPlay"];
   if ((NSNull *)result.autoPlay == [NSNull null]) {
@@ -153,7 +157,7 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", (self.autoPlay ? self.autoPlay : [NSNull null]), @"autoPlay", (self.hwAcc ? self.hwAcc : [NSNull null]), @"hwAcc", (self.options ? self.options : [NSNull null]), @"options", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.type ? self.type : [NSNull null]), @"type", (self.packageName ? self.packageName : [NSNull null]), @"packageName", (self.autoPlay ? self.autoPlay : [NSNull null]), @"autoPlay", (self.hwAcc ? self.hwAcc : [NSNull null]), @"hwAcc", (self.options ? self.options : [NSNull null]), @"options", nil];
 }
 @end
 
@@ -182,14 +186,26 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.uri == [NSNull null]) {
     result.uri = nil;
   }
-  result.isLocalMedia = dict[@"isLocalMedia"];
-  if ((NSNull *)result.isLocalMedia == [NSNull null]) {
-    result.isLocalMedia = nil;
+  result.type = dict[@"type"];
+  if ((NSNull *)result.type == [NSNull null]) {
+    result.type = nil;
+  }
+  result.packageName = dict[@"packageName"];
+  if ((NSNull *)result.packageName == [NSNull null]) {
+    result.packageName = nil;
+  }
+  result.autoPlay = dict[@"autoPlay"];
+  if ((NSNull *)result.autoPlay == [NSNull null]) {
+    result.autoPlay = nil;
+  }
+  result.hwAcc = dict[@"hwAcc"];
+  if ((NSNull *)result.hwAcc == [NSNull null]) {
+    result.hwAcc = nil;
   }
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.isLocalMedia ? self.isLocalMedia : [NSNull null]), @"isLocalMedia", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.type ? self.type : [NSNull null]), @"type", (self.packageName ? self.packageName : [NSNull null]), @"packageName", (self.autoPlay ? self.autoPlay : [NSNull null]), @"autoPlay", (self.hwAcc ? self.hwAcc : [NSNull null]), @"hwAcc", nil];
 }
 @end
 

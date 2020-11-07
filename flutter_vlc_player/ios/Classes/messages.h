@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CreateMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
 @property(nonatomic, copy, nullable) NSString * uri;
-@property(nonatomic, strong, nullable) NSNumber * isLocalMedia;
+@property(nonatomic, strong, nullable) NSNumber * type;
+@property(nonatomic, copy, nullable) NSString * packageName;
 @property(nonatomic, strong, nullable) NSNumber * autoPlay;
 @property(nonatomic, strong, nullable) NSNumber * hwAcc;
 @property(nonatomic, strong, nullable) NSArray * options;
@@ -49,7 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SetMediaMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
 @property(nonatomic, copy, nullable) NSString * uri;
-@property(nonatomic, strong, nullable) NSNumber * isLocalMedia;
+@property(nonatomic, strong, nullable) NSNumber * type;
+@property(nonatomic, copy, nullable) NSString * packageName;
+@property(nonatomic, strong, nullable) NSNumber * autoPlay;
+@property(nonatomic, strong, nullable) NSNumber * hwAcc;
 @end
 
 @interface BooleanMessage : NSObject

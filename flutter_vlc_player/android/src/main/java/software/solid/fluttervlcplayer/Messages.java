@@ -23,9 +23,13 @@ public class Messages {
     public String getUri() { return uri; }
     public void setUri(String setterArg) { this.uri = setterArg; }
 
-    private Boolean isLocalMedia;
-    public Boolean getIsLocalMedia() { return isLocalMedia; }
-    public void setIsLocalMedia(Boolean setterArg) { this.isLocalMedia = setterArg; }
+    private Long type;
+    public Long getType() { return type; }
+    public void setType(Long setterArg) { this.type = setterArg; }
+
+    private String packageName;
+    public String getPackageName() { return packageName; }
+    public void setPackageName(String setterArg) { this.packageName = setterArg; }
 
     private Boolean autoPlay;
     public Boolean getAutoPlay() { return autoPlay; }
@@ -43,7 +47,8 @@ public class Messages {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("uri", uri);
-      toMapResult.put("isLocalMedia", isLocalMedia);
+      toMapResult.put("type", type);
+      toMapResult.put("packageName", packageName);
       toMapResult.put("autoPlay", autoPlay);
       toMapResult.put("hwAcc", hwAcc);
       toMapResult.put("options", options);
@@ -55,8 +60,10 @@ public class Messages {
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       Object uri = map.get("uri");
       fromMapResult.uri = (String)uri;
-      Object isLocalMedia = map.get("isLocalMedia");
-      fromMapResult.isLocalMedia = (Boolean)isLocalMedia;
+      Object type = map.get("type");
+      fromMapResult.type = (type == null) ? null : ((type instanceof Integer) ? (Integer)type : (Long)type);
+      Object packageName = map.get("packageName");
+      fromMapResult.packageName = (String)packageName;
       Object autoPlay = map.get("autoPlay");
       fromMapResult.autoPlay = (Boolean)autoPlay;
       Object hwAcc = map.get("hwAcc");
@@ -96,15 +103,30 @@ public class Messages {
     public String getUri() { return uri; }
     public void setUri(String setterArg) { this.uri = setterArg; }
 
-    private Boolean isLocalMedia;
-    public Boolean getIsLocalMedia() { return isLocalMedia; }
-    public void setIsLocalMedia(Boolean setterArg) { this.isLocalMedia = setterArg; }
+    private Long type;
+    public Long getType() { return type; }
+    public void setType(Long setterArg) { this.type = setterArg; }
+
+    private String packageName;
+    public String getPackageName() { return packageName; }
+    public void setPackageName(String setterArg) { this.packageName = setterArg; }
+
+    private Boolean autoPlay;
+    public Boolean getAutoPlay() { return autoPlay; }
+    public void setAutoPlay(Boolean setterArg) { this.autoPlay = setterArg; }
+
+    private Long hwAcc;
+    public Long getHwAcc() { return hwAcc; }
+    public void setHwAcc(Long setterArg) { this.hwAcc = setterArg; }
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("uri", uri);
-      toMapResult.put("isLocalMedia", isLocalMedia);
+      toMapResult.put("type", type);
+      toMapResult.put("packageName", packageName);
+      toMapResult.put("autoPlay", autoPlay);
+      toMapResult.put("hwAcc", hwAcc);
       return toMapResult;
     }
     static SetMediaMessage fromMap(HashMap map) {
@@ -113,8 +135,14 @@ public class Messages {
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       Object uri = map.get("uri");
       fromMapResult.uri = (String)uri;
-      Object isLocalMedia = map.get("isLocalMedia");
-      fromMapResult.isLocalMedia = (Boolean)isLocalMedia;
+      Object type = map.get("type");
+      fromMapResult.type = (type == null) ? null : ((type instanceof Integer) ? (Integer)type : (Long)type);
+      Object packageName = map.get("packageName");
+      fromMapResult.packageName = (String)packageName;
+      Object autoPlay = map.get("autoPlay");
+      fromMapResult.autoPlay = (Boolean)autoPlay;
+      Object hwAcc = map.get("hwAcc");
+      fromMapResult.hwAcc = (hwAcc == null) ? null : ((hwAcc instanceof Integer) ? (Integer)hwAcc : (Long)hwAcc);
       return fromMapResult;
     }
   }

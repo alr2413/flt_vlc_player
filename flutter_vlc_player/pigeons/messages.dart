@@ -7,7 +7,8 @@ class TextureMessage {
 class CreateMessage {
   int textureId;
   String uri;
-  bool isLocalMedia;
+  int type;
+  String packageName;
   bool autoPlay;
   int hwAcc;
   List<String> options;
@@ -16,7 +17,10 @@ class CreateMessage {
 class SetMediaMessage {
   int textureId;
   String uri;
-  bool isLocalMedia;
+  int type;
+  String packageName;
+  bool autoPlay;
+  int hwAcc;
 }
 
 class BooleanMessage {
@@ -183,7 +187,7 @@ abstract class VlcPlayerApi {
   void castToRenderer(RenderDeviceMessage msg);
 }
 
-// after changing anything, must run "flutter pub run pigeon \--input pigeons/messages.dart"
+// to make changes effect, must run "flutter pub run pigeon \--input pigeons/messages.dart"
 void configurePigeon(PigeonOptions opts) {
   opts.dartOut =
       '../flutter_vlc_player_platform_interface/lib/src/messages/messages.dart';

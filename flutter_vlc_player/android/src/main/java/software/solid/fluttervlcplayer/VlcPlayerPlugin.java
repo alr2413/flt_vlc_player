@@ -168,7 +168,16 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
 
         //todo: check for local file
         VlcPlayer player;
-        if (arg.getIsLocalMedia() != null) {
+        // if (arg.getIsLocalMedia() != null) {
+        //     player =
+        //             new VlcPlayer(
+        //                     flutterState.applicationContext,
+        //                     eventChannel,
+        //                     handle,
+        //                     arg.getUri(),
+        //                     options);
+        //     vlcPlayers.put(handle.id(), player);
+        // } else {
             player =
                     new VlcPlayer(
                             flutterState.applicationContext,
@@ -177,16 +186,7 @@ public class VlcPlayerPlugin implements FlutterPlugin, ActivityAware, VlcPlayerA
                             arg.getUri(),
                             options);
             vlcPlayers.put(handle.id(), player);
-        } else {
-            player =
-                    new VlcPlayer(
-                            flutterState.applicationContext,
-                            eventChannel,
-                            handle,
-                            arg.getUri(),
-                            options);
-            vlcPlayers.put(handle.id(), player);
-        }
+        // }
 //        TextureMessage message = new TextureMessage();
 //        message.setTextureId(handle.id());
         return;

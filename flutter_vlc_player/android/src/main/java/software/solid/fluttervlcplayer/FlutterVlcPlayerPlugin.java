@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import io.flutter.FlutterInjector;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -25,7 +26,9 @@ public class FlutterVlcPlayerPlugin implements FlutterPlugin, ActivityAware {
         flutterVlcPlayerFactory =
                 new FlutterVlcPlayerFactory(
                         registrar.messenger(),
-                        registrar.textures()
+                        registrar.textures(),
+                        registrar::lookupKeyForAsset,
+                        registrar::lookupKeyForAsset
                 );
         registrar
                 .platformViewRegistry()
@@ -57,10 +60,14 @@ public class FlutterVlcPlayerPlugin implements FlutterPlugin, ActivityAware {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        final FlutterInjector injector = FlutterInjector.instance();
+        //
         flutterVlcPlayerFactory =
                 new FlutterVlcPlayerFactory(
                         flutterPluginBinding.getBinaryMessenger(),
-                        flutterPluginBinding.getTextureRegistry()
+                        flutterPluginBinding.getTextureRegistry(),
+                        injector.flutterLoader()::getLookupKeyForAsset,
+                        injector.flutterLoader()::getLookupKeyForAsset
                 );
         flutterPluginBinding
                 .getPlatformViewRegistry()
