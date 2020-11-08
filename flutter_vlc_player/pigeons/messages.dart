@@ -81,7 +81,7 @@ class SpuTrackMessage {
 class AddSubtitleMessage {
   int textureId;
   String uri;
-  bool isLocal;
+  int type;
   bool isSelected;
 }
 
@@ -93,6 +93,13 @@ class AudioTracksMessage {
 class AudioTrackMessage {
   int textureId;
   int audioTrackNumber;
+}
+
+class AddAudioMessage {
+  int textureId;
+  String uri;
+  int type;
+  bool isSelected;
 }
 
 class VideoTracksMessage {
@@ -170,6 +177,7 @@ abstract class VlcPlayerApi {
   AudioTrackMessage getAudioTrack(TextureMessage msg);
   void setAudioDelay(DelayMessage msg);
   DelayMessage getAudioDelay(TextureMessage msg);
+  void addAudioTrack(AddAudioMessage msg);
   // videos
   TrackCountMessage getVideoTracksCount(TextureMessage msg);
   VideoTracksMessage getVideoTracks(TextureMessage msg);

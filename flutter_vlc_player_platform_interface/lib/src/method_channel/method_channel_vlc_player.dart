@@ -291,15 +291,15 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
 
   @override
   Future<void> addSubtitleTrack(
-    int textureId,
-    String uri, {
-    bool isLocal,
+    int textureId, {
+    @required String uri,
+    @required DataSourceType type,
     bool isSelected,
   }) async {
     AddSubtitleMessage message = AddSubtitleMessage();
     message.textureId = textureId;
     message.uri = uri;
-    message.isLocal = isLocal;
+    message.type = type.index;
     message.isSelected = isSelected;
     return await _api.addSubtitleTrack(message);
   }
@@ -344,6 +344,21 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     DelayMessage response =
         await _api.getAudioDelay(TextureMessage()..textureId = textureId);
     return response.delay;
+  }
+
+  @override
+  Future<void> addAudioTrack(
+    int textureId, {
+    @required String uri,
+    @required DataSourceType type,
+    bool isSelected,
+  }) async {
+    AddAudioMessage message = AddAudioMessage();
+    message.textureId = textureId;
+    message.uri = uri;
+    message.type = type.index;
+    message.isSelected = isSelected;
+    return await _api.addAudioTrack(message);
   }
 
   @override

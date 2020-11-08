@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AddSubtitleMessage;
 @class AudioTracksMessage;
 @class AudioTrackMessage;
+@class AddAudioMessage;
 @class VideoTracksMessage;
 @class VideoTrackMessage;
 @class VideoScaleMessage;
@@ -114,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AddSubtitleMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
 @property(nonatomic, copy, nullable) NSString * uri;
-@property(nonatomic, strong, nullable) NSNumber * isLocal;
+@property(nonatomic, strong, nullable) NSNumber * type;
 @property(nonatomic, strong, nullable) NSNumber * isSelected;
 @end
 
@@ -126,6 +127,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AudioTrackMessage : NSObject
 @property(nonatomic, strong, nullable) NSNumber * textureId;
 @property(nonatomic, strong, nullable) NSNumber * audioTrackNumber;
+@end
+
+@interface AddAudioMessage : NSObject
+@property(nonatomic, strong, nullable) NSNumber * textureId;
+@property(nonatomic, copy, nullable) NSString * uri;
+@property(nonatomic, strong, nullable) NSNumber * type;
+@property(nonatomic, strong, nullable) NSNumber * isSelected;
 @end
 
 @interface VideoTracksMessage : NSObject
@@ -199,6 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(nullable AudioTrackMessage *)getAudioTrack:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setAudioDelay:(DelayMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable DelayMessage *)getAudioDelay:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)addAudioTrack:(AddAudioMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable TrackCountMessage *)getVideoTracksCount:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(nullable VideoTracksMessage *)getVideoTracks:(TextureMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)setVideoTrack:(VideoTrackMessage*)input error:(FlutterError *_Nullable *_Nonnull)error;

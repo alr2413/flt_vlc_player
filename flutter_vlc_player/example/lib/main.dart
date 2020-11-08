@@ -60,12 +60,13 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VlcPlayerController.network(
-      "http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4",
+    _controller = VlcPlayerController.asset(
+      // "http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4",
       // "http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4",
-      // "/storage/emulated/0/Download/Test.mp4",
-      // "/sdcard/Download/Test.mp4",
-      autoPlay: false,
+      // "file:///storage/emulated/0/Download/Test.mp4",
+      // "file:///sdcard/test.mp4",
+      "assets/sample.mp4",
+      autoPlay: true,
       onInit: () {
         print('onInit ${_controller.value.playingState}');
       },
@@ -212,10 +213,7 @@ class _VlcRemoteVideoState extends State<_VlcRemoteVideo> {
                 flex: 1,
                 child: FlatButton(
                   child: Text("Change URL"),
-                  onPressed: () => _controller.setStreamUrl(
-                    changeUrl,
-                    DataSourceType.network,
-                  ),
+                  onPressed: () => _controller.setMediaFromNetwork(changeUrl),
                 ),
               ),
               Flexible(

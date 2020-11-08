@@ -5,6 +5,7 @@ import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.RendererDiscoverer;
 import org.videolan.libvlc.RendererItem;
+import org.videolan.libvlc.interfaces.IMedia;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,6 +27,7 @@ import software.solid.fluttervlcplayer.Enums.HwAcc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -296,27 +298,34 @@ final class FlutterVlcPlayer implements PlatformView {
         return mediaPlayer.isPlaying();
     }
 
-    void setStreamUrl(String url, boolean autoPlay, long hwAcc) {
-        mediaPlayer.stop();
-        //
-        Uri uri = Uri.parse(url);
-        Media media = new Media(libVLC, uri);
-        if (hwAcc != HwAcc.AUTOMATIC.getNumericType()) {
-            if (hwAcc == HwAcc.DISABLED.getNumericType()) {
-                media.setHWDecoderEnabled(false, false);
-            } else if (hwAcc == HwAcc.FULL.getNumericType() || hwAcc == HwAcc.DECODING.getNumericType()) {
-                media.setHWDecoderEnabled(true, true);
-                if (hwAcc == HwAcc.DECODING.getNumericType()) {
-                    media.addOption(":no-mediacodec-dr");
-                    media.addOption(":no-omxil-dr");
+    void setStreamUrl(String url, boolean isAssetUrl, boolean autoPlay, long hwAcc) {
+        try {
+            mediaPlayer.stop();
+            //
+            Media media;
+            if (isAssetUrl)
+                media = new Media(libVLC, context.getAssets().openFd(url));
+            else
+                media = new Media(libVLC, Uri.parse(url));
+            if (hwAcc != HwAcc.AUTOMATIC.getNumericType()) {
+                if (hwAcc == HwAcc.DISABLED.getNumericType()) {
+                    media.setHWDecoderEnabled(false, false);
+                } else if (hwAcc == HwAcc.FULL.getNumericType() || hwAcc == HwAcc.DECODING.getNumericType()) {
+                    media.setHWDecoderEnabled(true, true);
+                    if (hwAcc == HwAcc.DECODING.getNumericType()) {
+                        media.addOption(":no-mediacodec-dr");
+                        media.addOption(":no-omxil-dr");
+                    }
                 }
             }
+            mediaPlayer.setMedia(media);
+            media.release();
+            //
+            if (autoPlay)
+                mediaPlayer.play();
+        } catch (IOException e) {
+            log(e.getMessage());
         }
-        mediaPlayer.setMedia(media);
-        media.release();
-        //
-        if (autoPlay)
-            mediaPlayer.play();
     }
 
     void setLooping(boolean value) {
@@ -383,8 +392,11 @@ final class FlutterVlcPlayer implements PlatformView {
         return mediaPlayer.getSpuDelay();
     }
 
-    void addSubtitleTrack(String uri, boolean isLocal, boolean isSelected) {
-        mediaPlayer.addSlave(Media.Slave.Type.Subtitle, uri, isSelected);
+    void addSubtitleTrack(String url, boolean isNetworkUrl, boolean isSelected) {
+        if (isNetworkUrl)
+            mediaPlayer.addSlave(Media.Slave.Type.Subtitle, Uri.parse(url), isSelected);
+        else
+            mediaPlayer.addSlave(Media.Slave.Type.Subtitle, url, isSelected);
     }
 
     int getAudioTracksCount() {
@@ -416,6 +428,13 @@ final class FlutterVlcPlayer implements PlatformView {
 
     long getAudioDelay() {
         return mediaPlayer.getAudioDelay();
+    }
+
+    void addAudioTrack(String url, boolean isNetworkUrl, boolean isSelected) {
+        if (isNetworkUrl)
+            mediaPlayer.addSlave(Media.Slave.Type.Audio, Uri.parse(url), isSelected);
+        else
+            mediaPlayer.addSlave(Media.Slave.Type.Audio, url, isSelected);
     }
 
     int getVideoTracksCount() {

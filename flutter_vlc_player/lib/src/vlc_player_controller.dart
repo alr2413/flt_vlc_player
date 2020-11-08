@@ -36,24 +36,6 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
         _onRendererHandler = onRendererHandler,
         super(VlcPlayerValue(duration: null));
 
-  /// Constructs a [VlcPlayerController] playing a video from an local file.
-  ///
-  /// The name of the local file is given by the [dataSource] argument and must not be
-  /// null.
-  VlcPlayerController.file(
-    this.dataSource, {
-    this.autoInitialize = true,
-    this.hwAcc = HwAcc.AUTO,
-    this.autoPlay = true,
-    this.options,
-    VoidCallback onInit,
-    RendererCallback onRendererHandler,
-  })  : package = null,
-        _dataSourceType = DataSourceType.file,
-        _onInit = onInit,
-        _onRendererHandler = onRendererHandler,
-        super(VlcPlayerValue(duration: null));
-
   /// Constructs a [VlcPlayerController] playing a video from obtained from
   /// the network.
   ///
@@ -69,6 +51,25 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     RendererCallback onRendererHandler,
   })  : package = null,
         _dataSourceType = DataSourceType.network,
+        _onInit = onInit,
+        _onRendererHandler = onRendererHandler,
+        super(VlcPlayerValue(duration: null));
+
+  /// Constructs a [VlcPlayerController] playing a video from a file.
+  ///
+  /// This will load the file from the file-URI given by:
+  /// `'file://${file.path}'`.
+  VlcPlayerController.file(
+    File file, {
+    this.autoInitialize = true,
+    this.hwAcc = HwAcc.AUTO,
+    this.autoPlay = true,
+    this.options,
+    VoidCallback onInit,
+    RendererCallback onRendererHandler,
+  })  : dataSource = 'file://${file.path}',
+        package = null,
+        _dataSourceType = DataSourceType.file,
         _onInit = onInit,
         _onRendererHandler = onRendererHandler,
         super(VlcPlayerValue(duration: null));
@@ -91,7 +92,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
   final bool autoInitialize;
 
   /// Only set for [asset] videos. The package that the asset was loaded from.
-  final String package;
+  String package;
 
   /// Describes the type of data source this [VlcPlayerController]
   /// is constructed with.
@@ -280,14 +281,76 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     super.dispose();
   }
 
-  /// This stops playback and changes the URL. Once the new URL has been loaded, the playback state will revert to
-  /// its state before the method was called. (i.e. if setStreamUrl is called whilst media is playing, once the new
-  /// URL has been loaded, the new stream will begin playing.)
-  /// [uri] - the URL of the stream to start playing.
+  /// This stops playback and changes the data source. Once the new data source has been loaded, the playback state will revert to
+  /// its state before the method was called. (i.e. if this method is called whilst media is playing, once the new
+  /// data source has been loaded, the new stream will begin playing.)
+  /// [dataSource] - the path of the asset file.
+  Future<void> setMediaFromAsset(
+    String dataSource, {
+    String package,
+    bool autoPlay,
+    HwAcc hwAcc,
+  }) async {
+    this._dataSourceType = DataSourceType.asset;
+    this.package = package;
+    await _setStreamUrl(
+      dataSource,
+      dataSourceType: DataSourceType.asset,
+      package: package,
+      autoPlay: autoPlay,
+      hwAcc: hwAcc,
+    );
+  }
+
+  /// This stops playback and changes the data source. Once the new data source has been loaded, the playback state will revert to
+  /// its state before the method was called. (i.e. if this method is called whilst media is playing, once the new
+  /// data source has been loaded, the new stream will begin playing.)
+  /// [dataSource] - the URL of the stream to start playing.
+  Future<void> setMediaFromNetwork(
+    String dataSource, {
+    bool autoPlay,
+    HwAcc hwAcc,
+  }) async {
+    this._dataSourceType = DataSourceType.network;
+    this.package = null;
+    await _setStreamUrl(
+      dataSource,
+      dataSourceType: DataSourceType.network,
+      package: null,
+      autoPlay: autoPlay,
+      hwAcc: hwAcc,
+    );
+  }
+
+  /// This stops playback and changes the data source. Once the new data source has been loaded, the playback state will revert to
+  /// its state before the method was called. (i.e. if this method is called whilst media is playing, once the new
+  /// data source has been loaded, the new stream will begin playing.)
+  /// [file] - the File stream to start playing.
+  Future<void> setMediaFromFile(
+    File file, {
+    bool autoPlay,
+    HwAcc hwAcc,
+  }) async {
+    this._dataSourceType = DataSourceType.file;
+    this.package = null;
+    String dataSource = 'file://${file.path}';
+    await _setStreamUrl(
+      dataSource,
+      dataSourceType: DataSourceType.file,
+      package: null,
+      autoPlay: autoPlay,
+      hwAcc: hwAcc,
+    );
+  }
+
+  /// This stops playback and changes the data source. Once the new data source has been loaded, the playback state will revert to
+  /// its state before the method was called. (i.e. if this method is called whilst media is playing, once the new
+  /// data source has been loaded, the new stream will begin playing.)
+  /// [dataSource] - the URL of the stream to start playing.
   /// [dataSourceType] - the source type of media.
-  Future<void> setStreamUrl(
-    String uri,
-    DataSourceType dataSourceType, {
+  Future<void> _setStreamUrl(
+    String dataSource, {
+    DataSourceType dataSourceType,
     String package,
     bool autoPlay,
     HwAcc hwAcc,
@@ -298,11 +361,11 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     value._initialized = false;
     await _vlcPlayerPlatform.setStreamUrl(
       _viewId,
-      uri: uri,
-      type: this.dataSourceType,
-      package: this.package,
-      hwAcc: this.hwAcc ?? HwAcc.AUTO,
-      autoPlay: this.autoPlay ?? true,
+      uri: dataSource,
+      type: dataSourceType,
+      package: package,
+      hwAcc: hwAcc ?? HwAcc.AUTO,
+      autoPlay: autoPlay ?? true,
     );
     value._initialized = true;
     return;
@@ -528,13 +591,40 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     return spuDelay;
   }
 
-  /// Add extra subtitle to media.
-  /// [uri] - URL of subtitle
-  /// [isLocal] - Set true if subtitle is on local storage
+  /// Add extra network subtitle to media.
+  /// [dataSource] - Url of subtitle
   /// [isSelected] - Set true if you wanna force the added subtitle to start display on media.
-  Future<void> addSubtitleTrack(
+  Future<void> addSubtitleFromNetwork(
+    String dataSource, {
+    bool isSelected,
+  }) async {
+    return await _addSubtitleTrack(
+      dataSource,
+      dataSourceType: DataSourceType.network,
+      isSelected: isSelected ?? true,
+    );
+  }
+
+  /// Add extra subtitle file to media.
+  /// [file] - Subtitle file
+  /// [isSelected] - Set true if you wanna force the added subtitle to start display on media.
+  Future<void> addSubtitleFromFile(
+    File file, {
+    bool isSelected,
+  }) async {
+    return await _addSubtitleTrack(
+      'file://${file.path}',
+      dataSourceType: DataSourceType.file,
+      isSelected: isSelected ?? true,
+    );
+  }
+
+  /// Add extra subtitle to media.
+  /// [uri] - URI of subtitle
+  /// [isSelected] - Set true if you wanna force the added subtitle to start display on media.
+  Future<void> _addSubtitleTrack(
     String uri, {
-    bool isLocal,
+    DataSourceType dataSourceType,
     bool isSelected,
   }) async {
     if (!value.initialized || _isDisposed) {
@@ -542,8 +632,8 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     }
     return await _vlcPlayerPlatform.addSubtitleTrack(
       _viewId,
-      uri,
-      isLocal: isLocal ?? false,
+      uri: uri,
+      type: dataSourceType,
       isSelected: isSelected ?? true,
     );
   }
@@ -606,6 +696,53 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     int audioDelay = await _vlcPlayerPlatform.getAudioDelay(_viewId);
     value = value.copyWith(audioDelay: audioDelay);
     return audioDelay;
+  }
+
+  /// Add extra network audio to media.
+  /// [dataSource] - Url of audio
+  /// [isSelected] - Set true if you wanna force the added audio to start playing on media.
+  Future<void> addAudioFromNetwork(
+    String dataSource, {
+    bool isSelected,
+  }) async {
+    return await _addAudioTrack(
+      dataSource,
+      dataSourceType: DataSourceType.network,
+      isSelected: isSelected ?? true,
+    );
+  }
+
+  /// Add extra audio file to media.
+  /// [file] - Audio file
+  /// [isSelected] - Set true if you wanna force the added audio to start playing on media.
+  Future<void> addAudioFromFile(
+    File file, {
+    bool isSelected,
+  }) async {
+    return await _addAudioTrack(
+      'file://${file.path}',
+      dataSourceType: DataSourceType.file,
+      isSelected: isSelected ?? true,
+    );
+  }
+
+  /// Add extra audio to media.
+  /// [uri] - URI of audio
+  /// [isSelected] - Set true if you wanna force the added audio to start playing on media.
+  Future<void> _addAudioTrack(
+    String uri, {
+    DataSourceType dataSourceType,
+    bool isSelected,
+  }) async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+    return await _vlcPlayerPlatform.addAudioTrack(
+      _viewId,
+      uri: uri,
+      type: dataSourceType,
+      isSelected: isSelected ?? true,
+    );
   }
 
   /// Returns the number of video tracks

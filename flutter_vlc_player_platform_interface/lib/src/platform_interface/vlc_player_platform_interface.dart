@@ -192,12 +192,12 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
 
   /// Add extra subtitle to media.
   /// [uri] - URL of subtitle
-  /// [isLocal] - Set true if subtitle is on local storage
+  /// [type] - Set type of subtitle
   /// [isSelected] - Set true if you wanna force the added subtitle to start display on media.
   Future<void> addSubtitleTrack(
-    int viewId,
-    String uri, {
-    bool isLocal,
+    int viewId, {
+    @required String uri,
+    @required DataSourceType type,
     bool isSelected,
   }) {
     throw UnimplementedError('addSubtitleTrack() has not been implemented.');
@@ -234,6 +234,19 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
   /// Returns the amount of audio track time delay.
   Future<int> getAudioDelay(int viewId) {
     throw UnimplementedError('getAudioDelay() has not been implemented.');
+  }
+
+  /// Add extra audio to media.
+  /// [uri] - uri of audio
+  /// [type] - type of subtitle (network or file)
+  /// [isSelected] - Set true if you wanna force the added subtitle to start display on media.
+  Future<void> addAudioTrack(
+    int viewId, {
+    @required String uri,
+    @required DataSourceType type,
+    bool isSelected,
+  }) {
+    throw UnimplementedError('addAudioTrack() has not been implemented.');
   }
 
   /// Returns the number of video tracks

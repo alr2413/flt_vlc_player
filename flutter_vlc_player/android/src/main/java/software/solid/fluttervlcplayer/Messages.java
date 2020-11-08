@@ -443,9 +443,9 @@ public class Messages {
     public String getUri() { return uri; }
     public void setUri(String setterArg) { this.uri = setterArg; }
 
-    private Boolean isLocal;
-    public Boolean getIsLocal() { return isLocal; }
-    public void setIsLocal(Boolean setterArg) { this.isLocal = setterArg; }
+    private Long type;
+    public Long getType() { return type; }
+    public void setType(Long setterArg) { this.type = setterArg; }
 
     private Boolean isSelected;
     public Boolean getIsSelected() { return isSelected; }
@@ -455,7 +455,7 @@ public class Messages {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("textureId", textureId);
       toMapResult.put("uri", uri);
-      toMapResult.put("isLocal", isLocal);
+      toMapResult.put("type", type);
       toMapResult.put("isSelected", isSelected);
       return toMapResult;
     }
@@ -465,8 +465,8 @@ public class Messages {
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       Object uri = map.get("uri");
       fromMapResult.uri = (String)uri;
-      Object isLocal = map.get("isLocal");
-      fromMapResult.isLocal = (Boolean)isLocal;
+      Object type = map.get("type");
+      fromMapResult.type = (type == null) ? null : ((type instanceof Integer) ? (Integer)type : (Long)type);
       Object isSelected = map.get("isSelected");
       fromMapResult.isSelected = (Boolean)isSelected;
       return fromMapResult;
@@ -521,6 +521,46 @@ public class Messages {
       fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
       Object audioTrackNumber = map.get("audioTrackNumber");
       fromMapResult.audioTrackNumber = (audioTrackNumber == null) ? null : ((audioTrackNumber instanceof Integer) ? (Integer)audioTrackNumber : (Long)audioTrackNumber);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class AddAudioMessage {
+    private Long textureId;
+    public Long getTextureId() { return textureId; }
+    public void setTextureId(Long setterArg) { this.textureId = setterArg; }
+
+    private String uri;
+    public String getUri() { return uri; }
+    public void setUri(String setterArg) { this.uri = setterArg; }
+
+    private Long type;
+    public Long getType() { return type; }
+    public void setType(Long setterArg) { this.type = setterArg; }
+
+    private Boolean isSelected;
+    public Boolean getIsSelected() { return isSelected; }
+    public void setIsSelected(Boolean setterArg) { this.isSelected = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("textureId", textureId);
+      toMapResult.put("uri", uri);
+      toMapResult.put("type", type);
+      toMapResult.put("isSelected", isSelected);
+      return toMapResult;
+    }
+    static AddAudioMessage fromMap(HashMap map) {
+      AddAudioMessage fromMapResult = new AddAudioMessage();
+      Object textureId = map.get("textureId");
+      fromMapResult.textureId = (textureId == null) ? null : ((textureId instanceof Integer) ? (Integer)textureId : (Long)textureId);
+      Object uri = map.get("uri");
+      fromMapResult.uri = (String)uri;
+      Object type = map.get("type");
+      fromMapResult.type = (type == null) ? null : ((type instanceof Integer) ? (Integer)type : (Long)type);
+      Object isSelected = map.get("isSelected");
+      fromMapResult.isSelected = (Boolean)isSelected;
       return fromMapResult;
     }
   }
@@ -765,6 +805,7 @@ public class Messages {
     AudioTrackMessage getAudioTrack(TextureMessage arg);
     void setAudioDelay(DelayMessage arg);
     DelayMessage getAudioDelay(TextureMessage arg);
+    void addAudioTrack(AddAudioMessage arg);
     TrackCountMessage getVideoTracksCount(TextureMessage arg);
     VideoTracksMessage getVideoTracks(TextureMessage arg);
     void setVideoTrack(VideoTrackMessage arg);
@@ -1399,6 +1440,27 @@ public class Messages {
               TextureMessage input = TextureMessage.fromMap((HashMap)message);
               DelayMessage output = api.getAudioDelay(input);
               wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.VlcPlayerApi.addAudioTrack", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              AddAudioMessage input = AddAudioMessage.fromMap((HashMap)message);
+              api.addAudioTrack(input);
+              wrapped.put("result", null);
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));

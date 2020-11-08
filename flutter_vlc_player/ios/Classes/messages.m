@@ -90,6 +90,10 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 +(AudioTrackMessage*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
 @end
+@interface AddAudioMessage ()
++(AddAudioMessage*)fromMap:(NSDictionary*)dict;
+-(NSDictionary*)toMap;
+@end
 @interface VideoTracksMessage ()
 +(VideoTracksMessage*)fromMap:(NSDictionary*)dict;
 -(NSDictionary*)toMap;
@@ -418,9 +422,9 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.uri == [NSNull null]) {
     result.uri = nil;
   }
-  result.isLocal = dict[@"isLocal"];
-  if ((NSNull *)result.isLocal == [NSNull null]) {
-    result.isLocal = nil;
+  result.type = dict[@"type"];
+  if ((NSNull *)result.type == [NSNull null]) {
+    result.type = nil;
   }
   result.isSelected = dict[@"isSelected"];
   if ((NSNull *)result.isSelected == [NSNull null]) {
@@ -429,7 +433,7 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
   return result;
 }
 -(NSDictionary*)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.isLocal ? self.isLocal : [NSNull null]), @"isLocal", (self.isSelected ? self.isSelected : [NSNull null]), @"isSelected", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.type ? self.type : [NSNull null]), @"type", (self.isSelected ? self.isSelected : [NSNull null]), @"isSelected", nil];
 }
 @end
 
@@ -466,6 +470,32 @@ static NSDictionary* wrapResult(NSDictionary *result, FlutterError *error) {
 }
 -(NSDictionary*)toMap {
   return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.audioTrackNumber ? self.audioTrackNumber : [NSNull null]), @"audioTrackNumber", nil];
+}
+@end
+
+@implementation AddAudioMessage
++(AddAudioMessage*)fromMap:(NSDictionary*)dict {
+  AddAudioMessage* result = [[AddAudioMessage alloc] init];
+  result.textureId = dict[@"textureId"];
+  if ((NSNull *)result.textureId == [NSNull null]) {
+    result.textureId = nil;
+  }
+  result.uri = dict[@"uri"];
+  if ((NSNull *)result.uri == [NSNull null]) {
+    result.uri = nil;
+  }
+  result.type = dict[@"type"];
+  if ((NSNull *)result.type == [NSNull null]) {
+    result.type = nil;
+  }
+  result.isSelected = dict[@"isSelected"];
+  if ((NSNull *)result.isSelected == [NSNull null]) {
+    result.isSelected = nil;
+  }
+  return result;
+}
+-(NSDictionary*)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.uri ? self.uri : [NSNull null]), @"uri", (self.type ? self.type : [NSNull null]), @"type", (self.isSelected ? self.isSelected : [NSNull null]), @"isSelected", nil];
 }
 @end
 
@@ -1117,6 +1147,23 @@ void VlcPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<VlcPlayerA
         TextureMessage *input = [TextureMessage fromMap:message];
         DelayMessage *output = [api getAudioDelay:input error:&error];
         callback(wrapResult([output toMap], error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.VlcPlayerApi.addAudioTrack"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        AddAudioMessage *input = [AddAudioMessage fromMap:message];
+        [api addAudioTrack:input error:&error];
+        callback(wrapResult(nil, error));
       }];
     }
     else {

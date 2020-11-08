@@ -299,14 +299,14 @@ class DelayMessage {
 class AddSubtitleMessage {
   int textureId;
   String uri;
-  bool isLocal;
+  int type;
   bool isSelected;
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['textureId'] = textureId;
     pigeonMap['uri'] = uri;
-    pigeonMap['isLocal'] = isLocal;
+    pigeonMap['type'] = type;
     pigeonMap['isSelected'] = isSelected;
     return pigeonMap;
   }
@@ -315,7 +315,7 @@ class AddSubtitleMessage {
     final AddSubtitleMessage result = AddSubtitleMessage();
     result.textureId = pigeonMap['textureId'];
     result.uri = pigeonMap['uri'];
-    result.isLocal = pigeonMap['isLocal'];
+    result.type = pigeonMap['type'];
     result.isSelected = pigeonMap['isSelected'];
     return result;
   }
@@ -355,6 +355,31 @@ class AudioTrackMessage {
     final AudioTrackMessage result = AudioTrackMessage();
     result.textureId = pigeonMap['textureId'];
     result.audioTrackNumber = pigeonMap['audioTrackNumber'];
+    return result;
+  }
+}
+
+class AddAudioMessage {
+  int textureId;
+  String uri;
+  int type;
+  bool isSelected;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['textureId'] = textureId;
+    pigeonMap['uri'] = uri;
+    pigeonMap['type'] = type;
+    pigeonMap['isSelected'] = isSelected;
+    return pigeonMap;
+  }
+  // ignore: unused_element
+  static AddAudioMessage _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final AddAudioMessage result = AddAudioMessage();
+    result.textureId = pigeonMap['textureId'];
+    result.uri = pigeonMap['uri'];
+    result.type = pigeonMap['type'];
+    result.isSelected = pigeonMap['isSelected'];
     return result;
   }
 }
@@ -1171,6 +1196,28 @@ class VlcPlayerApi {
     }
     
   }
+  Future<void> addAudioTrack(AddAudioMessage arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.addAudioTrack', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+    
+  }
   Future<TrackCountMessage> getVideoTracksCount(TextureMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -1490,6 +1537,7 @@ abstract class TestHostVlcPlayerApi {
   AudioTrackMessage getAudioTrack(TextureMessage arg);
   void setAudioDelay(DelayMessage arg);
   DelayMessage getAudioDelay(TextureMessage arg);
+  void addAudioTrack(AddAudioMessage arg);
   TrackCountMessage getVideoTracksCount(TextureMessage arg);
   VideoTracksMessage getVideoTracks(TextureMessage arg);
   void setVideoTrack(VideoTrackMessage arg);
@@ -1949,6 +1997,21 @@ abstract class TestHostVlcPlayerApi {
           final TextureMessage input = TextureMessage._fromMap(mapMessage);
           final DelayMessage output = api.getAudioDelay(input);
           return <dynamic, dynamic>{'result': output._toMap()};
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+          BasicMessageChannel<dynamic>('dev.flutter.pigeon.VlcPlayerApi.addAudioTrack', StandardMessageCodec());
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+
+        channel.setMockMessageHandler((dynamic message) async {
+          final Map<dynamic, dynamic> mapMessage = message as Map<dynamic, dynamic>;
+          final AddAudioMessage input = AddAudioMessage._fromMap(mapMessage);
+          api.addAudioTrack(input);
+          return <dynamic, dynamic>{};
         });
       }
     }

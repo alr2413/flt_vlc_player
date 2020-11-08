@@ -1,11 +1,14 @@
 package software.solid.fluttervlcplayer;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.util.LongSparseArray;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,22 +58,26 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
         FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
         //
         ArrayList<String> options = new ArrayList<String>();
-        if(arg.getOptions().size() > 0)
-            options = arg.getOptions();
+        if (arg.getOptions().size() > 0)
+            for (Object option : arg.getOptions())
+                options.add((String) option);
         player.initialize(options);
         //
         String mediaUrl;
+        boolean isAssetUrl;
         if (arg.getType() == DataSourceType.ASSET.getNumericType()) {
             String assetLookupKey;
             if (arg.getPackageName() != null)
                 assetLookupKey = keyForAssetAndPackageName.get(arg.getUri(), arg.getPackageName());
             else
                 assetLookupKey = keyForAsset.get(arg.getUri());
-            mediaUrl = "asset:///" + assetLookupKey;
+            mediaUrl = assetLookupKey;
+            isAssetUrl = true;
         } else {
             mediaUrl = arg.getUri();
+            isAssetUrl = false;
         }
-        player.setStreamUrl(mediaUrl, arg.getAutoPlay(), arg.getHwAcc());
+        player.setStreamUrl(mediaUrl, isAssetUrl, arg.getAutoPlay(), arg.getHwAcc());
     }
 
     @Override
@@ -83,6 +90,8 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
     @Override
     public void setStreamUrl(Messages.SetMediaMessage arg) {
         FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        //
+        boolean isAssetUrl;
         String mediaUrl;
         if (arg.getType() == DataSourceType.ASSET.getNumericType()) {
             String assetLookupKey;
@@ -90,11 +99,13 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
                 assetLookupKey = keyForAssetAndPackageName.get(arg.getUri(), arg.getPackageName());
             else
                 assetLookupKey = keyForAsset.get(arg.getUri());
-            mediaUrl = "asset:///" + assetLookupKey;
+            mediaUrl = assetLookupKey;
+            isAssetUrl = true;
         } else {
             mediaUrl = arg.getUri();
+            isAssetUrl = false;
         }
-        player.setStreamUrl(mediaUrl, arg.getAutoPlay(), arg.getHwAcc());
+        player.setStreamUrl(mediaUrl, isAssetUrl, arg.getAutoPlay(), arg.getHwAcc());
     }
 
     @Override
@@ -234,7 +245,8 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
     @Override
     public void addSubtitleTrack(Messages.AddSubtitleMessage arg) {
         FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
-        player.addSubtitleTrack(arg.getUri(), arg.getIsLocal(), arg.getIsSelected());
+        boolean isNetworkUrl = arg.getType() == DataSourceType.NETWORK.getNumericType();
+        player.addSubtitleTrack(arg.getUri(), isNetworkUrl, arg.getIsSelected());
     }
 
     @Override
@@ -279,6 +291,13 @@ public class FlutterVlcPlayerBuilder implements Messages.VlcPlayerApi {
         Messages.DelayMessage message = new Messages.DelayMessage();
         message.setDelay(player.getAudioDelay());
         return message;
+    }
+
+    @Override
+    public void addAudioTrack(Messages.AddAudioMessage arg) {
+        FlutterVlcPlayer player = vlcPlayers.get(arg.getTextureId());
+        boolean isNetworkUrl = arg.getType() == DataSourceType.NETWORK.getNumericType();
+        player.addAudioTrack(arg.getUri(), isNetworkUrl, arg.getIsSelected());
     }
 
     @Override

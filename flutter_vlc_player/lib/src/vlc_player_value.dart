@@ -40,7 +40,7 @@ class VlcPlayerValue {
       duration: null,
       playingState: PlayingState.error,
       errorDescription: errorDescription,
-    ).._initialized = false;
+    );
   }
 
   /// The total duration of the video.

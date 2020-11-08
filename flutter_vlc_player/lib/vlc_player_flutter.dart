@@ -1,6 +1,7 @@
 library vlc_player_flutter;
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
