@@ -18,7 +18,13 @@ export 'package:flutter_vlc_player_platform_interface/vlc_player_flutter_platfor
         VlcMediaEventType,
         VlcRendererEvent,
         VlcRendererEventType,
-        DataSourceType;
+        DataSourceType,
+        VlcPlayerOptions,
+        VlcAdvancedOptions,
+        VlcAudioOptions,
+        VlcRtpOptions,
+        VlcStreamOutputOptions,
+        VlcVideoOptions;
 
 part 'src/enums/playing_state.dart';
 

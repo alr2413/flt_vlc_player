@@ -75,6 +75,14 @@ class _AppState extends State<App> {
           onRendererHandler: (type, id, name) {
             print('onRendererHandler $type $id $name');
           },
+          options: VlcPlayerOptions(
+            advanced: VlcAdvancedOptions([
+              VlcAdvancedOptions.networkCaching(2000),
+            ]),
+            rtp: VlcRtpOptions([
+              VlcRtpOptions.rtpOverRtsp(true),
+            ]),
+          ),
         );
         break;
       case VideoType.file:

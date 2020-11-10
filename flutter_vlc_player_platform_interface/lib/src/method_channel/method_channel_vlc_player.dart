@@ -6,7 +6,9 @@ import 'package:cryptoutils/utils.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_vlc_player_platform_interface/vlc_player_flutter_platform_interface.dart';
+
+import '../../vlc_player_flutter_platform_interface.dart';
+import '../utils/options/vlc_player_options.dart';
 import '../enums/hardware_acceleration.dart';
 import '../enums/media_event_type.dart';
 import '../enums/renderer_event_type.dart';
@@ -41,7 +43,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     String package,
     bool autoPlay,
     HwAcc hwAcc,
-    List<String> options,
+    VlcPlayerOptions options,
   }) async {
     CreateMessage message = CreateMessage();
     message.textureId = viewId;
@@ -50,7 +52,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     message.packageName = package;
     message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
     message.autoPlay = autoPlay ?? true;
-    message.options = options ?? [];
+    message.options = options.get() ?? [];
     return await _api.create(message);
   }
 

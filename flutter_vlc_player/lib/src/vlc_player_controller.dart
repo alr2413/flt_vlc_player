@@ -83,7 +83,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
 
   /// Adds options to vlc. For more [https://wiki.videolan.org/VLC_command-line_help] If nothing is provided,
   /// vlc will run without any options set.
-  final List<String> options;
+  final VlcPlayerOptions options;
 
   /// The video should be played automatically.
   final bool autoPlay;
@@ -143,7 +143,7 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
       package: this.package,
       hwAcc: this.hwAcc ?? HwAcc.AUTO,
       autoPlay: this.autoPlay ?? true,
-      options: this.options ?? [],
+      options: this.options,
     );
 
     _creatingCompleter.complete(null);

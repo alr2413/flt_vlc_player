@@ -4,13 +4,14 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_vlc_player_platform_interface/vlc_player_flutter_platform_interface.dart';
 import 'package:meta/meta.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+import '../../vlc_player_flutter_platform_interface.dart';
 import '../enums/hardware_acceleration.dart';
 import '../events/renderer_event.dart';
 import '../events/media_event.dart';
-
+import '../utils/options/vlc_player_options.dart';
 import '../method_channel/method_channel_vlc_player.dart';
 
 /// The interface that implementations of vlc must implement.
@@ -63,7 +64,7 @@ abstract class VlcPlayerPlatform extends PlatformInterface {
     String package,
     bool autoPlay,
     HwAcc hwAcc,
-    List<String> options,
+    VlcPlayerOptions options,
   }) {
     throw UnimplementedError('create() has not been implemented.');
   }
