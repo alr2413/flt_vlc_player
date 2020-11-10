@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'controls_overlay.dart';
 import 'video_data.dart';
 
-class VlcRemoteVideo extends StatefulWidget {
+class VlcVideoPlayerWithControls extends StatefulWidget {
   @override
-  VlcRemoteVideoState createState() => VlcRemoteVideoState();
+  VlcVideoPlayerWithControlsState createState() => VlcVideoPlayerWithControlsState();
 }
 
-class VlcRemoteVideoState extends State<VlcRemoteVideo> {
+class VlcVideoPlayerWithControlsState extends State<VlcVideoPlayerWithControls> {
   VlcPlayerController _controller;
 
   //
@@ -62,7 +62,7 @@ class VlcRemoteVideoState extends State<VlcRemoteVideo> {
     //
     listVideos.add(VideoData(
       name: 'Asset Video 1',
-      path: 'assets/sample.mp4', // or '/storage/emulated/0/test.mp4'
+      path: 'assets/sample.mp4',
       type: VideoType.asset,
     ));
   }
@@ -80,7 +80,6 @@ class VlcRemoteVideoState extends State<VlcRemoteVideo> {
         _controller = VlcPlayerController.network(
           initVideo.path,
           onInit: () async {
-            // await Future.delayed(Duration(seconds: 1));
             await _controller.startRendererScanning();
           },
           onRendererHandler: (type, id, name) {
@@ -144,7 +143,6 @@ class VlcRemoteVideoState extends State<VlcRemoteVideo> {
   void dispose() {
     _controller.stopRendererScanning();
     _controller.removeListener(() {});
-    _controller.dispose();
     super.dispose();
   }
 
@@ -597,7 +595,7 @@ class VlcRemoteVideoState extends State<VlcRemoteVideo> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Select Cast Device"),
+            title: Text("Display Devices"),
             content: Container(
               width: double.maxFinite,
               height: 250,
@@ -630,7 +628,7 @@ class VlcRemoteVideoState extends State<VlcRemoteVideo> {
       );
     } else {
       Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text("No Cast Device Found!")));
+          .showSnackBar(SnackBar(content: Text("No Display Device Found!")));
     }
   }
 

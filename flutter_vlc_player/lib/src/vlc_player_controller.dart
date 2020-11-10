@@ -192,8 +192,8 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
             spuTracksCount: event.spuTracksCount,
             activeSpuTrack: event.activeSpuTrack,
           );
-          if (!initializingCompleter.isCompleted)
-            initializingCompleter.complete(null);
+          // if (!initializingCompleter.isCompleted)
+          //   initializingCompleter.complete(null);
           break;
 
         case VlcMediaEventType.ended:
@@ -259,8 +259,11 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
         .rendererEventsFor(_viewId)
         .listen(rendererEventListener);
 
-    if (_onInit != null) _onInit();
+    if (!initializingCompleter.isCompleted)
+      initializingCompleter.complete(null);
+    //
     value._initialized = true;
+    if (_onInit != null) _onInit();
 
     return initializingCompleter.future;
   }

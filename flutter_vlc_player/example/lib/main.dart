@@ -4,7 +4,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'vlc_remote_video.dart';
+import 'vlc_video_player_with_controls.dart';
+
 
 void main() {
   runApp(
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
         centerTitle: true,
         title: Text('Vlc Player Example'),
       ),
-      body: VlcRemoteVideo(),
+      body: VlcVideoPlayerWithControls(),
     );
   }
 }
