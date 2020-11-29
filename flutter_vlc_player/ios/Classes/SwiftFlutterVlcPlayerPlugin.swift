@@ -14,6 +14,7 @@ public class SwiftFlutterVlcPlayerPlugin: NSObject, FlutterPlugin {
     }
 }
 
+//change to public class VLCView: NSObject, FlutterPlatformView,VlcPlayerApi {
 public class VLCView: NSObject, FlutterPlatformView {
 //    public func initialize(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
 //
@@ -191,7 +192,7 @@ public class VLCView: NSObject, FlutterPlatformView {
 //    public func cast(toRenderer input: RenderDeviceMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
 //
 //    }
-    
+//
    
 
     @IBOutlet private var hostedView: UIView!
