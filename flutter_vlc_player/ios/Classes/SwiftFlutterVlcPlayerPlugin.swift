@@ -22,6 +22,7 @@ public class VLCView: NSObject, FlutterPlatformView,VlcPlayerApi {
 
     public func create(_ input: CreateMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
 
+        print("made it to create");
     }
 
     public func dispose(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -212,6 +213,8 @@ public class VLCView: NSObject, FlutterPlatformView,VlcPlayerApi {
     var rendererItems: [VLCRendererItem] = [VLCRendererItem]()
     var discoverers: [VLCRendererDiscoverer] = [VLCRendererDiscoverer]()
     var strongRef: VLCRendererDiscoverer?
+    
+    //var api: VlcPlayerApi = VLCView.init(withFrame: <#T##CGRect#>, withRegistrar: <#T##FlutterPluginRegistrar#>, withId: <#T##Int64#>)
     
     public init(withFrame _: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withId id: Int64) {
         self.registrar = registrar
@@ -788,9 +791,14 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
     }
     
     public func create(withFrame _: CGRect, viewIdentifier viewId: Int64, arguments _: Any?) -> FlutterPlatformView {
-        // Can pass args if necessary for intialization. For now default to empty Rect.
         // let dictionary =  args as! Dictionary<String, Double>
-        return VLCView(withFrame: CGRect(x: 0, y: 0, width: 0, height: 0), withRegistrar: registrar!, withId: viewId)
+        //the actual view
+        let vlcView: FlutterPlatformView = VLCView(withFrame: CGRect(x: 0, y: 0, width: 0, height: 0), withRegistrar: registrar!, withId: viewId)
+        //setup to let pigeon know who is going to listen to messages
+        let api: VlcPlayerApi = vlcView as! VlcPlayerApi
+        //initalize pigeon
+        VlcPlayerApiSetup(registrar?.messenger() as! FlutterBinaryMessenger, api)
+        return vlcView
     }
     
     public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
