@@ -69,6 +69,7 @@ class _AppState extends State<App> {
       case VideoType.network:
         _controller = VlcPlayerController.network(
           initVideo.path,
+          hwAcc: HwAcc.FULL,
           onInit: () async {
             await _controller.startRendererScanning();
           },
@@ -76,12 +77,15 @@ class _AppState extends State<App> {
             print('onRendererHandler $type $id $name');
           },
           options: VlcPlayerOptions(
+            
             advanced: VlcAdvancedOptions([
               VlcAdvancedOptions.networkCaching(2000),
+
             ]),
             rtp: VlcRtpOptions([
               VlcRtpOptions.rtpOverRtsp(true),
             ]),
+            
           ),
         );
         break;
@@ -170,7 +174,7 @@ class _AppState extends State<App> {
                 onTap: () async {
                   switch (video.type) {
                     case VideoType.network:
-                      await _controller.setMediaFromNetwork(video.path);
+                      await _controller.setMediaFromNetwork(video.path, hwAcc: HwAcc.FULL);
                       break;
                     case VideoType.file:
                       File file = File(video.path);

@@ -264,6 +264,7 @@ class VlcPlayerWithControlsState extends State<VlcPlayerWithControls>
                 Center(
                   child: VlcPlayer(
                     controller: _controller,
+                  
                     aspectRatio: 16 / 9,
                     placeholder: Center(child: CircularProgressIndicator()),
                   ),
