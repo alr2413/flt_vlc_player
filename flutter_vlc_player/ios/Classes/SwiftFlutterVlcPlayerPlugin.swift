@@ -188,6 +188,7 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
         
         self.vlcMediaPlayer.media = media
         self.vlcMediaPlayer.drawable = self.hostedView
+        self.vlcMediaPlayer.delegate = self.eventChannelHandler
         
         let options = input.options as? [String] ?? []
         for option in options {
