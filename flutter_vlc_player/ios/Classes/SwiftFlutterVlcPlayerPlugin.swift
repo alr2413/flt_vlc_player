@@ -29,13 +29,13 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
         let arguments = args as? NSDictionary ?? [:]
 
         
-        let channel = FlutterEventChannel(name: "flutter_video_plugin/getVideoEvents_\(viewId)", binaryMessenger: registrar.messenger())
-        
+        let eventChannel = FlutterEventChannel(name: "flutter_video_plugin/getVideoEvents_\(viewId)", binaryMessenger: registrar.messenger())
+
         
         var vlcViewController: VLCViewController
         vlcViewController = VLCViewController(
             parent: UIView(frame: frame),
-            channel: channel,
+            eventChannel: eventChannel,
             arguments: arguments,
             registrar: registrar)
         
@@ -59,23 +59,23 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     var hostedView: UIView
     var vlcMediaPlayer: VLCMediaPlayer
     var registrar: FlutterPluginRegistrar
-     var eventChannel: FlutterEventChannel
-     var eventChannelHandler: VLCPlayerEventStreamHandler
-
+    var eventChannel: FlutterEventChannel
+    let eventChannelHandler:VLCPlayerEventStreamHandler
 
     
     public func view() -> UIView {
+        
+        
+        eventChannel.setStreamHandler(eventChannelHandler)
         return hostedView
     }
     
-    init(parent: UIView, channel: FlutterEventChannel, arguments args: NSDictionary, registrar: FlutterPluginRegistrar) {
+    init(parent: UIView, eventChannel: FlutterEventChannel, arguments args: NSDictionary, registrar: FlutterPluginRegistrar) {
         self.hostedView = parent
         self.registrar = registrar
         self.vlcMediaPlayer = VLCMediaPlayer()
-        self.eventChannel = channel
-        eventChannelHandler = VLCPlayerEventStreamHandler()
-        eventChannel.setStreamHandler(eventChannelHandler)
-        
+        self.eventChannel = eventChannel
+        self.eventChannelHandler = VLCPlayerEventStreamHandler()
         
     }
     
