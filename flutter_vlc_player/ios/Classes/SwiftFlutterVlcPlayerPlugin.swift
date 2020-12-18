@@ -64,9 +64,7 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     let mediaEventChannelHandler: VLCPlayerEventStreamHandler
     var rendererEventChannel: FlutterEventChannel
     let rendererEventChannelHandler: VLCRendererEventStreamHandler
-    
-    var discoverers: [VLCRendererDiscoverer] = [VLCRendererDiscoverer]()
-    var strongRef: VLCRendererDiscoverer?
+    var rendererdiscoverers: [VLCRendererDiscoverer] = [VLCRendererDiscoverer]()
     
     public func view() -> UIView {
         mediaEventChannel.setStreamHandler(mediaEventChannelHandler)
@@ -192,7 +190,8 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     
     public func setLooping(_ input: LoopingMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-        //        self.vlcMediaPlayer.media.addOption()
+        // self.vlcMediaPlayer.media.addOption()
+        // --loop, --no-loop
     }
     
     public func seek(to input: PositionMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -422,58 +421,59 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     
     public func startRendererScanning(_ input: RendererScanningMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-        guard let rendererDiscoverer = VLCRendererDiscoverer(name: "Bonjour_renderer")
-        else {
-            print("VLCRendererDiscovererManager: Unable to instanciate renderer discoverer with name: Bonjour_renderer")
-            return
+        rendererdiscoverers.removeAll()
+        rendererEventChannelHandler.renderItems.removeAll()
+        // chromecast service name: "Bonjour_renderer"
+        let rendererServices = self.vlcMediaPlayer.rendererServices()
+        for rendererService in rendererServices{
+            guard let rendererDiscoverer
+                    = VLCRendererDiscoverer(name: rendererService) else {
+                continue
+            }
+            rendererDiscoverer.delegate = self.rendererEventChannelHandler
+            rendererDiscoverer.start()
+            rendererdiscoverers.append(rendererDiscoverer)
         }
-        guard rendererDiscoverer.start() else {
-            print("VLCRendererDiscovererManager: Unable to start renderer discoverer with name: Bonjour_renderer")
-            return
-        }
-        rendererDiscoverer.delegate = self.rendererEventChannelHandler
-        self.strongRef = rendererDiscoverer
-        return
     }
     
     public func stopRendererScanning(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-        self.vlcMediaPlayer.stop()
+        for rendererDiscoverer in rendererdiscoverers {
+            rendererDiscoverer.stop()
+            rendererDiscoverer.delegate = nil
+        }
+        rendererdiscoverers.removeAll()
+        rendererEventChannelHandler.renderItems.removeAll()
+        if(self.vlcMediaPlayer.isPlaying){
+            self.vlcMediaPlayer.pause()
+        }
         self.vlcMediaPlayer.setRendererItem(nil)
     }
     
     public func getRendererDevices(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> RendererDevicesMessage? {
         
-        var castDescriptions: [String: String] = [:]
-        let castItems = getRenderItems()
-        for (_, item) in castItems.enumerated() {
-            castDescriptions[item.name] = item.name
+        var rendererDevices: [String: String] = [:]
+        let rendererItems = rendererEventChannelHandler.renderItems
+        for (_, item) in rendererItems.enumerated() {
+            rendererDevices[item.name] = item.name
         }
-        
-        
-        
-        let messages:RendererDevicesMessage;
-        messages = RendererDevicesMessage();
-        messages.rendererDevices = castDescriptions
-        return messages
+        let message: RendererDevicesMessage = RendererDevicesMessage()
+        message.rendererDevices = rendererDevices
+        return message
     }
     
     public func cast(toRenderer input: RenderDeviceMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
         if (self.vlcMediaPlayer.isPlaying){
             self.vlcMediaPlayer.pause()
-            
         }
-        
+        let rendererItems = self.rendererEventChannelHandler.renderItems
+        let rendererItem = rendererItems.first{
+            $0.name.contains(input.rendererDevice ?? "")
+        }
+        self.vlcMediaPlayer.setRendererItem(rendererItem)
+        self.vlcMediaPlayer.play()
     }
-    
-    func getRenderItems() -> [VLCRendererItem]
-    {
-        return rendererEventChannelHandler.renderItems;
-        
-    }
-    
-    
 }
 
 
@@ -497,7 +497,6 @@ class VLCRendererEventStreamHandler: NSObject, FlutterStreamHandler, VLCRenderer
     
     func rendererDiscovererItemAdded(_ rendererDiscoverer: VLCRendererDiscoverer, item: VLCRendererItem) {
         
-        
         self.renderItems.append(item)
         
         guard let rendererEventSink = self.rendererEventSink else { return }
@@ -510,13 +509,16 @@ class VLCRendererEventStreamHandler: NSObject, FlutterStreamHandler, VLCRenderer
     
     func rendererDiscovererItemDeleted(_ rendererDiscoverer: VLCRendererDiscoverer, item: VLCRendererItem) {
         
+        if let index = renderItems.firstIndex(of: item) {
+            renderItems.remove(at: index)
+        }
+        
         guard let rendererEventSink = self.rendererEventSink else { return }
         rendererEventSink([
             "event": "detached",
             "id": item.name,
             "name" : item.name,
         ])
-        
     }
 }
 
@@ -540,25 +542,17 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
         
         let player = aNotification?.object as? VLCMediaPlayer
         let media = player?.media
+        
         let tracks: [Any] = media?.tracksInformation ?? [""] // [Any]
         var track: NSDictionary
-        
-        //        var ratio = Float(0.0)
         var height = 0
         var width = 0
-        
         if (player?.currentVideoTrackIndex != nil) &&
             (player?.currentVideoTrackIndex != -1) {
             track = tracks[0] as! NSDictionary
             height = (track["height"] as? Int) ?? 0
             width = (track["width"] as? Int) ?? 0
-            
-            //                if height != 0, width != 0 {
-            //                    ratio = Float(width / height)
-            //                }
-            
         }
-        
         let audioTracksCount = player?.numberOfAudioTracks ?? 0
         let activeAudioTrack = player?.currentAudioTrackIndex ?? 0
         let spuTracksCount = player?.numberOfSubtitlesTracks ?? 0
@@ -594,7 +588,7 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
                 "event": "playing",
                 "height": height,
                 "width":  width,
-                "speed": speed,
+                "speed": NSNumber(value: speed),
                 "duration": duration,
                 "audioTracksCount": audioTracksCount,
                 "activeAudioTrack": activeAudioTrack,
