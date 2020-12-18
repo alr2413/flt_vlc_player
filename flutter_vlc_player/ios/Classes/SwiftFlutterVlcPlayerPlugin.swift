@@ -67,8 +67,6 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     var rendererdiscoverers: [VLCRendererDiscoverer] = [VLCRendererDiscoverer]()
     
     public func view() -> UIView {
-        mediaEventChannel.setStreamHandler(mediaEventChannelHandler)
-        rendererEventChannel.setStreamHandler(rendererEventChannelHandler)
         return hostedView
     }
     
@@ -85,74 +83,44 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
         self.mediaEventChannelHandler = VLCPlayerEventStreamHandler()
         self.rendererEventChannel = rendererEventChannel
         self.rendererEventChannelHandler = VLCRendererEventStreamHandler()
+        //
+        self.mediaEventChannel.setStreamHandler(mediaEventChannelHandler)
+        self.rendererEventChannel.setStreamHandler(rendererEventChannelHandler)
+        self.vlcMediaPlayer.drawable = self.hostedView
+        self.vlcMediaPlayer.delegate = self.mediaEventChannelHandler
     }
-
+    
     
     public func initialize(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
-        
+        return
     }
     
     public func create(_ input: CreateMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-        var media:VLCMedia
+        var isAssetUrl: Bool = false
+        var mediaUrl: String = ""
         
-        guard let urlString = input.uri,
-              let url = URL(string: urlString)
-        else {
-            return
-        }
-        
-        var assetPath: String?
-        
-        if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET)
-        {
+        if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET){
+            var assetPath: String
             if input.packageName != nil {
-                assetPath = registrar.lookupKey(forAsset: urlString, fromPackage: input.packageName!)
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
             } else {
-                assetPath = registrar.lookupKey(forAsset: urlString)
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
             }
-            media = VLCMedia(path: assetPath ?? "")
-            
-        }
-        else{
-            media = VLCMedia(url: url)
-        }
-        
-        self.vlcMediaPlayer.media = media
-        self.vlcMediaPlayer.drawable = self.hostedView
-        self.vlcMediaPlayer.delegate = self.mediaEventChannelHandler
-        
-        let options = input.options as? [String] ?? []
-        for option in options {
-            media.addOption(option)
+            mediaUrl = assetPath
+            isAssetUrl = true
+        }else{
+            mediaUrl = input.uri ?? ""
+            isAssetUrl = false
         }
         
-        let hardwareAccellerationType = input.hwAcc
-        
-        switch HWAccellerationType.init(rawValue: hardwareAccellerationType as! Int)
-        {
-        case .HW_ACCELERATION_DISABLED:
-            media.addOption("--codec=avcodec")
-            
-        case .HW_ACCELERATION_DECODING:
-            media.addOption("--codec=all")
-            media.addOption(":no-mediacodec-dr")
-            media.addOption(":no-omxil-dr")
-            
-        case .HW_ACCELERATION_FULL:
-            media.addOption("--codec=all")
-            
-        case .HW_ACCELERATION_AUTOMATIC:
-            break
-            
-        case .none:
-            break
-        }
-        
-        if((input.autoPlay) != nil)
-        {
-            self.vlcMediaPlayer.play()
-        }
+        self.setMediaPlayerUrl(
+            uri: mediaUrl,
+            isAssetUrl: isAssetUrl,
+            autoPlay: input.autoPlay?.boolValue ?? true,
+            hwAcc: input.hwAcc?.intValue ?? HWAccellerationType.HW_ACCELERATION_AUTOMATIC.rawValue,
+            options: input.options as? [String] ?? []
+        )
     }
     
     public func dispose(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -161,9 +129,29 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     
     public func setStreamUrl(_ input: SetMediaMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-        //        let isPlaying = self.vlcMediaPlayer.isPlaying
-        //        self.vlcMediaPlayer.stop()
+        var isAssetUrl: Bool = false
+        var mediaUrl: String = ""
         
+        if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET){
+            var assetPath: String
+            if input.packageName != nil {
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
+            } else {
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
+            }
+            mediaUrl = assetPath
+            isAssetUrl = true
+        }else{
+            mediaUrl = input.uri ?? ""
+            isAssetUrl = false
+        }
+        self.setMediaPlayerUrl(
+            uri: mediaUrl,
+            isAssetUrl: isAssetUrl,
+            autoPlay: input.autoPlay?.boolValue ?? true,
+            hwAcc: input.hwAcc?.intValue ?? HWAccellerationType.HW_ACCELERATION_AUTOMATIC.rawValue,
+            options: []
+        )
     }
     
     public func play(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -474,6 +462,57 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
         self.vlcMediaPlayer.setRendererItem(rendererItem)
         self.vlcMediaPlayer.play()
     }
+    
+    
+    func setMediaPlayerUrl(uri: String, isAssetUrl: Bool, autoPlay: Bool, hwAcc: Int, options: [String]){
+        
+        self.vlcMediaPlayer.stop()
+        var media: VLCMedia
+        if(isAssetUrl){
+            media = VLCMedia(path: uri)
+        }
+        else{
+            guard let url = URL(string: uri)
+            else {
+                return
+            }
+            media = VLCMedia(url: url)
+        }
+        
+        if(!options.isEmpty){
+            for option in options {
+                media.addOption(option)
+            }
+        }
+        
+        switch HWAccellerationType.init(rawValue: hwAcc)
+        {
+        case .HW_ACCELERATION_DISABLED:
+            media.addOption("--codec=avcodec")
+            break
+            
+        case .HW_ACCELERATION_DECODING:
+            media.addOption("--codec=all")
+            media.addOption(":no-mediacodec-dr")
+            media.addOption(":no-omxil-dr")
+            break
+            
+        case .HW_ACCELERATION_FULL:
+            media.addOption("--codec=all")
+            break
+            
+        case .HW_ACCELERATION_AUTOMATIC:
+            break
+            
+        case .none:
+            break
+        }
+        
+        self.vlcMediaPlayer.media = media
+        if(autoPlay){
+            self.vlcMediaPlayer.play()
+        }
+    }
 }
 
 
@@ -528,11 +567,13 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
     private var mediaEventSink: FlutterEventSink?
     
     func onListen(withArguments _: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        
         mediaEventSink = events
         return nil
     }
     
     func onCancel(withArguments _: Any?) -> FlutterError? {
+        
         mediaEventSink = nil
         return nil
     }
@@ -658,7 +699,7 @@ enum HWAccellerationType: Int
 {
     case HW_ACCELERATION_AUTOMATIC = 0
     case HW_ACCELERATION_DISABLED = 1
-    case  HW_ACCELERATION_DECODING = 2
+    case HW_ACCELERATION_DECODING = 2
     case HW_ACCELERATION_FULL = 3
 }
 
