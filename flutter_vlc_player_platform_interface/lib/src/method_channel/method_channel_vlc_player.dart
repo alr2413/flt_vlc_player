@@ -134,7 +134,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
               mediaEventType: VlcMediaEventType.timeChanged,
               position: Duration(milliseconds: map['position'] ?? 0),
               playbackSpeed: map['speed'] ?? 1.0,
-              bufferPercent: map['buffer'] ?? 100,
+              bufferPercent: map['buffer'] ?? 100.0,
             );
 
           case 'mediaChanged':

@@ -560,7 +560,7 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
         let duration =  media?.length.value ?? 0
         let speed = player?.rate ?? 1
         let position = player?.time?.value?.intValue ?? 0
-        let buffering = 0
+        let buffering = 100.0
         
         switch player?.state
         {
@@ -588,7 +588,7 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
                 "event": "playing",
                 "height": height,
                 "width":  width,
-                "speed": NSNumber(value: speed),
+                "speed": speed,
                 "duration": duration,
                 "audioTracksCount": audioTracksCount,
                 "activeAudioTrack": activeAudioTrack,
@@ -607,9 +607,9 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
         case .buffering:
             mediaEventSink([
                 "event": "timeChanged",
-                "position": NSNumber(value: position),
-                "speed": NSNumber(value: speed),
-                "buffer" : NSNumber(value: buffering),
+                "position": position,
+                "speed": speed,
+                "buffer" : buffering,
             ])
             break
             
@@ -641,7 +641,7 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
                 "event": "timeChanged",
                 "position": position,
                 "speed": speed,
-                "buffer": 0,
+                "buffer": 100.0,
             ])
         }
     }
