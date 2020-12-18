@@ -65,6 +65,9 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     var rendererEventChannel: FlutterEventChannel
     let rendererEventChannelHandler: VLCRendererEventStreamHandler
     
+    var discoverers: [VLCRendererDiscoverer] = [VLCRendererDiscoverer]()
+    var strongRef: VLCRendererDiscoverer?
+    
     public func view() -> UIView {
         mediaEventChannel.setStreamHandler(mediaEventChannelHandler)
         rendererEventChannel.setStreamHandler(rendererEventChannelHandler)
@@ -85,80 +88,7 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
         self.rendererEventChannel = rendererEventChannel
         self.rendererEventChannelHandler = VLCRendererEventStreamHandler()
     }
-    
-    //    public func setMediaUrlHelper(newUrl:String, isAssetUrl:Bool,  autoPlay:Bool,  hwAcc:Int)
-    //    {
-    //        var media:VLCMedia
-    //
-    ////        guard let urlString = newUrl,
-    ////              let url = URL(string: urlString)
-    ////        else {
-    ////
-    ////            return
-    ////        }
-    //        if ( isAssetUrl )
-    //        {
-    //
-    //        }
-    //
-    //        var assetPath: String?
-    //
-    //        if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET)
-    //        {
-    //            if input.packageName != nil {
-    //                assetPath = registrar.lookupKey(forAsset: urlString, fromPackage: input.packageName!)
-    //            } else {
-    //                assetPath = registrar.lookupKey(forAsset: urlString)
-    //            }
-    //            media = VLCMedia(path: assetPath ?? "")
-    //
-    //        }
-    //        else{
-    //            media = VLCMedia(url: url)
-    //        }
-    //
-    //
-    //
-    //        self.vlcMediaPlayer.media = media
-    //        self.vlcMediaPlayer.drawable = self.hostedView
-    //
-    //        let options = input.options as? [String] ?? []
-    //        for option in options {
-    //            media.addOption(option)
-    //        }
-    //
-    //
-    //        let hardwareAccellerationType = input.hwAcc
-    //
-    //        switch HWAccellerationType.init(rawValue: hardwareAccellerationType as! Int)
-    //        {
-    //        case .HW_ACCELERATION_DISABLED:
-    //            media.addOption("--codec=avcodec")
-    //
-    //        case .HW_ACCELERATION_DECODING:
-    //            media.addOption("--codec=all")
-    //            media.addOption(":no-mediacodec-dr")
-    //            media.addOption(":no-omxil-dr")
-    //
-    //        case .HW_ACCELERATION_FULL:
-    //            media.addOption("--codec=all")
-    //
-    //        case .HW_ACCELERATION_AUTOMATIC:
-    //            break
-    //        case .none:
-    //            break
-    //        }
-    //
-    //
-    //
-    //
-    //
-    //        if((input.autoPlay) != nil)
-    //        {
-    //        self.vlcMediaPlayer.play()
-    //        }
-    //
-    //    }
+
     
     public func initialize(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
@@ -492,7 +422,18 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     
     public func startRendererScanning(_ input: RendererScanningMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-//        input.rendererService
+        guard let rendererDiscoverer = VLCRendererDiscoverer(name: "Bonjour_renderer")
+        else {
+            print("VLCRendererDiscovererManager: Unable to instanciate renderer discoverer with name: Bonjour_renderer")
+            return
+        }
+        guard rendererDiscoverer.start() else {
+            print("VLCRendererDiscovererManager: Unable to start renderer discoverer with name: Bonjour_renderer")
+            return
+        }
+        rendererDiscoverer.delegate = self.rendererEventChannelHandler
+        self.strongRef = rendererDiscoverer
+        return
     }
     
     public func stopRendererScanning(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -502,16 +443,36 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
     }
     
     public func getRendererDevices(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> RendererDevicesMessage? {
-        return nil;
+        
+        var castDescriptions: [String: String] = [:]
+        let castItems = getRenderItems()
+        for (_, item) in castItems.enumerated() {
+            castDescriptions[item.name] = item.name
+        }
+        
+        
+        
+        let messages:RendererDevicesMessage;
+        messages = RendererDevicesMessage();
+        messages.rendererDevices = castDescriptions
+        return messages
     }
     
     public func cast(toRenderer input: RenderDeviceMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
         if (self.vlcMediaPlayer.isPlaying){
             self.vlcMediaPlayer.pause()
+            
         }
-                
+        
     }
+    
+    func getRenderItems() -> [VLCRendererItem]
+    {
+        return rendererEventChannelHandler.renderItems;
+        
+    }
+    
     
 }
 
@@ -519,6 +480,8 @@ public class VLCViewController: NSObject, FlutterPlatformView, VlcPlayerApi {
 class VLCRendererEventStreamHandler: NSObject, FlutterStreamHandler, VLCRendererDiscovererDelegate {
     
     private var rendererEventSink: FlutterEventSink?
+    var renderItems:[VLCRendererItem] = [VLCRendererItem]()
+    
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         
@@ -533,6 +496,9 @@ class VLCRendererEventStreamHandler: NSObject, FlutterStreamHandler, VLCRenderer
     }
     
     func rendererDiscovererItemAdded(_ rendererDiscoverer: VLCRendererDiscoverer, item: VLCRendererItem) {
+        
+        
+        self.renderItems.append(item)
         
         guard let rendererEventSink = self.rendererEventSink else { return }
         rendererEventSink([
@@ -701,47 +667,6 @@ enum HWAccellerationType: Int
     case  HW_ACCELERATION_DECODING = 2
     case HW_ACCELERATION_FULL = 3
 }
-
-//enum FlutterMethodCallOption: String {
-//    case initialize
-//    case dispose
-//    case changeURL
-//    case getSnapshot
-//    case setPlaybackState
-//    case isPlaying
-//    case setPlaybackSpeed
-//    case getPlaybackSpeed
-//    case setTime
-//    case getTime
-//    case getDuration
-//    case setVolume
-//    case getVolume
-//    case getSpuTracksCount
-//    case getSpuTracks
-//    case setSpuTrack
-//    case getSpuTrack
-//    case setSpuDelay
-//    case getSpuDelay
-//    case addSubtitleTrack
-//    case getAudioTracksCount
-//    case getAudioTracks
-//    case getAudioTrack
-//    case setAudioTrack
-//    case setAudioDelay
-//    case getAudioDelay
-//    case getVideoTracksCount
-//    case getVideoTracks
-//    case getCurrentVideoTrack
-//    case getVideoTrack
-//    case setVideoScale
-//    case getVideoScale
-//    case setVideoAspectRatio
-//    case getVideoAspectRatio
-//    case startCastDiscovery
-//    case stopCastDiscovery
-//    case getCastDevices
-//    case startCasting
-//}
 
 extension VLCMediaPlayer {
     
