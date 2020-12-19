@@ -40,7 +40,7 @@ class _AppState extends State<App> {
     listVideos.add(VideoData(
       name: 'Network Video 2',
       path:
-          'http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4',
+          'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
       type: VideoType.network,
     ));
     //
