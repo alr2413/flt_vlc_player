@@ -225,9 +225,9 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
     void errorListener(Object obj) {
       final PlatformException e = obj;
       value = VlcPlayerValue.erroneous(e.message);
-      // if (!initializingCompleter.isCompleted) {
-      //   initializingCompleter.completeError(obj);
-      // }
+      if (!initializingCompleter.isCompleted) {
+        initializingCompleter.completeError(obj);
+      }
     }
 
     _mediaEventSubscription = _vlcPlayerPlatform

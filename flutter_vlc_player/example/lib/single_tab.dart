@@ -164,6 +164,12 @@ class _SingleTabState extends State<SingleTab> {
                     File file = File(video.path);
                     if (await file.exists())
                       await _controller.setMediaFromFile(file);
+                    else
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("File not exists!"),
+                        ),
+                      );
                     break;
                   case VideoType.asset:
                     await _controller.setMediaFromAsset(video.path);
