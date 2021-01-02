@@ -25,8 +25,10 @@ class ControlsOverlay extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () async {
-                            await controller.seekTo(controller.value.position -
-                                Duration(seconds: 10));
+                            if (controller.value.duration != null)
+                              await controller.seekTo(
+                                  controller.value.position -
+                                      Duration(seconds: 10));
                           },
                           color: Colors.white,
                           iconSize: 60.0,
@@ -42,8 +44,10 @@ class ControlsOverlay extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () async {
-                            await controller.seekTo(controller.value.position +
-                                Duration(seconds: 10));
+                            if (controller.value.duration != null)
+                              await controller.seekTo(
+                                  controller.value.position +
+                                      Duration(seconds: 10));
                           },
                           color: Colors.white,
                           iconSize: 60.0,
