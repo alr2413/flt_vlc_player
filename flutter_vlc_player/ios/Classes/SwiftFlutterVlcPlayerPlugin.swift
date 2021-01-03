@@ -655,12 +655,15 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
             break
             
         case .error:
-            mediaEventSink(
+            /*mediaEventSink(
                 FlutterError(
                     code: "500",
                     message: "Player State got an error",
                     details: nil)
-            )
+            )*/
+            mediaEventSink([
+                "event": "error",
+            ])
             break
             
         case .esAdded:

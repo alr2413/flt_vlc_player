@@ -142,6 +142,11 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
               mediaEventType: VlcMediaEventType.mediaChanged,
             );
 
+          case 'error':
+            return VlcMediaEvent(
+              mediaEventType: VlcMediaEventType.error,
+            );
+
           default:
             return VlcMediaEvent(
               mediaEventType: VlcMediaEventType.unknown,

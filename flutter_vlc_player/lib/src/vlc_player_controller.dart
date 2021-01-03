@@ -217,13 +217,21 @@ class VlcPlayerController extends ValueNotifier<VlcPlayerValue> {
         case VlcMediaEventType.mediaChanged:
           break;
 
+        case VlcMediaEventType.error:
+          value = value.copyWith(
+            isPlaying: false,
+            isBuffering: false,
+            playingState: PlayingState.error,
+          );
+          break;
+
         case VlcMediaEventType.unknown:
           break;
       }
     }
 
     void errorListener(Object obj) {
-      final PlatformException e = obj;
+      final PlatformException e = obj as PlatformException;
       value = VlcPlayerValue.erroneous(e.message);
       if (!initializingCompleter.isCompleted) {
         initializingCompleter.completeError(obj);

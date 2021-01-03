@@ -30,14 +30,14 @@ class VlcPlayerValue {
 
   /// Returns an instance with a `null` [Duration].
   factory VlcPlayerValue.uninitialized() {
-    return VlcPlayerValue(duration: null).._initialized = false;
+    return VlcPlayerValue(duration: Duration.zero).._initialized = false;
   }
 
-  /// Returns an instance with a `null` [Duration], the playing state error
+  /// Returns an instance with the playing state error
   /// and the given [errorDescription].
   factory VlcPlayerValue.erroneous(String errorDescription) {
     return VlcPlayerValue(
-      duration: null,
+      duration: Duration.zero,
       playingState: PlayingState.error,
       errorDescription: errorDescription,
     );

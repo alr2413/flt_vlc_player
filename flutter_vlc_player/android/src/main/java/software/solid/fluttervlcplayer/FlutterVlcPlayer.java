@@ -262,7 +262,9 @@ final class FlutterVlcPlayer implements PlatformView {
                                 break;
 
                             case MediaPlayer.Event.EncounteredError:
-                                mediaEventSink.error("vlc_error", "A VLC error occurred.", null);
+                                //mediaEventSink.error("500", "Player State got an error.", null);
+                                eventObject.put("event", "error");
+                                mediaEventSink.success(eventObject);
                                 break;
 
                             case MediaPlayer.Event.LengthChanged:

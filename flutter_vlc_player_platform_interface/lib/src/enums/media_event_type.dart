@@ -8,4 +8,5 @@ enum VlcMediaEventType {
   mediaChanged,
   ended,
   unknown,
+  error,
 }
