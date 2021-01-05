@@ -25,7 +25,7 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
     
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
         
-//        let arguments = args as? NSDictionary ?? [:]
+        //        let arguments = args as? NSDictionary ?? [:]
         return builder.build(frame: frame, viewId: viewId, messenger: registrar.messenger())
     }
     
@@ -64,19 +64,19 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         var mediaUrl: String = ""
         
         if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET){
-//            var assetPath: String
-//            if input.packageName != nil {
-//                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
-//            } else {
-//                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
-//            }
-//            mediaUrl = assetPath
+            //            var assetPath: String
+            //            if input.packageName != nil {
+            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
+            //            } else {
+            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
+            //            }
+            //            mediaUrl = assetPath
             isAssetUrl = true
         }else{
             mediaUrl = input.uri ?? ""
             isAssetUrl = false
         }
-
+        
         player.setMediaPlayerUrl(
             uri: mediaUrl,
             isAssetUrl: isAssetUrl,
@@ -88,8 +88,15 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
     
     public func dispose(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-    }
+        var player: VLCViewController
+        if let textureId = input.textureId {
+            player = (players[textureId] as? VLCViewController)!
+        }
         
+        player.dispose()
+        players.removeValue(forKey: input.textureId)
+    }
+    
     public func setStreamUrl(_ input: SetMediaMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
         var player: VLCViewController
@@ -101,13 +108,13 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         var mediaUrl: String = ""
         
         if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET){
-//            var assetPath: String
-//            if input.packageName != nil {
-//                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
-//            } else {
-//                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
-//            }
-//            mediaUrl = assetPath
+            //            var assetPath: String
+            //            if input.packageName != nil {
+            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
+            //            } else {
+            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
+            //            }
+            //            mediaUrl = assetPath
             isAssetUrl = true
         }else{
             mediaUrl = input.uri ?? ""
@@ -128,6 +135,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         if let textureId = input.textureId {
             player = (players[textureId] as? VLCViewController)!
         }
+        
         player.play()
     }
     
@@ -137,6 +145,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         if let textureId = input.textureId {
             player = (players[textureId] as? VLCViewController)!
         }
+        
         player.pause()
     }
     
@@ -146,6 +155,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         if let textureId = input.textureId {
             player = (players[textureId] as? VLCViewController)!
         }
+        
         player.stop()
     }
     
@@ -157,19 +167,18 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: BooleanMessage = BooleanMessage()
-        message.result = player.isPlaying() as NSNumber
+        message.result = player.isPlaying()
         return message
     }
     
     public func setLooping(_ input: LoopingMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
-//        var player: VLCViewController
-//        if let textureId = input.textureId {
-//            player = (players[textureId] as? VLCViewController)!
-//        }
+        var player: VLCViewController
+        if let textureId = input.textureId {
+            player = (players[textureId] as? VLCViewController)!
+        }
         
-        // self.vlcMediaPlayer.media.addOption()
-        // --loop, --no-loop
+        player.setLooping(isLooping: input.isLooping)
     }
     
     public func seek(to input: PositionMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -179,9 +188,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        player.seek(input.position)
-        
-        self.vlcMediaPlayer.time = VLCTime(number: input.position)
+        player.seek(position: input.position)
     }
     
     public func position(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> PositionMessage? {
@@ -192,7 +199,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: PositionMessage = PositionMessage()
-        message.position = self.vlcMediaPlayer.time.value
+        message.position = player.position()
         return message
     }
     
@@ -204,7 +211,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: DurationMessage = DurationMessage()
-        message.duration = self.vlcMediaPlayer.media?.length.value ?? 0
+        message.duration = player.duration()
         return message
     }
     
@@ -215,7 +222,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.audio.volume = input.volume?.int32Value ?? 100
+        player.setVolume(volume: input.volume)
     }
     
     public func getVolume(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> VolumeMessage? {
@@ -226,7 +233,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: VolumeMessage = VolumeMessage()
-        message.volume = NSNumber(value: self.vlcMediaPlayer.audio.volume)
+        message.volume = player.getVolume()
         return message
     }
     
@@ -237,7 +244,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.rate = input.speed?.floatValue ?? 1
+        player.setPlaybackSpeed(speed: input.speed)
     }
     
     public func getPlaybackSpeed(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> PlaybackSpeedMessage? {
@@ -248,7 +255,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: PlaybackSpeedMessage = PlaybackSpeedMessage()
-        message.speed = NSNumber(value: self.vlcMediaPlayer.rate)
+        message.speed = player.getPlaybackSpeed()
         return message
     }
     
@@ -259,17 +266,8 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        let drawable: UIView = self.vlcMediaPlayer.drawable as! UIView
-        let size = drawable.frame.size
-        UIGraphicsBeginImageContextWithOptions(size, _: false, _: 0.0)
-        let rec = drawable.frame
-        drawable.drawHierarchy(in: rec, afterScreenUpdates: false)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        let byteArray = (image ?? UIImage()).pngData()
-        //
         let message: SnapshotMessage = SnapshotMessage()
-        message.snapshot = byteArray?.base64EncodedString()
+        message.snapshot = player.takeSnapshot()
         return message
     }
     
@@ -281,7 +279,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: TrackCountMessage = TrackCountMessage()
-        message.count = NSNumber(value: self.vlcMediaPlayer.numberOfSubtitlesTracks)
+        message.count = player.getSpuTracksCount()
         return message
     }
     
@@ -293,7 +291,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: SpuTracksMessage = SpuTracksMessage()
-        message.subtitles = self.vlcMediaPlayer.subtitles()
+        message.subtitles = player.getSpuTracks()
         return message
     }
     
@@ -304,7 +302,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.currentVideoSubTitleIndex = input.spuTrackNumber?.int32Value ?? 0
+        player.setSpuTrack(spuTrackNumber: input.spuTrackNumber)
     }
     
     public func getSpuTrack(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> SpuTrackMessage? {
@@ -315,7 +313,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: SpuTrackMessage = SpuTrackMessage()
-        message.spuTrackNumber = NSNumber(value: self.vlcMediaPlayer.currentVideoSubTitleIndex)
+        message.spuTrackNumber = player.getSpuTrack()
         return message
     }
     
@@ -326,7 +324,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.currentVideoSubTitleDelay = input.delay?.intValue ?? 0
+        player.setSpuDelay(delay: input.delay)
     }
     
     public func getSpuDelay(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DelayMessage? {
@@ -337,7 +335,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: DelayMessage = DelayMessage()
-        message.delay = NSNumber(value: self.vlcMediaPlayer.currentVideoSubTitleDelay)
+        message.delay = player.getSpuDelay()
         return message
     }
     
@@ -348,17 +346,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        // todo: check for file type
-        guard let urlString = input.uri,
-              let url = URL(string: urlString)
-        else {
-            return
-        }
-        self.vlcMediaPlayer.addPlaybackSlave(
-            url,
-            type: VLCMediaPlaybackSlaveType.subtitle,
-            enforce: input.isSelected?.boolValue ?? true
-        )
+        player.addSubtitleTrack(uri: input.uri, isSelected: input.isSelected)
     }
     
     public func getAudioTracksCount(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> TrackCountMessage? {
@@ -369,7 +357,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: TrackCountMessage = TrackCountMessage()
-        message.count = NSNumber(value: self.vlcMediaPlayer.numberOfAudioTracks)
+        message.count = player.getAudioTracksCount()
         return message
     }
     
@@ -381,7 +369,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: AudioTracksMessage = AudioTracksMessage()
-        message.audios = self.vlcMediaPlayer.audioTracks()
+        message.audios = player.getAudioTracks()
         return message
     }
     
@@ -392,7 +380,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.currentAudioTrackIndex = input.audioTrackNumber?.int32Value ?? 0
+        player.setAudioTrack(audioTrackNumber: input.audioTrackNumber)
     }
     
     public func getAudioTrack(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> AudioTrackMessage? {
@@ -403,7 +391,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: AudioTrackMessage = AudioTrackMessage()
-        message.audioTrackNumber = NSNumber(value: self.vlcMediaPlayer.currentAudioTrackIndex)
+        message.audioTrackNumber = player.getAudioTrack()
         return message
     }
     
@@ -414,7 +402,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.currentAudioPlaybackDelay = input.delay?.intValue ?? 0
+        player.setAudioDelay(delay: input.delay)
     }
     
     public func getAudioDelay(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DelayMessage? {
@@ -425,7 +413,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: DelayMessage = DelayMessage()
-        message.delay = NSNumber(value: self.vlcMediaPlayer.currentAudioPlaybackDelay)
+        message.delay = player.getAudioDelay()
         return message
     }
     
@@ -436,17 +424,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        // todo: check for file type
-        guard let urlString = input.uri,
-              let url = URL(string: urlString)
-        else {
-            return
-        }
-        self.vlcMediaPlayer.addPlaybackSlave(
-            url,
-            type: VLCMediaPlaybackSlaveType.audio,
-            enforce: input.isSelected?.boolValue ?? true
-        )
+        player.addAudioTrack(uri: input.uri, isSelected: input.isSelected)
     }
     
     public func getVideoTracksCount(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> TrackCountMessage? {
@@ -457,7 +435,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: TrackCountMessage = TrackCountMessage()
-        message.count = NSNumber(value: self.vlcMediaPlayer.numberOfVideoTracks)
+        message.count = player.getVideoTracksCount()
         return message
     }
     
@@ -469,7 +447,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: VideoTracksMessage = VideoTracksMessage()
-        message.videos = self.vlcMediaPlayer.videoTracks()
+        message.videos = player.getVideoTracks()
         return message
     }
     
@@ -480,7 +458,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.currentVideoTrackIndex = input.videoTrackNumber?.int32Value ?? 0
+        player.setVideoTrack(videoTrackNumber: input.videoTrackNumber)
     }
     
     public func getVideoTrack(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> VideoTrackMessage? {
@@ -491,7 +469,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: VideoTrackMessage = VideoTrackMessage()
-        message.videoTrackNumber = NSNumber(value: self.vlcMediaPlayer.currentVideoTrackIndex)
+        message.videoTrackNumber = player.getVideoTrack()
         return message
     }
     
@@ -502,7 +480,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        self.vlcMediaPlayer.scaleFactor = input.scale?.floatValue ?? 1
+        player.setVideoScale(scale: input.scale)
     }
     
     public func getVideoScale(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> VideoScaleMessage? {
@@ -513,7 +491,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: VideoScaleMessage = VideoScaleMessage()
-        message.scale = NSNumber(value: self.vlcMediaPlayer.scaleFactor)
+        message.scale = player.getVideoScale()
         return message
     }
     
@@ -524,10 +502,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        let aspectRatio = UnsafeMutablePointer<Int8>(
-            mutating: (input.aspectRatio as NSString?)?.utf8String!
-        )
-        self.vlcMediaPlayer.videoAspectRatio = aspectRatio
+        player.setVideoAspectRatio(aspectRatio: input.aspectRatio)
     }
     
     public func getVideoAspectRatio(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> VideoAspectRatioMessage? {
@@ -538,7 +513,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: VideoAspectRatioMessage = VideoAspectRatioMessage()
-        message.aspectRatio = String(cString: self.vlcMediaPlayer.videoAspectRatio)
+        message.aspectRatio = player.getVideoAspectRatio()
         return message
     }
     
@@ -550,7 +525,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         }
         
         let message: RendererServicesMessage = RendererServicesMessage()
-        message.services = self.vlcMediaPlayer.rendererServices()
+        message.services = player.getAvailableRendererServices()
         return message
     }
     
@@ -561,19 +536,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        rendererdiscoverers.removeAll()
-        rendererEventChannelHandler.renderItems.removeAll()
-        // chromecast service name: "Bonjour_renderer"
-        let rendererServices = self.vlcMediaPlayer.rendererServices()
-        for rendererService in rendererServices{
-            guard let rendererDiscoverer
-                    = VLCRendererDiscoverer(name: rendererService) else {
-                continue
-            }
-            rendererDiscoverer.delegate = self.rendererEventChannelHandler
-            rendererDiscoverer.start()
-            rendererdiscoverers.append(rendererDiscoverer)
-        }
+        player.startRendererScanning()
     }
     
     public func stopRendererScanning(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
@@ -583,16 +546,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        for rendererDiscoverer in rendererdiscoverers {
-            rendererDiscoverer.stop()
-            rendererDiscoverer.delegate = nil
-        }
-        rendererdiscoverers.removeAll()
-        rendererEventChannelHandler.renderItems.removeAll()
-        if(self.vlcMediaPlayer.isPlaying){
-            self.vlcMediaPlayer.pause()
-        }
-        self.vlcMediaPlayer.setRendererItem(nil)
+        player.stopRendererScanning()
     }
     
     public func getRendererDevices(_ input: TextureMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> RendererDevicesMessage? {
@@ -602,13 +556,8 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        var rendererDevices: [String: String] = [:]
-        let rendererItems = rendererEventChannelHandler.renderItems
-        for (_, item) in rendererItems.enumerated() {
-            rendererDevices[item.name] = item.name
-        }
         let message: RendererDevicesMessage = RendererDevicesMessage()
-        message.rendererDevices = rendererDevices
+        message.rendererDevices = player.getRendererDevices()
         return message
     }
     
@@ -619,15 +568,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
             player = (players[textureId] as? VLCViewController)!
         }
         
-        if (self.vlcMediaPlayer.isPlaying){
-            self.vlcMediaPlayer.pause()
-        }
-        let rendererItems = self.rendererEventChannelHandler.renderItems
-        let rendererItem = rendererItems.first{
-            $0.name.contains(input.rendererDevice ?? "")
-        }
-        self.vlcMediaPlayer.setRendererItem(rendererItem)
-        self.vlcMediaPlayer.play()
+        player.cast(rendererDevice: input.rendererDevice)
     }
 }
 
@@ -669,7 +610,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         self.vlcMediaPlayer.drawable = self.hostedView
         self.vlcMediaPlayer.delegate = self.mediaEventChannelHandler
     }
-
+    
     public func play() {
         
         self.vlcMediaPlayer.play()
@@ -685,12 +626,12 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         self.vlcMediaPlayer.stop()
     }
     
-    public func isPlaying() -> Bool?{
+    public func isPlaying() -> NSNumber?{
         
-        return self.vlcMediaPlayer.isPlaying
+        return self.vlcMediaPlayer.isPlaying as NSNumber
     }
     
-    public func setLooping() {
+    public func setLooping(isLooping: NSNumber?) {
         
         // self.vlcMediaPlayer.media.addOption()
         // --loop, --no-loop
@@ -709,7 +650,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     public func duration() -> NSNumber? {
         
         return self.vlcMediaPlayer.media?.length.value ?? 0
-         
+        
     }
     
     public func setVolume(volume: NSNumber?) {
@@ -723,7 +664,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func setPlaybackSpeed(speed: NSNumber?) {
-       
+        
         self.vlcMediaPlayer.rate = speed?.floatValue ?? 1
     }
     
@@ -733,7 +674,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func takeSnapshot() -> String? {
-       
+        
         let drawable: UIView = self.vlcMediaPlayer.drawable as! UIView
         let size = drawable.frame.size
         UIGraphicsBeginImageContextWithOptions(size, _: false, _: 0.0)
@@ -747,7 +688,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func getSpuTracksCount() -> NSNumber? {
-       
+        
         return NSNumber(value: self.vlcMediaPlayer.numberOfSubtitlesTracks)
     }
     
@@ -758,7 +699,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     
     public func setSpuTrack(spuTrackNumber: NSNumber?) {
         
-        self.vlcMediaPlayer.currentVideoSubTitleIndex = spuTrackNumber?.int32Value ?? -1
+        self.vlcMediaPlayer.currentVideoSubTitleIndex = spuTrackNumber?.int32Value ?? 0
     }
     
     public func getSpuTrack() -> NSNumber? {
@@ -776,7 +717,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         return NSNumber(value: self.vlcMediaPlayer.currentVideoSubTitleDelay)
     }
     
-    public func addSubtitleTrack(uri: String?, isSelected: Bool?) {
+    public func addSubtitleTrack(uri: String?, isSelected: NSNumber?) {
         
         // todo: check for file type
         guard let urlString = uri,
@@ -787,12 +728,12 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         self.vlcMediaPlayer.addPlaybackSlave(
             url,
             type: VLCMediaPlaybackSlaveType.subtitle,
-            enforce: isSelected ?? true
+            enforce: isSelected?.boolValue ?? true
         )
     }
     
     public func getAudioTracksCount() -> NSNumber? {
-       
+        
         return NSNumber(value: self.vlcMediaPlayer.numberOfAudioTracks)
     }
     
@@ -807,7 +748,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func getAudioTrack() -> NSNumber? {
-            
+        
         return NSNumber(value: self.vlcMediaPlayer.currentAudioTrackIndex)
     }
     
@@ -817,11 +758,11 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func getAudioDelay() -> NSNumber? {
-     
+        
         return NSNumber(value: self.vlcMediaPlayer.currentAudioPlaybackDelay)
     }
     
-    public func addAudioTrack(uri: String?, isSelected: Bool?) {
+    public func addAudioTrack(uri: String?, isSelected: NSNumber?) {
         
         // todo: check for file type
         guard let urlString = uri,
@@ -832,7 +773,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         self.vlcMediaPlayer.addPlaybackSlave(
             url,
             type: VLCMediaPlaybackSlaveType.audio,
-            enforce: isSelected ?? true
+            enforce: isSelected?.boolValue ?? true
         )
     }
     
@@ -843,7 +784,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     
     public func getVideoTracks() -> [Int:String]? {
         
-       return self.vlcMediaPlayer.videoTracks()
+        return self.vlcMediaPlayer.videoTracks()
     }
     
     public func setVideoTrack(videoTrackNumber: NSNumber?) {
@@ -852,12 +793,12 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func getVideoTrack() -> NSNumber? {
-      
+        
         return NSNumber(value: self.vlcMediaPlayer.currentVideoTrackIndex)
     }
     
     public func setVideoScale(scale: NSNumber?) {
-       
+        
         self.vlcMediaPlayer.scaleFactor = scale?.floatValue ?? 1
     }
     
@@ -916,7 +857,7 @@ public class VLCViewController: NSObject, FlutterPlatformView {
     }
     
     public func getRendererDevices() -> [String: String]? {
-     
+        
         var rendererDevices: [String: String] = [:]
         let rendererItems = rendererEventChannelHandler.renderItems
         for (_, item) in rendererItems.enumerated() {
@@ -938,6 +879,9 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         self.vlcMediaPlayer.play()
     }
     
+    public func dispose(){
+        //todo: dispose player & event handlers
+    }
     
     func setMediaPlayerUrl(uri: String, isAssetUrl: Bool, autoPlay: Bool, hwAcc: Int, options: [String]){
         
@@ -1131,11 +1075,11 @@ class VLCPlayerEventStreamHandler: NSObject, FlutterStreamHandler, VLCMediaPlaye
             
         case .error:
             /*mediaEventSink(
-                FlutterError(
-                    code: "500",
-                    message: "Player State got an error",
-                    details: nil)
-            )*/
+             FlutterError(
+             code: "500",
+             message: "Player State got an error",
+             details: nil)
+             )*/
             mediaEventSink([
                 "event": "error",
             ])
