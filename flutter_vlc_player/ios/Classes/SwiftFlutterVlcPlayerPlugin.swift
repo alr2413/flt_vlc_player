@@ -2,23 +2,38 @@ import Flutter
 import MobileVLCKit
 import UIKit
 
+//protocol KeyForAssetFn {
+//    func get(asset: String) -> String
+//}
+//
+//protocol KeyForAssetAndPackageName {
+//    func get(asset: String, packageName: String) -> String
+//}
+
+
 public class SwiftFlutterVlcPlayerPlugin: NSObject, FlutterPlugin {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         
-        let factory = VLCViewFactory(registrar:  registrar)
+//        let keyForAssetFn = registrar.lookupKey as (String) -> String
+//        let keyForAssetAndPackageName = registrar.lookupKey as (String, String) -> String
+        let factory = VLCViewFactory(registrar: registrar)
         registrar.register(factory, withId: "flutter_video_plugin/getVideoView")
     }
     
 }
 
 public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
-    
+        
     private var registrar: FlutterPluginRegistrar
     private var builder: VLCViewBuilder
+//    private var keyForAsset: KeyForAssetFn
+//    private var keyForAssetAndPackageName: KeyForAssetAndPackageName
     
     init(registrar: FlutterPluginRegistrar) {
         self.registrar = registrar
+//        self.keyForAsset = keyForAsset
+//        self.keyForAssetAndPackageName = keyForAssetAndPackageName
         self.builder = VLCViewBuilder(registrar: registrar)
         super.init()
     }
@@ -26,7 +41,7 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
         
         //        let arguments = args as? NSDictionary ?? [:]
-        return builder.build(frame: frame, viewId: viewId, messenger: registrar.messenger() )
+        return builder.build(frame: frame, viewId: viewId)
     }
     
     public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
@@ -39,18 +54,18 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
     
     var players = [Int:VLCViewController]()
     private var registrar: FlutterPluginRegistrar
+    private var messenger: FlutterBinaryMessenger
     
     init(registrar: FlutterPluginRegistrar) {
         self.registrar = registrar
-    }
-    
-    
-    
-    public func build(frame: CGRect, viewId: Int64, messenger:FlutterBinaryMessenger ) -> VLCViewController{
+        self.messenger = registrar.messenger()
+        super.init()
         //
         VlcPlayerApiSetup(messenger, self)
+    }
+    
+    public func build(frame: CGRect, viewId: Int64) -> VLCViewController{
         //
-        
         var vlcViewController: VLCViewController
         vlcViewController = VLCViewController(frame: frame, viewId: viewId, messenger: messenger)
         players[Int(viewId)] = vlcViewController
