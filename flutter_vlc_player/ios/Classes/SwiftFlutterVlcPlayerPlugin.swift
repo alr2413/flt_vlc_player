@@ -37,7 +37,8 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
 
 public class VLCViewBuilder: NSObject, VlcPlayerApi{
     
-    var players = [AnyHashable : Any](minimumCapacity: 1)
+    var players = [Int:VLCViewController]()
+
     
     public func build(frame: CGRect, viewId: Int64, messenger:FlutterBinaryMessenger) -> VLCViewController{
         //
@@ -45,8 +46,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         //
         var vlcViewController: VLCViewController
         vlcViewController = VLCViewController(frame: frame, viewId: viewId, messenger: messenger)
-        players[NSNumber(value: viewId)] = vlcViewController
-        
+        players[Int(viewId)] = vlcViewController
         return vlcViewController;
     }
     
@@ -58,7 +58,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         var isAssetUrl: Bool = false
@@ -91,18 +91,18 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.dispose()
-        players.removeValue(forKey: input.textureId)
+        players.removeValue(forKey: input.textureId as! Int)
     }
     
     public func setStreamUrl(_ input: SetMediaMessage, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         var isAssetUrl: Bool = false
@@ -134,7 +134,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.play()
@@ -144,7 +144,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.pause()
@@ -154,7 +154,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.stop()
@@ -164,7 +164,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: BooleanMessage = BooleanMessage()
@@ -176,7 +176,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setLooping(isLooping: input.isLooping)
@@ -186,7 +186,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.seek(position: input.position)
@@ -196,7 +196,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: PositionMessage = PositionMessage()
@@ -208,7 +208,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: DurationMessage = DurationMessage()
@@ -220,7 +220,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setVolume(volume: input.volume)
@@ -230,7 +230,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: VolumeMessage = VolumeMessage()
@@ -242,7 +242,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setPlaybackSpeed(speed: input.speed)
@@ -252,7 +252,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: PlaybackSpeedMessage = PlaybackSpeedMessage()
@@ -264,7 +264,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: SnapshotMessage = SnapshotMessage()
@@ -276,7 +276,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: TrackCountMessage = TrackCountMessage()
@@ -288,7 +288,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: SpuTracksMessage = SpuTracksMessage()
@@ -300,7 +300,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setSpuTrack(spuTrackNumber: input.spuTrackNumber)
@@ -310,7 +310,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: SpuTrackMessage = SpuTrackMessage()
@@ -322,7 +322,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setSpuDelay(delay: input.delay)
@@ -332,7 +332,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: DelayMessage = DelayMessage()
@@ -344,7 +344,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.addSubtitleTrack(uri: input.uri, isSelected: input.isSelected)
@@ -354,7 +354,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: TrackCountMessage = TrackCountMessage()
@@ -366,7 +366,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: AudioTracksMessage = AudioTracksMessage()
@@ -378,7 +378,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setAudioTrack(audioTrackNumber: input.audioTrackNumber)
@@ -388,7 +388,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: AudioTrackMessage = AudioTrackMessage()
@@ -400,7 +400,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setAudioDelay(delay: input.delay)
@@ -410,7 +410,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: DelayMessage = DelayMessage()
@@ -422,7 +422,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.addAudioTrack(uri: input.uri, isSelected: input.isSelected)
@@ -432,7 +432,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: TrackCountMessage = TrackCountMessage()
@@ -444,7 +444,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: VideoTracksMessage = VideoTracksMessage()
@@ -456,7 +456,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setVideoTrack(videoTrackNumber: input.videoTrackNumber)
@@ -466,7 +466,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: VideoTrackMessage = VideoTrackMessage()
@@ -478,7 +478,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setVideoScale(scale: input.scale)
@@ -488,7 +488,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: VideoScaleMessage = VideoScaleMessage()
@@ -500,7 +500,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.setVideoAspectRatio(aspectRatio: input.aspectRatio)
@@ -510,7 +510,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: VideoAspectRatioMessage = VideoAspectRatioMessage()
@@ -522,7 +522,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: RendererServicesMessage = RendererServicesMessage()
@@ -534,7 +534,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.startRendererScanning()
@@ -544,7 +544,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.stopRendererScanning()
@@ -554,7 +554,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         let message: RendererDevicesMessage = RendererDevicesMessage()
@@ -566,7 +566,7 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         
         var player: VLCViewController? = nil
         if let textureId = input.textureId {
-            player = (players[textureId] as? VLCViewController)!
+            player = players[Int(truncating: textureId)]
         }
         
         player?.cast(rendererDevice: input.rendererDevice)
