@@ -19,14 +19,14 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
     
     init(registrar: FlutterPluginRegistrar) {
         self.registrar = registrar
-        self.builder = VLCViewBuilder()
+        self.builder = VLCViewBuilder(registrar: registrar)
         super.init()
     }
     
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
         
         //        let arguments = args as? NSDictionary ?? [:]
-        return builder.build(frame: frame, viewId: viewId, messenger: registrar.messenger())
+        return builder.build(frame: frame, viewId: viewId, messenger: registrar.messenger() )
     }
     
     public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
@@ -38,12 +38,19 @@ public class VLCViewFactory: NSObject, FlutterPlatformViewFactory {
 public class VLCViewBuilder: NSObject, VlcPlayerApi{
     
     var players = [Int:VLCViewController]()
-
+    private var registrar: FlutterPluginRegistrar
     
-    public func build(frame: CGRect, viewId: Int64, messenger:FlutterBinaryMessenger) -> VLCViewController{
+    init(registrar: FlutterPluginRegistrar) {
+        self.registrar = registrar
+    }
+    
+    
+    
+    public func build(frame: CGRect, viewId: Int64, messenger:FlutterBinaryMessenger ) -> VLCViewController{
         //
         VlcPlayerApiSetup(messenger, self)
         //
+        
         var vlcViewController: VLCViewController
         vlcViewController = VLCViewController(frame: frame, viewId: viewId, messenger: messenger)
         players[Int(viewId)] = vlcViewController
@@ -65,13 +72,13 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         var mediaUrl: String = ""
         
         if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET){
-            //            var assetPath: String
-            //            if input.packageName != nil {
-            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
-            //            } else {
-            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
-            //            }
-            //            mediaUrl = assetPath
+            var assetPath: String
+            if input.packageName != nil {
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
+            } else {
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
+            }
+            mediaUrl = assetPath
             isAssetUrl = true
         }else{
             mediaUrl = input.uri ?? ""

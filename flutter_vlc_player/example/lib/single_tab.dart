@@ -116,6 +116,7 @@ class _SingleTabState extends State<SingleTab> {
         ListView.builder(
           shrinkWrap: true,
           itemCount: listVideos.length,
+          physics: NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             VideoData video = listVideos[index];
             IconData iconData;
