@@ -24,6 +24,12 @@ class _SingleTabState extends State<SingleTab> {
     listVideos = List<VideoData>();
     //
     listVideos.add(VideoData(
+      name: 'Asset Video 1',
+      path: 'assets/sample.mp4',
+      type: VideoType.asset,
+    ));
+    //
+    listVideos.add(VideoData(
       name: 'Network Video 1',
       path:
           'http://samples.mplayerhq.hu/MPEG-4/embedded_subs/1Video_2Audio_2SUBs_timed_text_streams_.mp4',
@@ -43,11 +49,6 @@ class _SingleTabState extends State<SingleTab> {
       type: VideoType.file,
     ));
     //
-    listVideos.add(VideoData(
-      name: 'Asset Video 1',
-      path: 'assets/sample.mp4',
-      type: VideoType.asset,
-    ));
   }
 
   @override
@@ -94,12 +95,14 @@ class _SingleTabState extends State<SingleTab> {
       case VideoType.asset:
         _controller = VlcPlayerController.asset(
           initVideo.path,
+          // package: "test",
           onInit: () async {
             await _controller.startRendererScanning();
           },
           onRendererHandler: (type, id, name) {
             print('onRendererHandler $type $id $name');
           },
+          options: VlcPlayerOptions(),
         );
         break;
     }

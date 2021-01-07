@@ -195,7 +195,7 @@ abstract class VlcPlayerApi {
   void castToRenderer(RenderDeviceMessage msg);
 }
 
-// to make changes effect, must run "flutter pub run pigeon \--input pigeons/messages.dart"
+// to make changes effect, must run "flutter pub run pigeon \--input pigeons/messages.dart --dart_null_safety"
 void configurePigeon(PigeonOptions opts) {
   opts.dartOut =
       '../flutter_vlc_player_platform_interface/lib/src/messages/messages.dart';
