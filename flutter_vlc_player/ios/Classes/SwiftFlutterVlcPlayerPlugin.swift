@@ -131,13 +131,13 @@ public class VLCViewBuilder: NSObject, VlcPlayerApi{
         var mediaUrl: String = ""
         
         if(DataSourceType(rawValue: Int(truncating: input.type!)) == DataSourceType.ASSET){
-            //            var assetPath: String
-            //            if input.packageName != nil {
-            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
-            //            } else {
-            //                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
-            //            }
-            //            mediaUrl = assetPath
+            var assetPath: String
+            if input.packageName != nil {
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "" , fromPackage: input.packageName ?? "")
+            } else {
+                assetPath = registrar.lookupKey(forAsset: input.uri ?? "")
+            }
+            mediaUrl = assetPath
             isAssetUrl = true
         }else{
             mediaUrl = input.uri ?? ""
@@ -932,20 +932,20 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         case .HW_ACCELERATION_DISABLED:
             media.addOption("--codec=avcodec")
             break
-            
+
         case .HW_ACCELERATION_DECODING:
             media.addOption("--codec=all")
             media.addOption(":no-mediacodec-dr")
             media.addOption(":no-omxil-dr")
             break
-            
+
         case .HW_ACCELERATION_FULL:
             media.addOption("--codec=all")
             break
-            
+
         case .HW_ACCELERATION_AUTOMATIC:
             break
-            
+
         case .none:
             break
         }
