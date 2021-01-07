@@ -49,7 +49,7 @@ class MethodChannelVlcPlayer extends VlcPlayerPlatform {
     message.textureId = viewId;
     message.uri = uri;
     message.type = type.index;
-    message.packageName = package ?? "";
+    message.packageName = package;
     message.hwAcc = hwAcc.index ?? HwAcc.AUTO.index;
     message.autoPlay = autoPlay ?? true;
     message.options = options?.get() ?? [];
