@@ -623,6 +623,8 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         
         self.hostedView = UIView(frame: frame)
         self.vlcMediaPlayer = VLCMediaPlayer()
+//        self.vlcMediaPlayer.libraryInstance.debugLogging = true
+//        self.vlcMediaPlayer.libraryInstance.debugLoggingLevel = 3
         self.mediaEventChannel = mediaEventChannel
         self.mediaEventChannelHandler = VLCPlayerEventStreamHandler()
         self.rendererEventChannel = rendererEventChannel
@@ -911,7 +913,11 @@ public class VLCViewController: NSObject, FlutterPlatformView {
         self.vlcMediaPlayer.stop()
         var media: VLCMedia
         if(isAssetUrl){
-            media = VLCMedia(path: uri)
+            guard let path = Bundle.main.path(forResource: uri, ofType: nil)
+            else {
+                return
+            }
+            media = VLCMedia(path: path)
         }
         else{
             guard let url = URL(string: uri)
